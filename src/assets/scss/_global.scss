@@ -1,0 +1,46 @@
+@import '_variables';
+@import '_mixins';
+@import '_fonts';
+
+// RESETS
+html {
+    box-sizing: border-box;
+    font-size: $font-size-root;
+    -ms-overflow-style: scrollbar;
+    height: 100%;
+    -webkit-overflow-scrolling: touch;
+    line-height: 1.15;
+    color: $dark-gray;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+}
+
+html *,
+html *::before,
+html *::after {
+    box-sizing: border-box;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    outline: none;
+}
+
+@at-root {
+    @-ms-viewport { width: device-width; }
+}
+
+var {
+    font-style: normal;
+}
+
+// BUTTONS
+
+// MISC.
+hr {
+    border: none;
+    border-top-style: solid;
+    border-top-width: 1px;
+    border-top-color: rgba($black, .25);
+}
