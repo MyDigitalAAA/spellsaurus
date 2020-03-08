@@ -33,9 +33,7 @@
                 <div class="casting-ingredients">
                     <p class="title">Nécessite</p>
                     <p class="content">
-                        <span v-for="ingredient of ingredients" :key="ingredient">
-                            <span>{{ ingredient }} </span>
-                        </span>
+                        {{ ingredients }}
                     </p>
                 </div>
             </section>
@@ -67,7 +65,7 @@ export default {
         description: Array,
         level: String,
         schools: Array,
-        ingredients: Array,
+        ingredients: String,
         charge: String,
         cost: String,
         variables: Array,
@@ -76,7 +74,6 @@ export default {
 </script>
 
 <style lang="scss">
-
 
     .spell-card {
         max-width: 35rem;
@@ -156,6 +153,7 @@ export default {
                         text-transform: uppercase;
                     }
                     .content {
+                        padding-top: 1rem;
                         font-size: .85rem;
                         text-align: justify;
                         text-align-last: center;
