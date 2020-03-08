@@ -7,7 +7,7 @@
         v-bind:schools="['Lumomancie', 'Nécromancie']"
         v-bind:level="'30'"
         v-bind:charge="'2'"
-        v-bind:ingredients="[`Volonté`, `Geste`]"
+        v-bind:ingredients="`Volonté, Geste`"
         v-bind:cost="'-90'"
         v-bind:variables="[{name: 'x', description: 'lol'}]"
         />
