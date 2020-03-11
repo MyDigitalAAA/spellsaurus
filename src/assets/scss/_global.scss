@@ -31,6 +31,15 @@ html *::after {
     @-ms-viewport { width: device-width; }
 }
 
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style-type: none;
+}
+
 var {
     font-style: normal;
 }
