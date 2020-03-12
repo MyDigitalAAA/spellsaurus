@@ -1,5 +1,5 @@
 <template>
-    <article class="spell-card">
+    <article class="spell-card" v-bind:class="{ active: isFlipped }" @click="toggleCard">
         <div class="content">
             <header>
                 <h3>{{ name }}</h3>
@@ -16,7 +16,7 @@
                             <var>{{ level }}</var>
                         </div>
                         <ul class="schools">
-                            <li v-for="school of schools" :key="school">
+                            <li v-for="(school, index) in schools" :key="index">
                                 {{ school }}
                             </li>
                         </ul>
@@ -39,7 +39,7 @@
             </section>
             <hr>
             <section class="spell-description">
-                <p v-for="line of description" :key="line">
+                <p v-for="(line, index) of description" :key="index">
                     {{ line }}
                 </p>
             </section>
@@ -47,7 +47,7 @@
             <footer v-if="variables">
                 <div class="label">Variables</div>
                 <div class="variables">
-                    <div v-for="variable in variables" :key="variable" class="xyz">
+                    <div v-for="(variable, index) in variables" :key="index" class="xyz">
                         <span>{{ variable.name }}</span>
                         <var>{{ variable.description }}</var>
                     </div>
@@ -58,8 +58,9 @@
 </template>
 
 <script>
+
 export default {
-    name: "spell-card",
+    name: 'spell-card',
     props: {
         name: String,
         description: Array,
@@ -69,8 +70,19 @@ export default {
         charge: String,
         cost: String,
         variables: Array,
-    }
+    },
+    data() {
+        return {
+            isFlipped: false,
+        }
+    },
+    methods: {
+        toggleCard: async function() {
+            this.isFlipped = !this.isFlipped;
+        }
+    },
 }
+
 </script>
 
 <style lang="scss">
@@ -79,10 +91,10 @@ export default {
         max-width: 35rem;
         padding: .5rem;
         margin: .5rem auto .5rem;
-        background: $card-border-inner;
-        border: solid 1px rgba($dark-blue, .5);
+        background: $spell-card--innerborder;
+        border: solid 1px rgba($primary--base, .5);
         border-radius: .5rem;
-        box-shadow: .0 .0 .75rem rgba($dark-blue, .25);
+        box-shadow: .0 .0 .75rem rgba($primary--base, .25);
 
         > .content {
             max-width: 35rem;
