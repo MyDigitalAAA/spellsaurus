@@ -1,12 +1,20 @@
 
-// COLOURS
+//// COLOURS
+// Global colours
 $white: #FFF;
 $black: #000;
 
-$dark-gray: #222;
+$primary--base: #2c3e50;
+$primary--blue: #599EF4;
+$secondary--blue: #355F91;
 
-$dark-blue: #2c3e50;
-$card-border-inner: #f5ebd8;
+$valid: #6AC47B;
+$warning: #F7A758;
+$alert: #F44E4E;
+
+
+// Spell colours
+$spell-card--innerborder: #f5ebd8;
 
 // FONT FAMILY
 $font-family: 'Overpass', sans-serif;
