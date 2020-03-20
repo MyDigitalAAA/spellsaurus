@@ -8,6 +8,9 @@ import spells from "./pages/spells";
 // Routes
 const routes = [
     {
+        path: "*", redirect: "/",
+    },
+    {
         path: '/', component: index,
     },
     {

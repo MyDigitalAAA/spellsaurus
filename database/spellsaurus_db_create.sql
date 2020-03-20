@@ -1,3 +1,14 @@
+DROP USER IF EXISTS 'archivist'@'%';
+
+CREATE USER 'archivist'@'%'
+    IDENTIFIED BY 'root';
+
+GRANT ALL
+  ON spellsaurus.*
+  TO 'archivist'@'%';
+
+FLUSH PRIVILEGES;
+
 DROP DATABASE IF EXISTS spellsaurus;
 CREATE DATABASE spellsaurus;
 USE spellsaurus;
