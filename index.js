@@ -1,26 +1,32 @@
 // MODULES
 const express = require('express');
-let connection = require('./connection');
-    const db = connection.db;
-
+const connection = require('./database/connection');
+    const getSpells = connection.getSpells;
+    const closeConnection = connection.closeConnection;
 
 // CONSTANTS
 const port = 2814;
 
-
-const query = "SELECT * FROM spell";
-
-// make to connection to the database.
-db.connect( err => {
-    if (err) { throw err }
-    console.log("Connected");
-    db.query(query, (err, result, fields) => {
-        console.log(result[0]);
-    });
-});
-
+// APP
 app = express();
+const server = app.listen(port, () => {console.log(`App listening on port ${port}`)});
 
-app.listen(port, () => {
-    console.log(`App listening on port ${port}`)
-});
+// getSpells().then((v) => {
+//     console.log(v);
+// }).catch(r => {
+//     console.log(r);
+// })
+
+app.route('/spells')
+    .get((req, res, next) => {
+        getSpells().then(v => {
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({spells : v}));
+        })
+    })
+
+// On process exit
+process.on('SIGINT', () => {
+    closeConnection();
+    server.close();
+})
