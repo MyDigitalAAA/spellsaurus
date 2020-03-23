@@ -23,7 +23,15 @@ CREATE TABLE IF NOT EXISTS `spell` (
     `level` INT UNSIGNED,
     `charge` INT UNSIGNED,
     `cost` VARCHAR(255),
-    PRIMARY KEY(`id`)
+    PRIMARY KEY (`id`)
+);
+
+/* META SCHOOLS */
+CREATE TABLE IF NOT EXISTS `meta_school` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL,
+    `description` VARCHAR(255),
+    PRIMARY KEY (`id`)
 );
 
 /* SCHOOLS */
@@ -31,14 +39,16 @@ CREATE TABLE IF NOT EXISTS `school` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
     `description` VARCHAR(255),
-    PRIMARY KEY(`id`)
+    `id_meta_school` INT UNSIGNED NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY(`id_meta_school`) REFERENCES meta_school(`id`)
 );
 
 /* COMMON INGREDIENTS */
 CREATE TABLE IF NOT EXISTS `ingredient` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
-    PRIMARY KEY `pk_id`(`id`)
+    PRIMARY KEY (`id`)
 );
 
 /* COMMON VARIABLES */
