@@ -1,32 +1,24 @@
 // MODULES
 const express = require('express');
+
 const connection = require('./database/connection');
-    const getSpells = connection.getSpells;
-    const closeConnection = connection.closeConnection;
+const db = connection.db;
+
+// 
+const routes = require('./routes');
 
 // CONSTANTS
 const port = 2814;
 
 // APP
 app = express();
-const server = app.listen(port, () => {console.log(`App listening on port ${port}`)});
+const server = app.listen( port, () => {console.log(`App listening on port ${port}`)});
 
-// getSpells().then((v) => {
-//     console.log(v);
-// }).catch(r => {
-//     console.log(r);
-// })
+app.use('/spells', routes.spells);
 
-app.route('/spells')
-    .get((req, res, next) => {
-        getSpells().then(v => {
-            res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify({spells : v}));
-        })
-    })
-
-// On process exit
+// On process kill with SIGINT
 process.on('SIGINT', () => {
-    closeConnection();
+    db.end();
     server.close();
+    console.log('Server closed');
 })
