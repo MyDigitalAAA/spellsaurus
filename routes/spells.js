@@ -5,19 +5,28 @@ const connection = require('../database/connection');
 const db = connection.db;
 
 getSpells = () => {
-    return new Promise((resolve, reject) => {
+    let fetchSpellsData = new Promise((resolve, reject) => {
         let query =
-        "SELECT * " +
+        "SELECT DISTINCT * " +
         "FROM spell";
 
         db.query(query, (err, result) => {
-            if (err) {
-                return reject;
+            if (err) { return reject }
+            if (result.length == 0) { console.log("No results found") }
+
+            for (let i = 0; i < result.length; i++) {
+                let currentSpell = result[i];
+                
+                let schoolQuery;
             }
-            resolve(result);
         })
 
+        let fetchSpellsSchoolsData = new Promise((resolve, reject) => {
+            
+        })
     })
+
+    return fetchSpellsData;
 }
 
 router

@@ -20,5 +20,4 @@ app.use('/spells', routes.spells);
 process.on('SIGINT', () => {
     db.end();
     server.close();
-    console.log('Server closed');
 })
