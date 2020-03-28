@@ -1,23 +1,25 @@
+'use strict';
+
 // MODULES
-const express = require('express');
+const express = require('express')
 
-const connection = require('./database/connection');
-const db = connection.db;
-
-// 
-const routes = require('./routes');
+const connection = require('./database/connection')
+const db = connection.db
 
 // CONSTANTS
-const port = 2814;
+const port = 2814
 
-// APP
-app = express();
-const server = app.listen( port, () => {console.log(`App listening on port ${port}`)});
+// Import routes
+const routes = require('./routes')
 
-app.use('/spells', routes.spells);
+// Builds app
+let app = express()
+const server = app.listen( port, () => { console.log(`App listening on port ${port}`)} )
+
+app.use('/spells', routes.spells)
 
 // On process kill with SIGINT
 process.on('SIGINT', () => {
-    db.end();
-    server.close();
+    db.end()
+    server.close()
 })

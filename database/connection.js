@@ -13,4 +13,10 @@ const db = mysql.createConnection({
     database: credentials.database,
 })
 
+db.on('error', err => {
+    if (err.errno == 'ECONNRESET') {
+        console.log("The connection was reset during your request. Please try again later.");
+    }
+})
+
 module.exports = { db }
