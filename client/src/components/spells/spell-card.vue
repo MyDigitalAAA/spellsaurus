@@ -1,5 +1,5 @@
 <template>
-    <article class="spell-card" v-bind:class="{ active: isFlipped }" @click="toggleCard">
+    <article class="spell-card">
         <div class="content">
             <header>
                 <h3>{{ name }}</h3>
@@ -17,7 +17,7 @@
                         </div>
                         <ul class="schools">
                             <li v-for="(school, index) in schools" :key="index">
-                                {{ school }}
+                                {{ school.name }}
                             </li>
                         </ul>
                     </div>
@@ -33,14 +33,14 @@
                 <div class="casting-ingredients">
                     <p class="title">Nécessite</p>
                     <p class="content">
-                        {{ ingredients }}
+                        <span v-for="(ingredient, index) in ingredients" :key="index">{{ ingredient }}</span>
                     </p>
                 </div>
             </section>
             <hr>
             <section class="spell-description">
-                <p v-for="(line, index) of description" :key="index">
-                    {{ line }}
+                <p>
+                    {{ description }}
                 </p>
             </section>
             <hr>

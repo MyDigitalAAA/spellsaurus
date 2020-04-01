@@ -31,12 +31,12 @@ const getSpells = (params) => {
             // Loops over the results to fetch the associated tables
             for (let i = 0; i < result.length; i++) {
 
-                let currentSpell_ID = i + 1
+                let currentSpell_ID = result[i].id
                 
                 // Fetches the spell's schools
                 let fetchSpellSchoolData = new Promise((resolve, reject) => {
                     let query =
-                    "SELECT school.name, school.description " +
+                    "SELECT school.name " +
                     "FROM spells_schools AS sc " +
                     "INNER JOIN school AS school ON sc.id_school = school.id " +
                     "WHERE sc.id_spell = " + currentSpell_ID

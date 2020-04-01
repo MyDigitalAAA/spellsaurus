@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS `spell` (
     `level` INT UNSIGNED,
     `charge` INT UNSIGNED,
     `cost` VARCHAR(255),
+    `is_ritual` BOOLEAN,
     PRIMARY KEY (`id`)
 );
 
