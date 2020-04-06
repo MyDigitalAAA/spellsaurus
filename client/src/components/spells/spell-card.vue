@@ -31,9 +31,11 @@
                     </div>
                 </div>
                 <div class="casting-ingredients">
-                    <p class="title">Nécessite</p>
+                    <p class="title">Nécessite :</p>
                     <p class="content">
-                        <span v-for="(ingredient, index) in ingredients" :key="index">{{ ingredient }}</span>
+                        <span v-for="(ingredient, index) in ingredients" :key="index">
+                            {{ ingredient.name }}<span v-if="index != Object.keys(ingredients).length - 1">, </span>
+                        </span>
                     </p>
                 </div>
             </section>

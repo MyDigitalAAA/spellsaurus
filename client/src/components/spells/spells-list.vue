@@ -5,9 +5,9 @@
 </template>
 
 <script>
+
 // Components
 import spellcard from "./spell-card"
-
 // API
 import { RepositoryFactory } from "../../../api/repositories"
 const spellsRepository = RepositoryFactory.get('spells')
@@ -35,7 +35,7 @@ export default {
             this.loading = true
             const displaySpells = await this.fetchSpells();
             this.loading = false
-            this.spells = displaySpells.splice(0,10)
+            this.spells = displaySpells.slice(0, 10)
         }
     }
 }
