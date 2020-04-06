@@ -92,7 +92,7 @@ router
     getSpells(req.query)
     .then(v => {
         res.setHeader('Content-Type', 'application/json')
-        res.end(JSON.stringify({spells : v}))
+        res.end(JSON.stringify(v))
     })
     .catch(err => {
         console.log(err)
