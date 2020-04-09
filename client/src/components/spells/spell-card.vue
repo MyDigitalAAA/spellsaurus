@@ -41,9 +41,7 @@
             </section>
             <hr>
             <section class="spell-description">
-                <p>
-                    {{ description }}
-                </p>
+                <p>{{ description }}</p>
             </section>
             <hr>
             <footer v-if="variables">
@@ -67,10 +65,10 @@ export default {
         name: String,
         description: String,
         level: Number,
-        schools: Array,
-        ingredients: Array,
         charge: Number,
         cost: String,
+        schools: Array,
+        ingredients: Array,
         variables: Array,
     },
     data() {

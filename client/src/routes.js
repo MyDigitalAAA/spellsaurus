@@ -2,8 +2,9 @@
 
 
 // Pages
-import index from "./pages/index";
-import spells from "./pages/spells";
+import index from "./pages/index-page";
+import spells from "./pages/spells-page";
+import world from "./pages/world-page";
 
 // Routes
 const routes = [
@@ -15,6 +16,9 @@ const routes = [
     },
     {
         path: '/spells', component: spells,
+    },
+    {
+        path: '/world', component: world,
     }
 ];
 

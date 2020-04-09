@@ -1,7 +1,7 @@
 <template>
-    <div class="spells-page">
+    <section class="spells-page">
         <spell-list/>
-    </div>
+    </section>
 </template>
 
 <script>

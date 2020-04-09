@@ -1,7 +1,10 @@
 <template>
     <div id="srs">
 
-        <navigation/>
+        <header>
+            <navigation/>
+        </header>
+        
         <router-view/>
 
     </div>
@@ -21,11 +24,5 @@ export default {
 </script>
 
 <style lang="scss">
-
-    #srs {
-        font-family: Avenir, Helvetica, Arial, sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-    }
 
 </style>
