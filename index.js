@@ -23,9 +23,3 @@ const server = app.listen( port, () => {console.log(`App listening on port ${por
 
 // Routing
 app.use('/api/spells', routes.spells)
-
-// On process kill with SIGINT
-process.on('SIGINT', () => {
-    db.end()
-    server.close()
-})

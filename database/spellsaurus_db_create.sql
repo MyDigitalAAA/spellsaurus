@@ -1,5 +1,5 @@
 DROP DATABASE IF EXISTS spellsaurus;
-CREATE DATABASE spellsaurus;
+CREATE DATABASE spellsaurus CHARACTER SET utf8 COLLATE utf8_bin;
 USE spellsaurus;
 
 /* ==== PRIMARY TABLES ==== */

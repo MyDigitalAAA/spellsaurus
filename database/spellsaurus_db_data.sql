@@ -1,3 +1,5 @@
+SET NAMES utf8;
+
 -- META SCHOOLS
 INSERT INTO `meta_school` VALUES
 (1, 'Magies blanches', 'Magies disciplinant les arts de soins et de lumières.'),
