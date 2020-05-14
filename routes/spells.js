@@ -6,6 +6,85 @@ let router = express.Router()
 const connection = require('../database/connection')
 const db = connection.db
 
+
+const getSpells = () => {
+    let fetchSpellsData = new Promise((resolve, reject) => {
+
+        let query =
+        "SELECT DISTINCT * FROM spell"
+
+        db.query(query, async (err, result) => {
+            if (err) { return reject }
+            if (result.length == 0) { console.log("No spells found") }
+
+            // Loops over the results to fetch the associated tables
+            for (let i = 0; i < result.length; i++) {
+                result[i] = await buildSpell(result[i])
+            }
+            resolve(result)
+        })
+    })
+    return fetchSpellsData
+}
+
+const getSpell = (id) => {
+    let fetchSpellData = new Promise((resolve, reject) => {
+
+        let query = "SELECT * FROM spell WHERE id = " + id
+
+        db.query(query, async (err, result) => {
+            if (err) return reject
+            result = await buildSpell(result[0])
+            resolve(result);
+        })
+    })
+    return fetchSpellData
+}
+
+// ROUTES
+router.get('/', async (req, res, next) => {
+    getSpells()
+    .then(v => {
+        res.setHeader('Content-Type', 'application/json;charset=utf-8')
+        res.end(JSON.stringify(v))
+    })
+    .catch(err => {
+        console.log(err)
+        next()
+    })
+})
+router.get('/:id/', async (req, res, next) => {
+    getSpell(req.params.id)
+    .then(v => {
+        res.setHeader('Content-Type', 'application/json;charset=utf-8')
+        res.end(JSON.stringify(v))
+    })
+    .catch(err => {
+        console.log(err)
+        next()
+    })
+})
+
+// Param validation for single spell
+    // (check if id is int) (could be refactored)
+router.param('id', (req, res, next, id) => {
+    const regex = RegExp(/^[1-9]\d*$/);
+    try {
+        if (regex.test(id)) {
+            next()
+        } else {
+            let err = {
+                    name: "InvalidParameterException",
+                    description: "The parameter is not valid. It should be an integer."
+                }
+            throw err
+        }
+    } catch (err) {
+        res.status(403).send(err)
+    }
+})
+
+// SHARED FUNCTIONS
 // Builds the associated infos for a given spell object
 const buildSpell = async (spell) => {
 
@@ -32,7 +111,7 @@ const buildSpell = async (spell) => {
         "WHERE sv.id_spell = " + spell.id
 
         db.query(query, (err, result) => {
-            if (err) console.log(err)
+            if (err) return reject
             resolve(result)
         })
     })
@@ -46,7 +125,7 @@ const buildSpell = async (spell) => {
         "WHERE si.id_spell = " + spell.id
 
         db.query(query, (err, result) => {
-            if (err) console.log(err)
+            if (err) return reject
             resolve(result)
         })
     })
@@ -57,73 +136,5 @@ const buildSpell = async (spell) => {
     spell.ingredients = await fetchSpellIngredientsData
     return spell
 }
-
-const getSpells = () => {
-    let fetchSpellsData = new Promise((resolve, reject) => {
-
-        let query =
-        "SELECT DISTINCT * " +
-        "FROM spell "
-
-        db.query(query, async (err, result) => {
-            if (err) { return reject }
-            if (result.length == 0) { console.log("No spells found") }
-
-            // Loops over the results to fetch the associated tables
-            for (let i = 0; i < result.length; i++) {
-                result[i] = await buildSpell(result[i])
-            }
-            resolve(result)
-        })
-    })
-    return fetchSpellsData
-}
-
-const getSpell = (id) => {
-    let fetchSpellData = new Promise((resolve, reject) => {
-
-        let query =
-        "SELECT FROM spell where id = " + id
-
-        db.query(query, async (err, result) => {
-            if (err) { return reject }
-            resolve(result);
-        })
-    })
-    return fetchSpellData
-}
-
-// ROUTES
-// ALL SPELLS METHODS
-// Router
-router.get('/', async (req, res, next) => {
-    getSpells(req.query)
-    .then(v => {
-        res.setHeader('Content-Type', 'application/json;charset=utf-8')
-        res.end(JSON.stringify(v))
-    })
-    .catch(err => {
-        console.log(err)
-        next()
-    })
-})
-
-// ONE SPELL METHODS
-// Regex for param validation
-const regex = RegExp(/^[1-9]\d*$/);
-
-// Param validation
-router.param('id', (req, res, next, id) => {
-    if (regex.test(id)) {
-        next()
-    } else {
-        res.status(403).send('The id parameter should be an integer.')
-    }
-})
-
-// Router
-router.get('/:id/', async (req, res, next) => {
-    console.log("id")
-})
 
 module.exports = router
