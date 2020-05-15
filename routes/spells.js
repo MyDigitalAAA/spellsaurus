@@ -10,8 +10,7 @@ const db = connection.db
 const getSpells = () => {
     let fetchSpellsData = new Promise((resolve, reject) => {
 
-        let query =
-        "SELECT DISTINCT * FROM spell"
+        let query = "SELECT DISTINCT * FROM spell"
 
         db.query(query, async (err, result) => {
             if (err) { return reject }
