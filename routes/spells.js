@@ -1,8 +1,10 @@
 'use strict'
 
+// Router
 const express = require('express')
 let router = express.Router()
 
+// Connection
 const connection = require('../database/connection')
 const db = connection.db
 
@@ -12,68 +14,34 @@ const v = new Validator()
 const Spell = require("../models/Spell")
 v.addSchema(Spell, "/SpellModel")
 
+// Error handling
+const { HttpError } = require('../models/Errors')
+
+// ROUTES
+// GET ALL ------------------
 const getSpells = () => {
     let getSpellsPromise = new Promise((resolve, reject) => {
 
         let query = "SELECT DISTINCT * FROM spell"
 
         db.query(query, async (err, result) => {
-            if (err) return reject
-            if (result.length == 0) { console.log("No spell found in database") }
-
-            // Loops over the results to fetch the associated tables
-            for (let i = 0; i < result.length; i++) {
-                result[i] = await buildSpell(result[i])
+            if (err) {
+                reject(new HttpError(500, 'Database error'))
+            } else if (result.length == 0) {
+                reject(new HttpError(404, 'No spells were found'))
+            } else {
+                // Loops over the results to fetch the associated tables
+                for (let i = 0; i < result.length; i++) {
+                    result[i] = await buildSpell(result[i])
+                }
+                resolve(result)
             }
-            resolve(result)
         })
     })
+    .catch(err => { throw err })
+
     return getSpellsPromise
 }
-
-const getSpell = (id) => {
-    let getSpellPromise = new Promise((resolve, reject) => {
-
-        let query = "SELECT * FROM spell WHERE id = " + db.escapeId(id)
-
-        db.query(query, async (err, result) => {
-            if (err) return reject
-            result = await buildSpell(result[0])
-            resolve(result);
-        })
-    })
-    return getSpellPromise
-}
-
-const addSpell = (spell) => {
-    let addSpellPromise = new Promise((resolve, reject) => {
-
-        // Checks if body is empty
-        if(Object.keys(spell).length === 0 && spell.constructor === Object) {
-            reject("You can't add an empty spell !")
-        }
-
-        // Check if model validation goes through
-        if (!v.validate(spell, Spell).valid) {
-            reject("Schema is not valid")
-        } else {
-            resolve(spell)
-        }
-        
-    })
-    return addSpellPromise
-}
-
-const updateSpell = (spell) => {
-    return null;
-}
-
-const deleteSpell = (id) => {
-    return null;
-}
-
-// ROUTES
-// Get All
 router.get('/', async (req, res, next) => {
     getSpells()
     .then(v => {
@@ -81,12 +49,33 @@ router.get('/', async (req, res, next) => {
         res.end(JSON.stringify(v))
     })
     .catch(err => {
-        console.log(err)
-        next()
+        res.status(err.code).send(err.message)
     })
 })
 
-// Get One
+
+// GET ONE ------------------
+const getSpell = (id) => {
+
+    let getSpellPromise = new Promise((resolve, reject) => {
+
+        let query = "SELECT * FROM spell WHERE id = " + db.escape(id)
+
+        db.query(query, async (err, result) => {
+            if (err) {
+                reject(new HttpError(500, 'Error: Database error'))
+            } else if (result.length == 0) {
+                reject(new HttpError(404, 'Error: No ressource matching this id'))
+            } else {
+                result = await buildSpell(result[0])
+                resolve(result);
+            }
+        })
+    })
+    .catch(err => { throw err })
+
+    return getSpellPromise
+}
 router.get('/:id/', async (req, res, next) => {
     getSpell(req.params.id)
     .then(v => {
@@ -94,12 +83,28 @@ router.get('/:id/', async (req, res, next) => {
         res.end(JSON.stringify(v))
     })
     .catch(err => {
-        console.log(err)
-        next()
+        res.status(err.code).send(err.message)
     })
 })
 
-// Add One
+
+// CREATE ONE ------------------
+const addSpell = (spell) => {
+
+    let addSpellPromise = new Promise((resolve, reject) => {
+        // Checks if body is empty and 
+        if (isEmptyObject(spell)) {
+            reject(new Error("Spell cannot be nothing !"))
+        } else if (!v.validate(spell, Spell).valid) {
+            reject(new Error("Schema is not valid"))
+        } else {
+            resolve(spell)
+        }
+    })
+    .catch(err => { throw err })
+
+    return addSpellPromise
+}
 router.post('/', async (req, res, next) => {
     console.log(req.body)
     addSpell(req.body)
@@ -108,20 +113,28 @@ router.post('/', async (req, res, next) => {
         res.send(JSON.stringify(v))
     })
     .catch(err => {
-        console.log(err)
-        next()
+        res.status(err.code).send(err.message)
     })
 })
 
-// Update One
+
+// UPDATE ONE ------------------
+const updateSpell = (spell) => {
+    return null;
+}
 router.put('/:id/', async (req, res, next) => {
 
 })
 
-// Delete One
+
+// DELETE ONE ------------------
+const deleteSpell = (id) => {
+    return null;
+}
 router.delete('/:id/', async (req, res, next) => {
 
 })
+
 
 // Param validation for single spell
     // (check if id is int) (could be refactored)
@@ -142,7 +155,8 @@ router.param('id', (req, res, next, id) => {
     }
 })
 
-// SHARED FUNCTIONS
+// SHARED FUNCTIONS ------------------
+
 // Builds the associated infos for a given spell object
 const buildSpell = async (spell) => {
 
@@ -152,12 +166,18 @@ const buildSpell = async (spell) => {
         "SELECT school.id, school.name " +
         "FROM spells_schools AS sc " +
         "INNER JOIN school AS school ON sc.id_school = school.id " +
-        "WHERE sc.id_spell = " + db.escapeId(spell.id)
+        "WHERE sc.id_spell = " + spell.id
 
         db.query(query, (err, result) => {
-            if (err) return reject
-            resolve(result)
+            if (err) {
+                reject(new HttpError(500, 'Error: Database error'))
+            } else {
+                resolve(result);
+            }
         })
+    })
+    .catch(err => {
+        res.status(403).send(err)
     })
 
     // Fetches the spell's variables
@@ -166,12 +186,18 @@ const buildSpell = async (spell) => {
         "SELECT variable.id, variable.description " +
         "FROM spells_variables AS sv " +
         "INNER JOIN variable AS variable ON sv.id_variable = variable.id " +
-        "WHERE sv.id_spell = " + db.escapeId(spell.id)
+        "WHERE sv.id_spell = " + spell.id
 
         db.query(query, (err, result) => {
-            if (err) return reject
-            resolve(result)
+            if (err) {
+                reject(new HttpError(500, 'Error: Database error'))
+            } else {
+                resolve(result);
+            }
         })
+    })
+    .catch(err => {
+        res.status(403).send(err)
     })
 
     // Fetches the spell's ingredients
@@ -180,12 +206,18 @@ const buildSpell = async (spell) => {
         "SELECT ingredient.id, ingredient.name " +
         "FROM spells_ingredients AS si " +
         "INNER JOIN ingredient AS ingredient ON si.id_ingredient = ingredient.id " +
-        "WHERE si.id_spell = " + db.escapeId(spell.id)
+        "WHERE si.id_spell = " + spell.id
 
         db.query(query, (err, result) => {
-            if (err) return reject
-            resolve(result)
+            if (err) {
+                reject(new HttpError(500, 'Error: Database error'))
+            } else {
+                resolve(result)
+            }
         })
+    })
+    .catch(err => {
+        res.status(403).send(err)
     })
 
     // Builds the spell and returns it
@@ -193,6 +225,15 @@ const buildSpell = async (spell) => {
     spell.variables = await fetchSpellVariablesData
     spell.ingredients = await fetchSpellIngredientsData
     return spell
+}
+
+// Check if spell is null
+const isEmptyObject = (obj) => {
+    if (Object.keys(obj).length === 0 && obj.constructor === Object) {
+        return true
+    } else {
+        return false
+    }
 }
 
 module.exports = router

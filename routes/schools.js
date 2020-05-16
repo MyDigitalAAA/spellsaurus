@@ -1,8 +1,10 @@
 'use strict'
 
+// Router
 const express = require('express')
 let router = express.Router()
 
+// Connection
 const connection = require('../database/connection')
 const db = connection.db
 
@@ -12,41 +14,32 @@ const v = new Validator()
 const School = require("../models/School")
 v.addSchema(School, "/SchoolModel")
 
+// Error handling
+const { HttpError } = require('../models/Errors')
+
+
+// ROUTES
+// GET ALL ------------------
 const getSchools = () => {
     let getSchoolsPromise = new Promise((resolve, reject) => {
 
         let query = "SELECT DISTINCT * FROM school"
 
         db.query(query, async (err, result) => {
-            if (err) return reject
-            if (result.length == 0) { console.log("No school found in database") }
-
-            // Loops over the results to fetch the associated tables
-            for (let i = 0; i < result.length; i++) {
-                result[i] = await buildSchool(result[i])
+            if (err) {
+                reject(new HttpError(500, 'Error: Database error'))
+            } else if (result.length == 0) {
+                reject(new HttpError(404, 'Error: No ressource matching this id'))
+            } else {
+                result = await buildSchool(result[0])
+                resolve(result);
             }
-            resolve(result)
         })
     })
+    .catch(err => { throw err })
+
     return getSchoolsPromise
 }
-
-const getSchool = (id) => {
-    let getSchoolPromise = new Promise((resolve, reject) => {
-
-        let query = "SELECT * FROM school WHERE id = " + db.escapeId(id)
-
-        db.query(query, async (err, result) => {
-            if (err) return reject
-            result = await buildSchool(result[0])
-            resolve(result);
-        })
-    })
-    return getSchoolPromise
-}
-
-// ROUTES
-// Get All
 router.get('/', async (req, res, next) => {
     getSchools()
     .then(v => {
@@ -54,12 +47,27 @@ router.get('/', async (req, res, next) => {
         res.end(JSON.stringify(v))
     })
     .catch(err => {
-        console.log(err)
-        next()
+        res.status(err.code).send(err.message)
     })
 })
 
-// Get One
+
+// GET ONE ------------------
+const getSchool = (id) => {
+    let getSchoolPromise = new Promise((resolve, reject) => {
+
+        let query = "SELECT * FROM school WHERE id = " + db.escape(id)
+
+        db.query(query, async (err, result) => {
+            if (err) return reject
+            result = await buildSchool(result[0])
+            resolve(result);
+        })
+    })
+    .catch(err => { throw err })
+
+    return getSchoolPromise
+}
 router.get('/:id/', async (req, res, next) => {
     getSchool(req.params.id)
     .then(v => {
@@ -67,8 +75,7 @@ router.get('/:id/', async (req, res, next) => {
         res.end(JSON.stringify(v))
     })
     .catch(err => {
-        console.log(err)
-        next()
+        res.status(err.code).send(err.message)
     })
 })
 
@@ -80,18 +87,15 @@ router.param('id', (req, res, next, id) => {
         if (regex.test(id)) {
             next()
         } else {
-            let err = {
-                    name: "InvalidParameterException",
-                    description: "The parameter is not valid. It should be an integer."
-                }
-            throw err
+            throw new HttpError(403, 'Provided ID must be an integer')
         }
     } catch (err) {
-        res.status(403).send(err)
+        res.status(err.code).send(err.message)
     }
 })
 
-// SHARED FUNCTIONS
+// SHARED FUNCTIONS ------------------
+
 // Builds the associated infos for a given school object
 const buildSchool = async (school) => {
 
@@ -100,17 +104,32 @@ const buildSchool = async (school) => {
         let query =
         "SELECT ms.id, ms.name " +
         "FROM meta_school AS ms " +
-        "WHERE ms.id = " + db.escapeId(school.id_meta_school)
+        "WHERE ms.id = " + school.id_meta_school
 
         db.query(query, (err, result) => {
-            if (err) return reject
-            resolve(result)
+            if (err) {
+                reject(new HttpError(500, 'Error: Database error'))
+            } else {
+                resolve(result);
+            }
         })
+    })
+    .catch(err => {
+        res.status(403).send(err)
     })
 
     // Builds the school and returns it
     school.meta_school = await fetchMetaSchoolData
     return school
+}
+
+// Check if spell is null
+const isEmptyObject = (obj) => {
+    if (Object.keys(obj).length === 0 && obj.constructor === Object) {
+        return true
+    } else {
+        return false
+    }
 }
 
 module.exports = router
