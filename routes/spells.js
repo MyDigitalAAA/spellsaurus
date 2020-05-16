@@ -34,7 +34,7 @@ const getSpells = () => {
 const getSpell = (id) => {
     let getSpellPromise = new Promise((resolve, reject) => {
 
-        let query = "SELECT * FROM spell WHERE id = " + id
+        let query = "SELECT * FROM spell WHERE id = " + db.escapeId(id)
 
         db.query(query, async (err, result) => {
             if (err) return reject
@@ -152,7 +152,7 @@ const buildSpell = async (spell) => {
         "SELECT school.id, school.name " +
         "FROM spells_schools AS sc " +
         "INNER JOIN school AS school ON sc.id_school = school.id " +
-        "WHERE sc.id_spell = " + spell.id
+        "WHERE sc.id_spell = " + db.escapeId(spell.id)
 
         db.query(query, (err, result) => {
             if (err) return reject
@@ -166,7 +166,7 @@ const buildSpell = async (spell) => {
         "SELECT variable.id, variable.description " +
         "FROM spells_variables AS sv " +
         "INNER JOIN variable AS variable ON sv.id_variable = variable.id " +
-        "WHERE sv.id_spell = " + spell.id
+        "WHERE sv.id_spell = " + db.escapeId(spell.id)
 
         db.query(query, (err, result) => {
             if (err) return reject
@@ -180,7 +180,7 @@ const buildSpell = async (spell) => {
         "SELECT ingredient.id, ingredient.name " +
         "FROM spells_ingredients AS si " +
         "INNER JOIN ingredient AS ingredient ON si.id_ingredient = ingredient.id " +
-        "WHERE si.id_spell = " + spell.id
+        "WHERE si.id_spell = " + db.escapeId(spell.id)
 
         db.query(query, (err, result) => {
             if (err) return reject

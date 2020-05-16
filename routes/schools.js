@@ -34,7 +34,7 @@ const getSchools = () => {
 const getSchool = (id) => {
     let getSchoolPromise = new Promise((resolve, reject) => {
 
-        let query = "SELECT * FROM school WHERE id = " + id
+        let query = "SELECT * FROM school WHERE id = " + db.escapeId(id)
 
         db.query(query, async (err, result) => {
             if (err) return reject
@@ -100,7 +100,7 @@ const buildSchool = async (school) => {
         let query =
         "SELECT ms.id, ms.name " +
         "FROM meta_school AS ms " +
-        "WHERE ms.id = " + school.id_meta_school
+        "WHERE ms.id = " + db.escapeId(school.id_meta_school)
 
         db.query(query, (err, result) => {
             if (err) return reject
