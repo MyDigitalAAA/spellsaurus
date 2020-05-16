@@ -7,28 +7,28 @@ USE spellsaurus;
 /* SPELLS */
 CREATE TABLE IF NOT EXISTS `spell` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(255) NOT NULL,
-    `description` VARCHAR(1000) NOT NULL,
-    `level` INT UNSIGNED,
-    `charge` INT UNSIGNED,
-    `cost` VARCHAR(255),
-    `is_ritual` BOOLEAN,
+    `name` VARCHAR(255) NOT NULL DEFAULT 'Nom du sort',
+    `description` VARCHAR(1000) NOT NULL DEFAULT "Description du sort",
+    `level` INT UNSIGNED DEFAULT 0,
+    `charge` INT UNSIGNED DEFAULT 0,
+    `cost` VARCHAR(255) DEFAULT "0",
+    `is_ritual` BOOLEAN DEFAULT false,
     PRIMARY KEY (`id`)
 );
 
 /* META SCHOOLS */
 CREATE TABLE IF NOT EXISTS `meta_school` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(255) NOT NULL,
-    `description` VARCHAR(255),
+    `name` VARCHAR(255) NOT NULL DEFAULT "Nom de l'école mère",
+    `description` VARCHAR(255) DEFAULT "Description de l'école mère",
     PRIMARY KEY (`id`)
 );
 
 /* SCHOOLS */
 CREATE TABLE IF NOT EXISTS `school` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(255) NOT NULL,
-    `description` VARCHAR(255),
+    `name` VARCHAR(255) NOT NULL DEFAULT "Nom de l'école",
+    `description` VARCHAR(255) DEFAULT "Description de l'école",
     `id_meta_school` INT UNSIGNED NOT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY(`id_meta_school`) REFERENCES meta_school(`id`)
@@ -37,14 +37,14 @@ CREATE TABLE IF NOT EXISTS `school` (
 /* COMMON INGREDIENTS */
 CREATE TABLE IF NOT EXISTS `ingredient` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(255) NOT NULL,
+    `name` VARCHAR(255) NOT NULL DEFAULT "Langue de salamandre",
     PRIMARY KEY (`id`)
 );
 
 /* COMMON VARIABLES */
 CREATE TABLE IF NOT EXISTS `variable` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `description` VARCHAR(255) NOT NULL,
+    `description` VARCHAR(255) NOT NULL DEFAULT "Nombre de créatures affectées",
     PRIMARY KEY (`id`)
 );
 
