@@ -2,8 +2,9 @@
 
 // MODULES
 const express = require('express')
+const bodyParser = require('body-parser')
 const helmet = require('helmet')
-const morgan = require('morgan');
+const morgan = require('morgan')
 const cors = require('cors') // module to format the json response
 
 // Creates instances of database connections
@@ -18,8 +19,9 @@ const routes = require('./routes')
 
 // Builds app w/ express
 let app = express()
+app.use(bodyParser.json())
 app.use(cors())
-app.use(morgan('combined'))
+app.use(morgan('tiny'))
 app.use(helmet())
 
 // Serves
@@ -27,3 +29,4 @@ const server = app.listen( port, () => {console.log(`App listening on port ${por
 
 // Routing
 app.use('/api/spells', routes.spells)
+app.use('/api/schools', routes.schools)
