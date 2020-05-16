@@ -6,15 +6,20 @@ let router = express.Router()
 const connection = require('../database/connection')
 const db = connection.db
 
+// Model validation
+const Validator = require('jsonschema').Validator
+const v = new Validator()
+const Spell = require("../models/Spell")
+v.addSchema(Spell, "/SpellModel")
 
 const getSpells = () => {
-    let fetchSpellsData = new Promise((resolve, reject) => {
+    let getSpellsPromise = new Promise((resolve, reject) => {
 
         let query = "SELECT DISTINCT * FROM spell"
 
         db.query(query, async (err, result) => {
-            if (err) { return reject }
-            if (result.length == 0) { console.log("No spells found") }
+            if (err) return reject
+            if (result.length == 0) { console.log("No spell found in database") }
 
             // Loops over the results to fetch the associated tables
             for (let i = 0; i < result.length; i++) {
@@ -23,11 +28,11 @@ const getSpells = () => {
             resolve(result)
         })
     })
-    return fetchSpellsData
+    return getSpellsPromise
 }
 
 const getSpell = (id) => {
-    let fetchSpellData = new Promise((resolve, reject) => {
+    let getSpellPromise = new Promise((resolve, reject) => {
 
         let query = "SELECT * FROM spell WHERE id = " + id
 
@@ -37,10 +42,38 @@ const getSpell = (id) => {
             resolve(result);
         })
     })
-    return fetchSpellData
+    return getSpellPromise
+}
+
+const addSpell = (spell) => {
+    let addSpellPromise = new Promise((resolve, reject) => {
+
+        // Checks if body is empty
+        if(Object.keys(spell).length === 0 && spell.constructor === Object) {
+            reject("You can't add an empty spell !")
+        }
+
+        // Check if model validation goes through
+        if (!v.validate(spell, Spell).valid) {
+            reject("Schema is not valid")
+        } else {
+            resolve(spell)
+        }
+        
+    })
+    return addSpellPromise
+}
+
+const updateSpell = (spell) => {
+    return null;
+}
+
+const deleteSpell = (id) => {
+    return null;
 }
 
 // ROUTES
+// Get All
 router.get('/', async (req, res, next) => {
     getSpells()
     .then(v => {
@@ -52,6 +85,8 @@ router.get('/', async (req, res, next) => {
         next()
     })
 })
+
+// Get One
 router.get('/:id/', async (req, res, next) => {
     getSpell(req.params.id)
     .then(v => {
@@ -62,6 +97,30 @@ router.get('/:id/', async (req, res, next) => {
         console.log(err)
         next()
     })
+})
+
+// Add One
+router.post('/', async (req, res, next) => {
+    console.log(req.body)
+    addSpell(req.body)
+    .then(v => {
+        res.setHeader('Content-Type', 'application/json;charset=utf-8')
+        res.send(JSON.stringify(v))
+    })
+    .catch(err => {
+        console.log(err)
+        next()
+    })
+})
+
+// Update One
+router.put('/:id/', async (req, res, next) => {
+
+})
+
+// Delete One
+router.delete('/:id/', async (req, res, next) => {
+
 })
 
 // Param validation for single spell
