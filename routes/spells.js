@@ -29,13 +29,13 @@ const getSpells = () => {
                 reject(new HttpError(500, 'Database error'))
             } else if (result.length == 0) {
                 reject(new HttpError(404, 'No spells were found'))
-            } else {
-                // Loops over the results to fetch the associated tables
-                for (let i = 0; i < result.length; i++) {
-                    result[i] = await buildSpell(result[i])
-                }
-                resolve(result)
             }
+
+            // Loops over the results to fetch the associated tables
+            for (let i = 0; i < result.length; i++) {
+                result[i] = await buildSpell(result[i])
+            }
+            resolve(result)
         })
     })
     .catch(err => { throw err })
@@ -66,10 +66,9 @@ const getSpell = (id) => {
                 reject(new HttpError(500, 'Error: Database error'))
             } else if (result.length == 0) {
                 reject(new HttpError(404, 'Error: No ressource matching this id'))
-            } else {
-                result = await buildSpell(result[0])
-                resolve(result);
             }
+            result = await buildSpell(result[0])
+            resolve(result);
         })
     })
     .catch(err => { throw err })
@@ -92,21 +91,46 @@ router.get('/:id/', async (req, res, next) => {
 const addSpell = (spell) => {
 
     let addSpellPromise = new Promise((resolve, reject) => {
-        // Checks if body is empty and 
+
+        // Checks if body exists and if the model fits, and throws errors if it doesn't
         if (isEmptyObject(spell)) {
-            reject(new Error("Spell cannot be nothing !"))
+            reject(new HttpError(403, "Error: Spell cannot be nothing !"))
         } else if (!v.validate(spell, Spell).valid) {
-            reject(new Error("Schema is not valid"))
-        } else {
-            resolve(spell)
+            reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(spell, Spell).errors))
         }
+
+        let query =
+            'INSERT INTO spell (name, description'
+
+            if (spell.level != undefined) { query += ', level' }
+            if (spell.charge != undefined) { query += ', charge' }
+            if (spell.cost != undefined) { query += ', cost' }
+            if (spell.is_ritual != undefined) { query += ', is_ritual' }
+
+            query += `) VALUES (${db.escape(spell.name)}, ${db.escape(spell.description)}`
+
+            if (spell.level != undefined) { query += `, ${spell.level}` }
+            if (spell.charge != undefined) { query += `, ${spell.charge}` }
+            if (spell.cost != undefined) { query += `, ${db.escape(spell.cost)}` }
+            if (spell.is_ritual != undefined) { query += `, ${spell.is_ritual}` }
+
+            query += ')'
+
+            console.log(query)
+
+        db.query(query, async (err, result) => {
+            if (err) {
+                reject(new HttpError(500, 'Error: Database error'))
+            }
+            resolve(result);
+        })
+        
     })
     .catch(err => { throw err })
 
     return addSpellPromise
 }
 router.post('/', async (req, res, next) => {
-    console.log(req.body)
     addSpell(req.body)
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
