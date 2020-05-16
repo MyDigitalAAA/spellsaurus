@@ -30,10 +30,9 @@ const getSchools = () => {
                 reject(new HttpError(500, 'Error: Database error'))
             } else if (result.length == 0) {
                 reject(new HttpError(404, 'Error: No ressource matching this id'))
-            } else {
-                result = await buildSchool(result[0])
-                resolve(result);
             }
+            result = await buildSchool(result[0])
+            resolve(result);
         })
     })
     .catch(err => { throw err })
@@ -59,7 +58,9 @@ const getSchool = (id) => {
         let query = "SELECT * FROM school WHERE id = " + db.escape(id)
 
         db.query(query, async (err, result) => {
-            if (err) return reject
+            if (err) {
+                reject(new HttpError(500, 'Error: Database error'))
+            }
             result = await buildSchool(result[0])
             resolve(result);
         })
