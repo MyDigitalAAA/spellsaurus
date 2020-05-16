@@ -1,4 +1,5 @@
 SET NAMES utf8;
+USE spellsaurus;
 
 -- META SCHOOLS
 INSERT INTO `meta_school` VALUES
