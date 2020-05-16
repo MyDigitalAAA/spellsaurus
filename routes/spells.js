@@ -144,14 +144,10 @@ router.param('id', (req, res, next, id) => {
         if (regex.test(id)) {
             next()
         } else {
-            let err = {
-                    name: "InvalidParameterException",
-                    description: "The parameter is not valid. It should be an integer."
-                }
-            throw err
+            throw new HttpError(403, 'Provided ID must be an integer')
         }
     } catch (err) {
-        res.status(403).send(err)
+        res.status(err.code).send(err.message)
     }
 })
 
