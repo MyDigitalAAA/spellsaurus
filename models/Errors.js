@@ -1,4 +1,4 @@
-// Http error w/ code
+// Http error w/ http code
 class HttpError extends Error {
     constructor(code, message) {
         super(message)
