@@ -137,14 +137,13 @@ router.post('/', async (req, res, next) => {
 
 // UPDATE ONE ------------------
 const updateSpell = (s, id) => {
-    return new Promise((resolve, reject) => {
+    return new Promise( async (resolve, reject) => {
 
         // Check if spell exists
-        // try {
-        //     let old_spell = getSpell(id).catch(err => { throw err })
-        // } catch (err) {
-        //     reject(err)
-        // }
+        let old_spell = await getSpell(id)
+        .catch(err => {
+            reject(err)
+        })
 
         // Checks if body exists and if the model fits, and throws errors if it doesn't
         if (isEmptyObject(s)) {
@@ -154,16 +153,88 @@ const updateSpell = (s, id) => {
         }
 
         let query =
-            `UPDATE spell SET name = "test spell", description = "test", level = 999, charge = 999, cost = "cher", is_ritual = false WHERE id = ${db.escape(id)}`
+            'UPDATE spell SET '
+
+            if (s.name != undefined) { query += `name = "${s.name}" ` }
+            if (s.description != undefined) { query += `, description = "${s.description}" ` }
+            if (s.level != undefined) { query += `, level = ${s.level} ` }
+            if (s.charge != undefined) { query += `, charge = ${s.charge} ` }
+            if (s.cost != undefined) { query += `, cost = "${s.cost}" ` }
+            if (s.is_ritual != undefined) { query += `, is_ritual = ${s.is_ritual} ` }
+            
+            query += ` WHERE id = ${db.escape(id)}`
 
         db.query(query, async (err, result) => {
             if (err) {
-                throw new HttpError(500, 'Error: Database error')
+                reject(new HttpError(500, 'Error: Database error - Spell update failed'))
             } else {
-                console.log(`Spell "${s.name}" updated at ID ${result.insertId}, affecting ${result.affectedRows} row(s)`)
-                resolve(result);
+                console.log(result)
             }
         })
+
+        // If req.body has a school list of ids
+        if (s.schools.length > 0) {
+            let delete_schools_query =
+            `DELETE FROM spells_schools WHERE id_spell = ${old_spell.id}`
+
+            db.query(delete_schools_query, async (err, result) => {
+                if (err) {
+                    reject(new HttpError(500, 'Error: Database error - Spell school deletion failed.'))
+                }
+            })
+
+            for (let i = 0; i < s.schools.length; i++) {
+                let update_schools_query = `INSERT INTO spells_schools (id_spell, id_school) VALUES (${old_spell.id}, ${s.schools[i].id})`
+                db.query(update_schools_query, async (err, result) => {
+                    if (err) {
+                        reject(new HttpError(500, 'Error: Database error - Spell school update failed.'))
+                    }
+                })
+            }
+        }
+
+        // If req.body has a variable list of ids
+        if (s.variables.length > 0) {
+            let delete_variables_query =
+            `DELETE FROM spells_variables WHERE id_spell = ${old_spell.id}`
+
+            db.query(delete_variables_query, async (err, result) => {
+                if (err) {
+                    reject(new HttpError(500, 'Error: Database error - Spell variable deletion failed.'))
+                }
+            })
+
+            for (let i = 0; i < s.variables.length; i++) {
+                let update_variables_query = `INSERT INTO spells_variables (id_spell, id_variable) VALUES (${old_spell.id}, ${s.variables[i].id})`
+                db.query(update_variables_query, async (err, result) => {
+                    if (err) {
+                        reject(new HttpError(500, 'Error: Database error - Spell variable update failed.'))
+                    }
+                })
+            }
+        }
+
+        // If req.body has a variable list of ids
+        if (s.ingredients.length > 0) {
+            let delete_ingredients_query =
+            `DELETE FROM spells_ingredients WHERE id_spell = ${old_spell.id}`
+
+            db.query(delete_ingredients_query, async (err, result) => {
+                if (err) {
+                    reject(new HttpError(500, 'Error: Database error - Spell ingredients deletion failed.'))
+                }
+            })
+
+            for (let i = 0; i < s.ingredients.length; i++) {
+                let update_ingredients_query = `INSERT INTO spells_ingredients (id_spell, id_ingredient) VALUES (${old_spell.id}, ${s.ingredients[i].id})`
+                db.query(update_ingredients_query, async (err, result) => {
+                    if (err) {
+                        reject(new HttpError(500, 'Error: Database error - Spell ingredients update failed.'))
+                    }
+                })
+            }
+        }
+
     })
 }
 router.put('/:id/', async (req, res, next) => {
