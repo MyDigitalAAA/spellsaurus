@@ -8,6 +8,9 @@ let router = express.Router()
 const connection = require('../database/connection')
 const db = connection.db
 
+// ID validation
+const regexInt = RegExp(/^[1-9]\d*$/);
+
 // Model validation
 const Validator = require('jsonschema').Validator
 const v = new Validator()
@@ -43,7 +46,7 @@ const getSpells = () => {
         })
     })
 }
-router.get('/', async (req, res, next) => {
+router.get('/', async (req, res) => {
     getSpells()
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
@@ -74,7 +77,7 @@ const getSpell = (id) => {
         })
     })
 }
-router.get('/:id/', async (req, res, next) => {
+router.get('/:id/', async (req, res) => {
     getSpell(req.params.id)
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
@@ -118,12 +121,63 @@ const addSpell = (s) => {
             if (err) {
                 reject(new HttpError(500, 'Error: Database error'))
             }
-            console.log(`Spell "${s.name}" inserted with ID ${result.insertId}, affecting ${result.affectedRows} row(s)`)
+            console.log(`Inserted "${s.name}" with ID ${result.insertId}, affecting ${result.affectedRows} row(s)`)
             resolve(result);
         })
+
+        // If req.body has a school list of ids
+        if (s.schools.length > 0) {
+            for (let i = 0; i < s.schools.length; i++) {
+                if (!regexInt.test(s.schools[i].id)) {
+                    reject(new HttpError(403, 'Error: Query error - School ID should be an integer !'))
+                }
+
+                let insert_schools_query = `INSERT INTO spells_schools (id_spell, id_school) VALUES (${old_spell.id}, ${s.schools[i].id})`
+                db.query(insert_schools_query, async (err, result) => {
+                    if (err) {
+                        reject(new HttpError(500, 'Error: Database error - No schools matching this ID'))
+                    }
+                    console.log(`Associated "${s.schools[i].name}" to spell ID ${old_spell.id}, affecting ${result.affectedRows} row(s)`)
+                })
+            }
+        }
+
+        // If req.body has a variable list of ids
+        if (s.variables.length > 0) {
+            for (let i = 0; i < s.variables.length; i++) {
+                if (!regexInt.test(s.variables[i].id)) {
+                    reject(new HttpError(403, 'Error: Query error - School ID should be an integer !'))
+                }
+
+                let insert_variables_query = `INSERT INTO spells_schools (id_spell, id_school) VALUES (${old_spell.id}, ${s.variables[i].id})`
+                db.query(insert_variables_query, async (err, result) => {
+                    if (err) {
+                        reject(new HttpError(500, 'Error: Database error - No variables matching this ID'))
+                    }
+                    console.log(`Associated "${s.variables[i].name}" to spell ID ${old_spell.id}, affecting ${result.affectedRows} row(s)`)
+                })
+            }
+        }
+
+        // If req.body has a ingredient list of ids
+        if (s.ingredients.length > 0) {
+            for (let i = 0; i < s.ingredients.length; i++) {
+                if (!regexInt.test(s.ingredients[i].id)) {
+                    reject(new HttpError(403, 'Error: Query error - School ID should be an integer !'))
+                }
+
+                let insert_ingredients_query = `INSERT INTO spells_schools (id_spell, id_school) VALUES (${old_spell.id}, ${s.ingredients[i].id})`
+                db.query(insert_ingredients_query, async (err, result) => {
+                    if (err) {
+                        reject(new HttpError(500, 'Error: Database error - No ingredients matching this ID'))
+                    }
+                    console.log(`Associated "${s.ingredients[i].name}" to spell ID ${old_spell.id}, affecting ${result.affectedRows} row(s)`)
+                })
+            }
+        }
     })
 }
-router.post('/', async (req, res, next) => {
+router.post('/', async (req, res) => {
     addSpell(req.body)
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
@@ -167,9 +221,8 @@ const updateSpell = (s, id) => {
         db.query(query, async (err, result) => {
             if (err) {
                 reject(new HttpError(500, 'Error: Database error - Spell update failed'))
-            } else {
-                console.log(result)
             }
+            console.log(`Updated "${s.name}" on ID ${old_spell.id}, affecting ${result.affectedRows} row(s)`)
         })
 
         // If req.body has a school list of ids
@@ -184,11 +237,16 @@ const updateSpell = (s, id) => {
             })
 
             for (let i = 0; i < s.schools.length; i++) {
+                if (!regexInt.test(s.schools[i].id)) {
+                    reject(new HttpError(403, 'Error: Query error - School ID should be an integer !'))
+                }
+
                 let update_schools_query = `INSERT INTO spells_schools (id_spell, id_school) VALUES (${old_spell.id}, ${s.schools[i].id})`
                 db.query(update_schools_query, async (err, result) => {
                     if (err) {
-                        reject(new HttpError(500, 'Error: Database error - Spell school update failed.'))
+                        reject(new HttpError(500, 'Error: Database error - No schools matching this ID'))
                     }
+                    console.log(`Updated association "${s.schools[i].name}" to spell ID ${old_spell.id}`)
                 })
             }
         }
@@ -205,11 +263,16 @@ const updateSpell = (s, id) => {
             })
 
             for (let i = 0; i < s.variables.length; i++) {
+                if (!regexInt.test(s.variables[i].id)) {
+                    reject(new HttpError(403, 'Error: Query error - Variable ID should be an integer !'))
+                }
+
                 let update_variables_query = `INSERT INTO spells_variables (id_spell, id_variable) VALUES (${old_spell.id}, ${s.variables[i].id})`
                 db.query(update_variables_query, async (err, result) => {
                     if (err) {
-                        reject(new HttpError(500, 'Error: Database error - Spell variable update failed.'))
+                        reject(new HttpError(500, 'Error: Database error - No variables matching this ID'))
                     }
+                    console.log(`Updated association "${s.variables[i].name}" to spell ID ${old_spell.id}`)
                 })
             }
         }
@@ -223,21 +286,28 @@ const updateSpell = (s, id) => {
                 if (err) {
                     reject(new HttpError(500, 'Error: Database error - Spell ingredients deletion failed.'))
                 }
+                console.log(result)
             })
 
+            // Loops over ingredients query
             for (let i = 0; i < s.ingredients.length; i++) {
+                if (!regexInt.test(s.ingredients[i].id)) {
+                    reject(new HttpError(403, 'Error: Query error - Ingredient ID should be an integer !'))
+                }
+
                 let update_ingredients_query = `INSERT INTO spells_ingredients (id_spell, id_ingredient) VALUES (${old_spell.id}, ${s.ingredients[i].id})`
                 db.query(update_ingredients_query, async (err, result) => {
                     if (err) {
-                        reject(new HttpError(500, 'Error: Database error - Spell ingredients update failed.'))
+                        reject(new HttpError(500, 'Error: Database error - No ingredients matching this ID'))
                     }
+                    console.log(`Updated association "${s.ingredients[i].name}" to spell ID ${old_spell.id}`)
                 })
             }
         }
 
     })
 }
-router.put('/:id/', async (req, res, next) => {
+router.put('/:id/', async (req, res) => {
     updateSpell(req.body, req.params.id)
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
@@ -253,10 +323,43 @@ router.put('/:id/', async (req, res, next) => {
 const deleteSpell = (id) => {
     return new Promise((resolve, reject) => {
 
+        let delete_schools_query = `DELETE FROM spells_schools WHERE id_spell = ${db.escape(id)}`
+        let delete_variables_query = `DELETE FROM spells_variables WHERE id_spell = ${db.escape(id)}`
+        let delete_ingredients_query = `DELETE FROM spells_ingredients WHERE id_spell = ${db.escape(id)}`
+        let delete_spell_query = `DELETE FROM spell WHERE id = ${db.escape(id)}`
+
+        db.query(delete_schools_query, async (err, result) => {
+            if (err) {
+                console.log(err)
+                reject(new HttpError(500, 'Error: Spell schools deletion failed'))
+            }
+            console.log(`Deleted schools associated to spell ID ${db.escape(id)}`)
+        })
+        db.query(delete_variables_query, async (err, result) => {
+            if (err) {
+                console.log(err)
+                reject(new HttpError(500, 'Error: Spell variables deletion failed'))
+            }
+            console.log(`Deleted variables associated to spell ID ${db.escape(id)}`)
+        })
+        db.query(delete_ingredients_query, async (err, result) => {
+            if (err) {
+                console.log(err)
+                reject(new HttpError(500, 'Error: Spell ingredients deletion failed'))
+            }
+            console.log(`Deleted ingredients associated to spell ID ${db.escape(id)}`)
+        })
+        db.query(delete_spell_query, async (err, result) => {
+            if (err) {
+                console.log(err)
+                reject(new HttpError(500, 'Error: Spell deletion failed'))
+            }
+            console.log(`Deleted spell ID ${db.escape(id)}, affecting ${result.affectedRows} rows`)
+        })
     })
 }
-router.delete('/:id/', async (req, res, next) => {
-    deleteSpell(req.body)
+router.delete('/:id/', async (req, res) => {
+    deleteSpell(req.params.id)
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
         res.send(JSON.stringify(v))
@@ -270,12 +373,11 @@ router.delete('/:id/', async (req, res, next) => {
 // Param validation for single spell
     // (check if id is int) (could be refactored)
 router.param('id', (req, res, next, id) => {
-    const regex = RegExp(/^[1-9]\d*$/);
     try {
-        if (regex.test(id)) {
+        if (regexInt.test(id)) {
             next()
         } else {
-            throw new HttpError(403, 'Error: Provided ID must be an integer')
+            throw new HttpError(403, 'Error: Provided ID must be an integer and not zero')
         }
     } catch (err) {
         res.status(err.code).send(err.message)
