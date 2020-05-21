@@ -299,6 +299,8 @@ const updateSpell = (s, id) => {
                                 })
                             }
                         }
+                    } else {
+                        resolve()
                     }
                 }) 
             }
@@ -332,6 +334,8 @@ const updateSpell = (s, id) => {
                                 })
                             }
                         }
+                    } else {
+                        resolve()
                     }
                 })
             }
@@ -367,6 +371,8 @@ const updateSpell = (s, id) => {
                                 })
                             }
                         }
+                    } else {
+                        resolve()
                     }
                 })
             }
