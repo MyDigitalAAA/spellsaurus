@@ -41,7 +41,7 @@ INSERT INTO `school` (name, description, id_meta_school) VALUES
 -- SPELLS
 /*
 SCHEMA
-(id, name, description, level, charge, cost),
+(name, description, level, charge, cost, is_ritual),
 */
 
 -- LIGHT SPELLS

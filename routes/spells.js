@@ -38,11 +38,12 @@ const getSpells = () => {
             for (let i = 0; i < result.length; i++) {
                 try {
                     result[i] = await buildSpell(result[i])
-                    resolve(result)
                 } catch (err) {
                     reject(err)
                 }
             }
+            console.log(result)
+            resolve(result)
         })
     })
 }
