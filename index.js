@@ -19,7 +19,7 @@ const routes = require('./routes')
 
 // Builds app w/ express
 let app = express()
-app.use(bodyParser.json())
+app.use(bodyParser.json({ limit: '10kb' }))
 app.use(cors())
 app.use(morgan('tiny'))
 app.use(helmet())
