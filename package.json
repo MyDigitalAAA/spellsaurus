@@ -1,0 +1,37 @@
+{
+  "name": "auracle-api",
+  "version": "1.0.0",
+  "description": "API for Auracle database",
+  "main": "index.js",
+  "scripts": {
+    "test": "start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexisNP/spellsaurus.git"
+  },
+  "keywords": [
+    "api",
+    "rpg",
+    "spells",
+    "magic",
+    "database",
+    "ttrpg",
+    "dices",
+    "worldbuilding"
+  ],
+  "author": "AlexisNP",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlexisNP/spellsaurus/issues"
+  },
+  "homepage": "https://github.com/AlexisNP/spellsaurus#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "helmet": "^3.22.0",
+    "jsonschema": "^1.2.6",
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1"
+  }
+}

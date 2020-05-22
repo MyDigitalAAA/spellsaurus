@@ -1,0 +1,6 @@
+@mixin blue-glow-box($radius) {
+    box-shadow: 0 0 .5rem * $radius #fff, 0 0 1rem * $radius $primary--blue, 0 0 2rem * $radius $primary--blue;
+}
+@mixin blue-glow-text($radius) {
+    text-shadow: 0 0 .5rem * $radius #fff, 0 0 1rem * $radius $primary--blue, 0 0 2rem * $radius $primary--blue;
+}
