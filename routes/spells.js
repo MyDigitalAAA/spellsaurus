@@ -151,6 +151,8 @@ const addSpell = (s) => {
                                     }
                                 })
                             }
+                        } else {
+                            resolve()
                         }
                     } else {
                         resolve()
@@ -177,6 +179,8 @@ const addSpell = (s) => {
                                     }
                                 })
                             }
+                        } else {
+                            resolve()
                         }
                     } else {
                         resolve()
@@ -203,6 +207,8 @@ const addSpell = (s) => {
                                     }
                                 })
                             }
+                        } else {
+                            resolve()
                         }
                     } else {
                         resolve()
@@ -225,7 +231,6 @@ const addSpell = (s) => {
 router.post('/', async (req, res) => {
     addSpell(req.body)
     .then(v => {
-        console.log(v)
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
         res.send(JSON.stringify(v))
     })
@@ -298,6 +303,8 @@ const updateSpell = (s, id) => {
                                     }
                                 })
                             }
+                        } else {
+                            resolve()
                         }
                     } else {
                         resolve()
@@ -333,6 +340,8 @@ const updateSpell = (s, id) => {
                                     }
                                 })
                             }
+                        } else {
+                            resolve()
                         }
                     } else {
                         resolve()
@@ -370,6 +379,8 @@ const updateSpell = (s, id) => {
                                     }
                                 })
                             }
+                        } else {
+                            resolve()
                         }
                     } else {
                         resolve()
