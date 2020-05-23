@@ -121,17 +121,17 @@ const addSpell = (s) => {
             let query =
             'INSERT INTO spell (name, description'
 
-            if (s.level != undefined) { query += ', level' }
-            if (s.charge != undefined) { query += ', charge' }
-            if (s.cost != undefined) { query += ', cost' }
-            if (s.is_ritual != undefined) { query += ', is_ritual' }
+            if (typeof s.level !== undefined) { query += ', level' }
+            if (typeof s.charge !== undefined) { query += ', charge' }
+            if (typeof s.cost !== undefined) { query += ', cost' }
+            if (typeof s.is_ritual !== undefined) { query += ', is_ritual' }
 
             query += `) VALUES (${db.escape(s.name)}, ${db.escape(s.description)}`
 
-            if (s.level != undefined) { query += `, ${s.level}` }
-            if (s.charge != undefined) { query += `, ${s.charge}` }
-            if (s.cost != undefined) { query += `, ${db.escape(s.cost)}` }
-            if (s.is_ritual != undefined) { query += `, ${s.is_ritual}` }
+            if (typeof s.level !== undefined) { query += `, ${s.level}` }
+            if (typeof s.charge !== undefined) { query += `, ${s.charge}` }
+            if (typeof s.cost !== undefined) { query += `, ${db.escape(s.cost)}` }
+            if (typeof s.is_ritual !== undefined) { query += `, ${s.is_ritual}` }
 
             query += ')'
 
@@ -145,7 +145,7 @@ const addSpell = (s) => {
 
                 let addSchoolsData = () => {
                     return new Promise((resolve, reject) => {
-                        if (s.schools != undefined) {
+                        if (typeof s.schools !== undefined) {
                             if (s.schools.length > 0) {
                                 for (let i = 0; i < s.schools.length; i++) {
                                     if (!regexInt.test(s.schools[i].id)) {
@@ -174,7 +174,7 @@ const addSpell = (s) => {
 
                 let addVariablesData = () => {
                     return new Promise((resolve, reject) => {
-                        if (s.variables != undefined) {
+                        if (typeof s.variables !== undefined) {
                             if (s.variables.length > 0) {
                                 for (let i = 0; i < s.variables.length; i++) {
                                     if (!regexInt.test(s.variables[i].id)) {
@@ -202,7 +202,7 @@ const addSpell = (s) => {
 
                 let addIngredientsData = () => {
                     return new Promise((resolve, reject) => {
-                        if (s.ingredients != undefined) {
+                        if (typeof s.ingredients !== undefined) {
                             if (s.ingredients.length > 0) {
                                 for (let i = 0; i < s.ingredients.length; i++) {
                                     if (!regexInt.test(s.ingredients[i].id)) {
@@ -279,12 +279,12 @@ const updateSpell = (s, id) => {
             let query =
             'UPDATE spell SET '
 
-            if (s.name != undefined) { query += `name = "${s.name}" ` }
-            if (s.description != undefined) { query += `, description = "${s.description}" ` }
-            if (s.level != undefined) { query += `, level = ${s.level} ` }
-            if (s.charge != undefined) { query += `, charge = ${s.charge} ` }
-            if (s.cost != undefined) { query += `, cost = "${s.cost}" ` }
-            if (s.is_ritual != undefined) { query += `, is_ritual = ${s.is_ritual} ` }
+            if (typeof s.name !== undefined) { query += `name = "${s.name}" ` }
+            if (typeof s.description !== undefined) { query += `, description = "${s.description}" ` }
+            if (typeof s.level !== undefined) { query += `, level = ${s.level} ` }
+            if (typeof s.charge !== undefined) { query += `, charge = ${s.charge} ` }
+            if (typeof s.cost !== undefined) { query += `, cost = "${s.cost}" ` }
+            if (typeof s.is_ritual !== undefined) { query += `, is_ritual = ${s.is_ritual} ` }
             
             query += ` WHERE id = ${db.escape(id)}`
 
@@ -296,7 +296,7 @@ const updateSpell = (s, id) => {
 
                 let updateSchoolsData = () => {
                     return new Promise((resolve, reject) => {
-                        if (s.schools != undefined) {
+                        if (typeof s.schools !== undefined) {
                             if (s.schools.length > 0) {
                                 let delete_schools_query =
                                 `DELETE FROM spells_schools WHERE id_spell = ${old_spell.id}`
@@ -333,7 +333,7 @@ const updateSpell = (s, id) => {
         
                 let updateVariablesData = () => {
                     return new Promise((resolve, reject) => {
-                        if (s.variables != undefined) {
+                        if (typeof s.variables !== undefined) {
                             if (s.variables.length > 0) {
                                 let delete_variables_query =
                                 `DELETE FROM spells_variables WHERE id_spell = ${old_spell.id}`
@@ -370,7 +370,7 @@ const updateSpell = (s, id) => {
         
                 let updateIngredientsData = () => {
                     return new Promise((resolve, reject) => {
-                        if (s.ingredients != undefined) {
+                        if (typeof s.ingredients !== undefined) {
                             if (s.ingredients.length > 0) {
                                 let delete_ingredients_query =
                                 `DELETE FROM spells_ingredients WHERE id_spell = ${old_spell.id}`
@@ -450,90 +450,86 @@ const deleteSpell = (id) => {
 
         // Check if spell exists
         let old_spell = await getSpell(id)
+        .catch(() => {
+            reject((new HttpError(404, 'No spell matching this ID')))
+        })
+
+        let deleteSchoolsData = () => {
+            return new Promise((resolve, reject) => {
+                let delete_schools_query = `DELETE FROM spells_schools WHERE id_spell = ${db.escape(id)}`
+                db.query(delete_schools_query, async (err, result) => {
+                    if (err) {
+                        reject(new HttpError(500, 'Spell schools deletion failed'))
+                    } else {
+                        console.log(`Deleted schools associated to spell ID ${db.escape(id)}`)
+                        resolve()
+                    }
+                })
+            })
+        }
+
+        let deleteVariablesData = () => {
+            return new Promise((resolve, reject) => {
+                let delete_variables_query = `DELETE FROM spells_variables WHERE id_spell = ${db.escape(id)}`
+                db.query(delete_variables_query, async (err, result) => {
+                    if (err) {
+                        console.log(err)
+                        reject(new HttpError(500, 'Spell variables deletion failed'))
+                    } else {
+                        console.log(`Deleted variables associated to spell ID ${db.escape(id)}`)
+                        resolve()
+                    }
+                })
+            })
+        }
+
+        let deleteIngredientsData = () => {
+            return new Promise((resolve, reject) => {
+                let delete_ingredients_query = `DELETE FROM spells_ingredients WHERE id_spell = ${db.escape(id)}`
+                db.query(delete_ingredients_query, async (err, result) => {
+                    if (err) {
+                        console.log(err)
+                        reject(new HttpError(500, 'Spell ingredients deletion failed'))
+                    } else {
+                        console.log(`Deleted ingredients associated to spell ID ${db.escape(id)}`)
+                        resolve()
+                    }
+                })
+            })
+        }
+
+        let deleteSpellData = () => {
+            return new Promise((resolve, reject) => {
+                let delete_spell_query = `DELETE FROM spell WHERE id = ${db.escape(id)}`
+                db.query(delete_spell_query, async (err, result) => {
+                    if (err) {
+                        console.log(err)
+                        reject(new HttpError(500, 'Spell deletion failed'))
+                    } else {
+                        console.log(`Deleted spell ID ${db.escape(id)}, affecting ${result.affectedRows} rows`)
+                        resolve()
+                    }
+                })
+            })
+        }
+
+        const promises = [
+            deleteSchoolsData(),
+            deleteVariablesData(),
+            deleteIngredientsData()
+        ]
+
+        Promise.all(promises)
+        .then(() => {
+            deleteSpellData()
+            let response = {
+                message: `Spell ID ${id} was successfully deleted.`
+            }
+            resolve(response)
+        })
         .catch(err => {
             reject(err)
         })
-
-        if (old_spell == undefined) {
-            reject((new HttpError(404, 'No spells matching this ID')))
-        } else {
-            let deleteSchoolsData = () => {
-                return new Promise((resolve, reject) => {
-                    let delete_schools_query = `DELETE FROM spells_schools WHERE id_spell = ${db.escape(id)}`
-                    db.query(delete_schools_query, async (err, result) => {
-                        if (err) {
-                            reject(new HttpError(500, 'Spell schools deletion failed'))
-                        } else {
-                            console.log(`Deleted schools associated to spell ID ${db.escape(id)}`)
-                            resolve()
-                        }
-                    })
-                })
-            }
-    
-            let deleteVariablesData = () => {
-                return new Promise((resolve, reject) => {
-                    let delete_variables_query = `DELETE FROM spells_variables WHERE id_spell = ${db.escape(id)}`
-                    db.query(delete_variables_query, async (err, result) => {
-                        if (err) {
-                            console.log(err)
-                            reject(new HttpError(500, 'Spell variables deletion failed'))
-                        } else {
-                            console.log(`Deleted variables associated to spell ID ${db.escape(id)}`)
-                            resolve()
-                        }
-                    })
-                })
-            }
-    
-            let deleteIngredientsData = () => {
-                return new Promise((resolve, reject) => {
-                    let delete_ingredients_query = `DELETE FROM spells_ingredients WHERE id_spell = ${db.escape(id)}`
-                    db.query(delete_ingredients_query, async (err, result) => {
-                        if (err) {
-                            console.log(err)
-                            reject(new HttpError(500, 'Spell ingredients deletion failed'))
-                        } else {
-                            console.log(`Deleted ingredients associated to spell ID ${db.escape(id)}`)
-                            resolve()
-                        }
-                    })
-                })
-            }
-    
-            let deleteSpellData = () => {
-                return new Promise((resolve, reject) => {
-                    let delete_spell_query = `DELETE FROM spell WHERE id = ${db.escape(id)}`
-                    db.query(delete_spell_query, async (err, result) => {
-                        if (err) {
-                            console.log(err)
-                            reject(new HttpError(500, 'Spell deletion failed'))
-                        } else {
-                            console.log(`Deleted spell ID ${db.escape(id)}, affecting ${result.affectedRows} rows`)
-                            resolve()
-                        }
-                    })
-                })
-            }
-    
-            const promises = [
-                deleteSchoolsData(),
-                deleteVariablesData(),
-                deleteIngredientsData()
-            ]
-    
-            Promise.all(promises)
-            .then(() => {
-                deleteSpellData()
-                let response = {
-                    message: `Spell ID ${id} was successfully deleted.`
-                }
-                resolve(response)
-            })
-            .catch(err => {
-                reject(err)
-            })
-        }
     })
     .catch(err => {
         throw err
@@ -584,7 +580,7 @@ const buildSpell = async (spell) => {
     let fetchSpellSchoolData = (s) => {
         return new Promise((resolve, reject) => {
 
-            if (s == undefined) { reject(new HttpError(404, "Error: No spells matching this ID"))}
+            if (typeof s == undefined) { reject(new HttpError(404, "Error: No spell matching this ID"))}
 
             let query =
             "SELECT school.id, school.name " +
@@ -607,7 +603,7 @@ const buildSpell = async (spell) => {
     let fetchSpellVariablesData = (s) => {
         return new Promise((resolve, reject) => {
 
-            if (s == undefined) { reject(new HttpError(404, "Error: No spells matching this ID"))}
+            if (typeof s == undefined) { reject(new HttpError(404, "Error: No spell matching this ID"))}
 
             let query =
             "SELECT variable.id, variable.description " +
@@ -630,7 +626,7 @@ const buildSpell = async (spell) => {
     let fetchSpellIngredientsData = (s) => {
         return new Promise((resolve, reject) => {
 
-            if (s == undefined) { reject(new HttpError(404, "Error: No spells matching this ID"))}
+            if (typeof s == undefined) { reject(new HttpError(404, "Error: No spell matching this ID"))}
 
             let query =
             "SELECT ingredient.id, ingredient.name " +
@@ -660,7 +656,7 @@ const buildSpell = async (spell) => {
     return s
 }
 
-// Check if spell is null
+// Check if object is null
 const isEmptyObject = (obj) => {
     if (Object.keys(obj).length === 0 && obj.constructor === Object) {
         return true
@@ -669,6 +665,7 @@ const isEmptyObject = (obj) => {
     }
 }
 
+// Check if script injection attempt
 const isXSSAttempt = (string) => {
     if (regexXSS.test(string)) {
         return true

@@ -50,13 +50,14 @@ CREATE TABLE IF NOT EXISTS `variable` (
 
 /* ==== USER TABLES ==== */
 
--- CREATE TABLE IF NOT EXISTS `user` (
---     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
---     `name` VARCHAR(255) NOT NULL DEFAULT "Disciple",
---     `mail` VARCHAR(255) NOT NULL,
---     `password` VARCHAR(255) NOT NULL,
---     PRIMARY KEY(`id`)
--- )
+CREATE TABLE IF NOT EXISTS `user` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(255) NOT NULL DEFAULT "Disciple",
+    `mail` VARCHAR(255) NOT NULL,
+    `password` VARCHAR(255) NOT NULL,
+    `banned` BOOLEAN DEFAULT false,
+    PRIMARY KEY(`id`)
+);
 
 /* ==== ASSOCIATION TABLES ==== */
 

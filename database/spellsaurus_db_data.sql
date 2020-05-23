@@ -202,6 +202,10 @@ INSERT INTO `spell` (name, description, level, charge, cost, is_ritual) VALUES
 ('Globules corrosives III', 'Une aura verte sombre se dégage des mains du lanceur. Une énorme nuée de globules se manifeste de cette aura et fond sur une cible unique, infligeant 3D10 de dégats de corrosion pendant 3 tours. Le sort ne peut se manifester dans un liquide.', 0, 0, '-50', false),
 ('Vent toxique', 'Le lanceur manifeste un courant d\'air mordant et nocif sur un petit groupe de cibles, infligeant 4D10 dégâts de corrosion pendant 3 tours à ces dernières.', 20, 1, '-70', false);
 
+-- USERS
+INSERT INTO `user` (name, mail, password) VALUES
+('Kevin', '35.alexis.mail@gmail.com', 'sept777');
+
 -- INGREDIENTS
 INSERT INTO `ingredient` (name) VALUES
 ('Volonté'),

@@ -30,3 +30,4 @@ const server = app.listen( port, () => {console.log(`App listening on port ${por
 // Routing
 app.use('/api/spells', routes.spells)
 app.use('/api/schools', routes.schools)
+app.use('/api/users', routes.users)
