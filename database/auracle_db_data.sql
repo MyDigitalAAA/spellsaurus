@@ -1,5 +1,5 @@
 SET NAMES utf8;
-USE spellsaurus;
+USE auracle;
 
 -- META SCHOOLS
 INSERT INTO `meta_school` (name, description) VALUES
@@ -219,6 +219,7 @@ INSERT INTO `variable` (description) VALUES
 /*
 SCHEMA
 (id_spell, id_school),
+
 */
 
 DELIMITER $$

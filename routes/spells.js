@@ -229,7 +229,7 @@ const addSpell = (s) => {
                 }
 
                 Promise.all([addSchoolsData(), addVariablesData(), addIngredientsData()])
-                .then(v => {
+                .then(() => {
                     resolve(getSpell(new_spell_id))
                 })
                 .catch(err => {

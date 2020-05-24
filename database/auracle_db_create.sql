@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS spellsaurus;
-CREATE DATABASE spellsaurus CHARACTER SET utf8 COLLATE utf8_bin;
-USE spellsaurus;
+DROP DATABASE IF EXISTS auracle;
+CREATE DATABASE auracle CHARACTER SET utf8 COLLATE utf8_bin;
+USE auracle;
 
 /* ==== PRIMARY TABLES ==== */
 
