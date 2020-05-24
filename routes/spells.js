@@ -121,17 +121,17 @@ const addSpell = (s) => {
             let query =
             'INSERT INTO spell (name, description'
 
-            if (typeof s.level !== undefined) { query += ', level' }
-            if (typeof s.charge !== undefined) { query += ', charge' }
-            if (typeof s.cost !== undefined) { query += ', cost' }
-            if (typeof s.is_ritual !== undefined) { query += ', is_ritual' }
+            if (s.level !== null) { query += ', level' }
+            if (s.charge !== null) { query += ', charge' }
+            if (s.cost !== null) { query += ', cost' }
+            if (s.is_ritual !== null) { query += ', is_ritual' }
 
             query += `) VALUES (${db.escape(s.name)}, ${db.escape(s.description)}`
 
-            if (typeof s.level !== undefined) { query += `, ${s.level}` }
-            if (typeof s.charge !== undefined) { query += `, ${s.charge}` }
-            if (typeof s.cost !== undefined) { query += `, ${db.escape(s.cost)}` }
-            if (typeof s.is_ritual !== undefined) { query += `, ${s.is_ritual}` }
+            if (s.level !== null) { query += `, ${s.level}` }
+            if (s.charge !== null) { query += `, ${s.charge}` }
+            if (s.cost !== null) { query += `, ${db.escape(s.cost)}` }
+            if (s.is_ritual !== null) { query += `, ${s.is_ritual}` }
 
             query += ')'
 
@@ -145,7 +145,7 @@ const addSpell = (s) => {
 
                 let addSchoolsData = () => {
                     return new Promise((resolve, reject) => {
-                        if (typeof s.schools !== undefined) {
+                        if (s.schools !== null) {
                             if (s.schools.length > 0) {
                                 for (let i = 0; i < s.schools.length; i++) {
                                     if (!regexInt.test(s.schools[i].id)) {
@@ -156,7 +156,7 @@ const addSpell = (s) => {
         
                                     db.query(insert_schools_query, async (err, result) => {
                                         if (err) {
-                                            reject(new HttpError(500, 'Database error - No schools matching this ID'))
+                                            reject(new HttpError(404, 'Database error - No schools matching this ID'))
                                         } else {
                                             console.log(`Associated school ID ${s.schools[i].id} to spell ID ${new_spell_id}, affecting ${result.affectedRows} row(s)`)
                                             resolve()
@@ -174,7 +174,7 @@ const addSpell = (s) => {
 
                 let addVariablesData = () => {
                     return new Promise((resolve, reject) => {
-                        if (typeof s.variables !== undefined) {
+                        if (s.variables !== null) {
                             if (s.variables.length > 0) {
                                 for (let i = 0; i < s.variables.length; i++) {
                                     if (!regexInt.test(s.variables[i].id)) {
@@ -184,7 +184,7 @@ const addSpell = (s) => {
                                     let insert_variables_query = `INSERT INTO spells_variables (id_spell, id_variable) VALUES (${new_spell_id}, ${s.variables[i].id})`
                                     db.query(insert_variables_query, async (err, result) => {
                                         if (err) {
-                                            reject(new HttpError(500, 'Database error - No variables matching this ID'))
+                                            reject(new HttpError(404, 'Database error - No variables matching this ID'))
                                         } else {
                                             console.log(`Associated variable ID ${s.variables[i].id} to spell ID ${new_spell_id}, affecting ${result.affectedRows} row(s)`)
                                             resolve()
@@ -202,7 +202,7 @@ const addSpell = (s) => {
 
                 let addIngredientsData = () => {
                     return new Promise((resolve, reject) => {
-                        if (typeof s.ingredients !== undefined) {
+                        if (s.ingredients !== null) {
                             if (s.ingredients.length > 0) {
                                 for (let i = 0; i < s.ingredients.length; i++) {
                                     if (!regexInt.test(s.ingredients[i].id)) {
@@ -212,7 +212,7 @@ const addSpell = (s) => {
                                     let insert_ingredients_query = `INSERT INTO spells_ingredients (id_spell, id_ingredient) VALUES (${new_spell_id}, ${s.ingredients[i].id})`
                                     db.query(insert_ingredients_query, async (err, result) => {
                                         if (err) {
-                                            reject(new HttpError(500, 'Database error - No ingredients matching this ID'))
+                                            reject(new HttpError(404, 'Database error - No ingredients matching this ID'))
                                         } else {
                                             console.log(`Associated ingredient ID ${s.ingredients[i].id} to spell ID ${new_spell_id}, affecting ${result.affectedRows} row(s)`)
                                             resolve()
@@ -276,150 +276,160 @@ const updateSpell = (s, id) => {
         } else if (isXSSAttempt(s.name) || isXSSAttempt(s.description) || isXSSAttempt(s.cost)) {
             reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
         } else {
-            let query =
-            'UPDATE spell SET '
 
-            if (typeof s.name !== undefined) { query += `name = "${s.name}" ` }
-            if (typeof s.description !== undefined) { query += `, description = "${s.description}" ` }
-            if (typeof s.level !== undefined) { query += `, level = ${s.level} ` }
-            if (typeof s.charge !== undefined) { query += `, charge = ${s.charge} ` }
-            if (typeof s.cost !== undefined) { query += `, cost = "${s.cost}" ` }
-            if (typeof s.is_ritual !== undefined) { query += `, is_ritual = ${s.is_ritual} ` }
-            
-            query += ` WHERE id = ${db.escape(id)}`
-
-            db.query(query, async (err, result) => {
-                if (err) {
-                    reject(new HttpError(500, 'Database error - Spell update failed'))
-                }
-                console.log(`Updated "${s.name}" on ID ${old_spell.id}, affecting ${result.affectedRows} row(s)`)
-
-                let updateSchoolsData = () => {
-                    return new Promise((resolve, reject) => {
-                        if (typeof s.schools !== undefined) {
-                            if (s.schools.length > 0) {
-                                let delete_schools_query =
-                                `DELETE FROM spells_schools WHERE id_spell = ${old_spell.id}`
-                    
-                                db.query(delete_schools_query, async (err, result) => {
+            let updateSchoolsData = () => {
+                return new Promise((resolve, reject) => {
+                    if (s.schools !== null) {
+                        if (s.schools.length > 0) {
+                            let delete_schools_query =
+                            `DELETE FROM spells_schools WHERE id_spell = ${old_spell.id}`
+                
+                            db.query(delete_schools_query, async (err, result) => {
+                                if (err) {
+                                    reject(new HttpError(500, 'Database error - Spell school deletion failed.'))
+                                }
+                            })
+                
+                            for (let i = 0; i < s.schools.length; i++) {
+                                if (!regexInt.test(s.schools[i].id)) {
+                                    reject(new HttpError(403, 'Query error - School ID should be an integer !'))
+                                } else {}
+                
+                                let update_schools_query = `INSERT INTO spells_schools (id_spell, id_school) VALUES (${old_spell.id}, ${s.schools[i].id})`
+                                db.query(update_schools_query, async (err, result) => {
                                     if (err) {
-                                        reject(new HttpError(500, 'Database error - Spell school deletion failed.'))
+                                        reject(new HttpError(404, 'Database error - No schools matching this ID'))
+                                    } else {
+                                        console.log(`Updated association school ID ${s.schools[i].id} to spell ID ${old_spell.id}`)
+                                        resolve()
                                     }
                                 })
-                    
-                                for (let i = 0; i < s.schools.length; i++) {
-                                    if (!regexInt.test(s.schools[i].id)) {
-                                        reject(new HttpError(403, 'Query error - School ID should be an integer !'))
-                                    } else {}
-                    
-                                    let update_schools_query = `INSERT INTO spells_schools (id_spell, id_school) VALUES (${old_spell.id}, ${s.schools[i].id})`
-                                    db.query(update_schools_query, async (err, result) => {
-                                        if (err) {
-                                            reject(new HttpError(500, 'Database error - No schools matching this ID'))
-                                        } else {
-                                            console.log(`Updated association school ID ${s.schools[i].id} to spell ID ${old_spell.id}`)
-                                            resolve()
-                                        }
-                                    })
-                                }
-                            } else {
-                                resolve()
                             }
                         } else {
                             resolve()
                         }
-                    })
-                }
-        
-                let updateVariablesData = () => {
-                    return new Promise((resolve, reject) => {
-                        if (typeof s.variables !== undefined) {
-                            if (s.variables.length > 0) {
-                                let delete_variables_query =
-                                `DELETE FROM spells_variables WHERE id_spell = ${old_spell.id}`
-                    
-                                db.query(delete_variables_query, async (err, result) => {
-                                    if (err) {
-                                        reject(new HttpError(500, 'Database error - Spell variable deletion failed.'))
-                                    }
-                                })
-                    
-                                for (let i = 0; i < s.variables.length; i++) {
-                                    if (!regexInt.test(s.variables[i].id)) {
-                                        reject(new HttpError(403, 'Query error - Variable ID should be an integer !'))
-                                    }
-                    
-                                    let update_variables_query = `INSERT INTO spells_variables (id_spell, id_variable) VALUES (${old_spell.id}, ${s.variables[i].id})`
-                                    db.query(update_variables_query, async (err, result) => {
-                                        if (err) {
-                                            reject(new HttpError(500, 'Database error - No variables matching this ID'))
-                                        } else {
-                                            console.log(`Updated variable ID "${s.variables[i].id}" to spell ID ${old_spell.id}`)
-                                            resolve()
-                                        }
-                                    })
-                                }
-                            } else {
-                                resolve()
-                            }
-                        } else {
-                            resolve()
-                        }
-                    })
-                }
-        
-                let updateIngredientsData = () => {
-                    return new Promise((resolve, reject) => {
-                        if (typeof s.ingredients !== undefined) {
-                            if (s.ingredients.length > 0) {
-                                let delete_ingredients_query =
-                                `DELETE FROM spells_ingredients WHERE id_spell = ${old_spell.id}`
-                    
-                                db.query(delete_ingredients_query, async (err, result) => {
-                                    if (err) {
-                                        reject(new HttpError(500, 'Database error - Spell ingredients deletion failed.'))
-                                    }
-                                    console.log(result)
-                                })
-                    
-                                // Loops over ingredients query
-                                for (let i = 0; i < s.ingredients.length; i++) {
-                                    if (!regexInt.test(s.ingredients[i].id)) {
-                                        reject(new HttpError(403, 'Query error - Ingredient ID should be an integer !'))
-                                    }
-                    
-                                    let update_ingredients_query = `INSERT INTO spells_ingredients (id_spell, id_ingredient) VALUES (${old_spell.id}, ${s.ingredients[i].id})`
-                                    db.query(update_ingredients_query, async (err, result) => {
-                                        if (err) {
-                                            reject(new HttpError(500, 'Database error - No ingredients matching this ID'))
-                                        } else {
-                                            console.log(`Updated ingredient ID "${s.ingredients[i].id}" to spell ID ${old_spell.id}`)
-                                            resolve()
-                                        }
-                                    })
-                                }
-                            } else {
-                                resolve()
-                            }
-                        } else {
-                            resolve()
-                        }
-                    })
-                }
-
-                const promises = [
-                    updateSchoolsData(),
-                    updateVariablesData(),
-                    updateIngredientsData()
-                ]
-
-                Promise.all(promises)
-                .then(() => {
-                    resolve(getSpell(old_spell.id))
+                    } else {
+                        resolve()
+                    }
                 })
-                .catch(err => {
-                    reject(err)
+            }
+    
+            let updateVariablesData = () => {
+                return new Promise((resolve, reject) => {
+                    if (s.variables !== null) {
+                        if (s.variables.length > 0) {
+                            let delete_variables_query =
+                            `DELETE FROM spells_variables WHERE id_spell = ${old_spell.id}`
+                
+                            db.query(delete_variables_query, async (err, result) => {
+                                if (err) {
+                                    reject(new HttpError(500, 'Database error - Spell variable deletion failed.'))
+                                }
+                            })
+                
+                            for (let i = 0; i < s.variables.length; i++) {
+                                if (!regexInt.test(s.variables[i].id)) {
+                                    reject(new HttpError(403, 'Query error - Variable ID should be an integer !'))
+                                }
+                
+                                let update_variables_query = `INSERT INTO spells_variables (id_spell, id_variable) VALUES (${old_spell.id}, ${s.variables[i].id})`
+                                db.query(update_variables_query, async (err, result) => {
+                                    if (err) {
+                                        reject(new HttpError(404, 'Database error - No variables matching this ID'))
+                                    } else {
+                                        console.log(`Updated variable ID "${s.variables[i].id}" to spell ID ${old_spell.id}`)
+                                        resolve()
+                                    }
+                                })
+                            }
+                        } else {
+                            resolve()
+                        }
+                    } else {
+                        resolve()
+                    }
                 })
+            }
+    
+            let updateIngredientsData = () => {
+                return new Promise((resolve, reject) => {
+                    if (s.ingredients !== null) {
+                        if (s.ingredients.length > 0) {
+                            let delete_ingredients_query =
+                            `DELETE FROM spells_ingredients WHERE id_spell = ${old_spell.id}`
+                
+                            db.query(delete_ingredients_query, async (err, result) => {
+                                if (err) {
+                                    reject(new HttpError(500, 'Database error - Spell ingredients deletion failed.'))
+                                }
+                                console.log(result)
+                            })
+                
+                            // Loops over ingredients query
+                            for (let i = 0; i < s.ingredients.length; i++) {
+                                if (!regexInt.test(s.ingredients[i].id)) {
+                                    reject(new HttpError(403, 'Query error - Ingredient ID should be an integer !'))
+                                }
+                
+                                let update_ingredients_query = `INSERT INTO spells_ingredients (id_spell, id_ingredient) VALUES (${old_spell.id}, ${s.ingredients[i].id})`
+                                db.query(update_ingredients_query, async (err, result) => {
+                                    if (err) {
+                                        reject(new HttpError(404, 'Database error - No ingredients matching this ID'))
+                                    } else {
+                                        console.log(`Updated ingredient ID "${s.ingredients[i].id}" to spell ID ${old_spell.id}`)
+                                        resolve()
+                                    }
+                                })
+                            }
+                        } else {
+                            resolve()
+                        }
+                    } else {
+                        resolve()
+                    }
+                })
+            }
+
+            let updateSpellData = () => {
+                return new Promise((resolve, reject) => {
+                    let update_spell_query =
+                    'UPDATE spell SET '
+        
+                    if (s.name !== null) { update_spell_query += `name = "${s.name}" ` }
+                    if (s.description !== null) { update_spell_query += `, description = "${s.description}" ` }
+                    if (s.level !== null) { update_spell_query += `, level = ${s.level} ` }
+                    if (s.charge !== null) { update_spell_query += `, charge = ${s.charge} ` }
+                    if (s.cost !== null) { update_spell_query += `, cost = "${s.cost}" ` }
+                    if (s.is_ritual !== null) { update_spell_query += `, is_ritual = ${s.is_ritual} ` }
+                    
+                    update_spell_query += ` WHERE id = ${db.escape(id)}`
+
+                    db.query(update_spell_query, async (err, result) => {
+                        if (err) {
+                            reject(new HttpError(500, 'Database error - Spell update failed'))
+                        } else {
+                            console.log(`Updated "${s.name}" on ID ${old_spell.id}, affecting ${result.affectedRows} row(s)`)
+                            resolve()
+                        }
+                    })
+                })
+            }
+
+            const sub_promises = [
+                updateSchoolsData(),
+                updateVariablesData(),
+                updateIngredientsData()
+            ]
+
+            Promise.all(sub_promises)
+            .then(() => {
+                updateSpellData()
+            })
+            .then(() => {
+                resolve(getSpell(old_spell.id))
+            })
+            .catch(err => {
+                reject(err)
             })
         }
     })
@@ -580,7 +590,7 @@ const buildSpell = async (spell) => {
     let fetchSpellSchoolData = (s) => {
         return new Promise((resolve, reject) => {
 
-            if (typeof s == undefined) { reject(new HttpError(404, "Error: No spell matching this ID"))}
+            if (s == null) { reject(new HttpError(404, "Error: No spell matching this ID"))}
 
             let query =
             "SELECT school.id, school.name " +
@@ -603,7 +613,7 @@ const buildSpell = async (spell) => {
     let fetchSpellVariablesData = (s) => {
         return new Promise((resolve, reject) => {
 
-            if (typeof s == undefined) { reject(new HttpError(404, "Error: No spell matching this ID"))}
+            if (s == null) { reject(new HttpError(404, "Error: No spell matching this ID"))}
 
             let query =
             "SELECT variable.id, variable.description " +
@@ -626,7 +636,7 @@ const buildSpell = async (spell) => {
     let fetchSpellIngredientsData = (s) => {
         return new Promise((resolve, reject) => {
 
-            if (typeof s == undefined) { reject(new HttpError(404, "Error: No spell matching this ID"))}
+            if (s == null) { reject(new HttpError(404, "Error: No spell matching this ID"))}
 
             let query =
             "SELECT ingredient.id, ingredient.name " +
