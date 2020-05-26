@@ -29,6 +29,7 @@ export default {
     methods: {
         async fetchSpells() {
             const { data } = await spellsRepository.getSpells()
+            console.log(data)
             return data
         },
         async computeSpells() {

@@ -9,6 +9,6 @@ export default {
         return api.get(`${resource}`)
     },
     getSpell(id) {
-        return api.get(`${resource}?id=${id}`)
+        return api.get(`${resource}/${id}`)
     },
 }
