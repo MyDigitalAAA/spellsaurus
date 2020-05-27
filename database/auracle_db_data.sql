@@ -12,7 +12,7 @@ INSERT INTO `meta_school` (name, description) VALUES
 ('Magies autres', 'Magies trop spécifiques et ne rentrant dans aucune autre grande école.');
 
 -- SCHOOLS
-INSERT INTO `school` (name, description, id_meta_school) VALUES
+INSERT INTO `school` (name, description, meta_school_id) VALUES
 ('Lumomancie', 'Discipline arcanique de la lumière.', 1),
 ('Vitamancie', 'Discipline arcanique de la guérison et de l\'énergie vitale.', 1),
 ('Obstrumancie', 'Discipline arcanique de la protection et des sceaux.', 1),
@@ -223,11 +223,11 @@ SCHEMA
 */
 
 DELIMITER $$
-CREATE PROCEDURE insertIntoSchoolRange(IN delimiter_start INT, IN delimiter_end INT, IN school_id INT)
+CREATE PROCEDURE insertIntoSchoolRange(IN delimiter_start INT, IN delimiter_end INT, IN id_school INT)
 BEGIN
     SET @i = delimiter_start;
     WHILE @i <= delimiter_end DO
-        INSERT INTO spells_schools (id_spell, id_school) VALUES (@i, school_id);
+        INSERT INTO spell_school (spell_id, school_id) VALUES (@i, id_school);
         SET @i = @i + 1;
     END WHILE;
 END$$

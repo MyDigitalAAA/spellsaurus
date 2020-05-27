@@ -15,7 +15,7 @@ const regexXSS = RegExp(/<[^>]*script/)
 // Model validation
 const Validator = require('jsonschema').Validator
 const v = new Validator()
-const School = require("../models/School")
+const School = require("../models/SchoolValidation")
 v.addSchema(School, "/SchoolModel")
 
 // Error handling

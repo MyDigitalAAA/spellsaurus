@@ -12,11 +12,58 @@ const db = connection.db
 const regexInt = RegExp(/^[1-9]\d*$/)
 const regexXSS = RegExp(/<[^>]*script/)
 
+// Bookshelf Models
+const bookshelf = require('../database/connection').bookshelf
+
+const Spell = bookshelf.Model.extend({
+    tableName: 'spell',
+    schools() {
+        return this.belongsToMany( School, 'spell_school', 'spell_id', 'school_id' )
+    },
+    variables() {
+        return this.belongsToMany( Variable, 'spell_variable', 'spell_id', 'variable_id' )
+    },
+    ingredients() {
+        return this.belongsToMany( Ingredient, 'spell_ingredient', 'spell_id', 'ingredient_id' )
+    }
+})
+
+const MetaSchool = bookshelf.Model.extend({
+    tableName: 'meta_school',
+    schools() {
+        return this.hasMany( School )
+    }
+})
+
+const School = bookshelf.Model.extend({
+    tableName: 'school',
+    spells() {
+        return this.belongsToMany( Spell, 'spell_school', 'school_id', 'spell_id')
+    },
+    meta_school() {
+        return this.belongsTo( MetaSchool, 'meta_school_id')
+    }
+})
+
+const Ingredient = bookshelf.Model.extend({
+    tableName: 'ingredient',
+    spells() {
+        return this.belongsToMany( Spell, 'spell_ingredient', 'ingredient_id', 'spell_id')
+    }
+})
+
+const Variable = bookshelf.Model.extend({
+    tableName: 'variable',
+    spells() {
+        return this.belongsToMany( Spell, 'spell_variable', 'variable_id', 'spell_id')
+    }
+})
+
 // Model validation
 const Validator = require('jsonschema').Validator
 const v = new Validator()
-const Spell = require("../models/Spell")
-v.addSchema(Spell, "/SpellModel")
+const SpellModel = require("../models/SpellValidation")
+v.addSchema(SpellModel, "/SpellModel")
 
 // Error handling
 const { HttpError } = require('../models/Errors')
@@ -26,25 +73,14 @@ const { HttpError } = require('../models/Errors')
 const getSpells = () => {
     return new Promise((resolve, reject) => {
 
-        let query = "SELECT DISTINCT * FROM spell"
-
-        db.query(query, async (err, result) => {
-            if (err) {
-                reject(new HttpError(500, 'Database error'))
-            } else if (result.length == 0) {
-                reject(new HttpError(404, 'No spells were found'))
-            }
-
-            // Loops over the results to fetch the associated tables
-            for (let i = 0; i < result.length; i++) {
-                try {
-                    result[i] = await buildSpell(result[i])
-                } catch (err) {
-                    reject(err)
-                }
-            }
-            resolve(result)
+        Spell.forge().fetchAll({ withRelated: ['schools.meta_school', 'variables', 'ingredients'] })
+        .then(v => {
+            resolve(v.toJSON({ omitPivot: true }))
         })
+        .catch(err => {
+            reject(new HttpError(500, err.message))
+        })
+
     })
     .catch(err => {
         throw err
@@ -113,8 +149,8 @@ const addSpell = (s) => {
         // Checks if body exists and if the model fits, and throws errors if it doesn't
         if (isEmptyObject(s)) {
             reject(new HttpError(403, "Error: Spell cannot be nothing !"))
-        } else if (!v.validate(s, Spell).valid) {
-            reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(s, Spell).errors))
+        } else if (!v.validate(s, SpellModel).valid) {
+            reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(s, SpellModel).errors))
         } else if (isXSSAttempt(s.name) || isXSSAttempt(s.description) || isXSSAttempt(s.cost)) {
             reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
         } else {
@@ -271,8 +307,8 @@ const updateSpell = (s, id) => {
         // Checks if body exists and if the model fits, and throws errors if it doesn't
         if (isEmptyObject(s)) {
             reject(new HttpError(403, "Error: Spell cannot be nothing !"))
-        } else if (!v.validate(s, Spell).valid) {
-            reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(s, Spell).errors))
+        } else if (!v.validate(s, SpellModel).valid) {
+            reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(s, SpellModel).errors))
         } else if (isXSSAttempt(s.name) || isXSSAttempt(s.description) || isXSSAttempt(s.cost)) {
             reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
         } else {

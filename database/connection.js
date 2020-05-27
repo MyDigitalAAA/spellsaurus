@@ -6,6 +6,20 @@ const mysql = require('mysql')
 let credentials_data = fs.readFileSync('./database/credentials.json')
 let credentials = JSON.parse(credentials_data)
 
+// Setting up the database connection
+const knex = require('knex')({
+    client: credentials.client,
+    connection: {
+      host     : credentials.host,
+      user     : credentials.user,
+      password : credentials.password,
+      database : credentials.database,
+      charset  : credentials.charset
+    },
+    debug: true
+})
+const bookshelf = require('bookshelf')(knex)
+
 const db = mysql.createConnection({
     host: credentials.host,
     user: credentials.user,
@@ -19,4 +33,4 @@ db.on('error', err => {
     }
 })
 
-module.exports = { db }
+module.exports = { db, bookshelf }
