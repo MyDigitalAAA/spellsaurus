@@ -86,7 +86,7 @@ export default {
 </script>
 
 <style lang="scss">
-
+    /*
     .spell-card {
         max-width: 35rem;
         padding: .5rem;
@@ -204,5 +204,5 @@ export default {
         }
 
     }
-
+    */
 </style>

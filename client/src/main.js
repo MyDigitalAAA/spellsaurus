@@ -10,6 +10,8 @@ Vue.use(VueRouter)
 const router = new VueRouter({
     mode: 'history',
     routes,
+    linkActiveClass: "",
+    linkExactActiveClass: "active",
 });
 
 const app = new Vue({

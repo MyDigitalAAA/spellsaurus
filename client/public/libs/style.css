@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css?family=Playfair+Display:400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&display=swap&subset=cyrillic,latin-ext');
+@font-face {
+  font-family: "stgeorge";
+  src: url("/public/resources/stgeorge.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+.word-break{
+  word-wrap: break-word;
+}
+/*img.emoji {
+  height: 1em;
+  width: 1em;
+  margin: 0 .05em 0 .1em;
+  vertical-align: -0.1em;
+}*/
+.cursor-pointer{
+  cursor: pointer;
+}
+.font-display{ font-family: 'Playfair Display', serif; }
+.font-weight-100{ font-weight: 100; }
+.font-weight-200{ font-weight: 200; }
+.font-weight-300{ font-weight: 300; }
+.font-weight-400{ font-weight: 400; }
+.font-weight-500{ font-weight: 500; }
+.font-weight-600{ font-weight: 600; }
+.font-weight-700{ font-weight: 700; }
+.font-weight-800{ font-weight: 800; }
+.font-weight-900{ font-weight: 900; }
+/*.pfp{
+    background: #f8f9fa;
+    border-radius: 50%;
+}
+.pfp-32{ height:32px; width:32px; }
+.pfp-64{ height:64px; width:64px; }
+.pfp-128{ height:128px; width:128px; }
+.pfp-256{ height:256px; width:256px; }*/
+.max-540{ max-width: 540px; }
+.max-720{ max-width: 720px; }
+.max-960{ max-width: 960px; }
+.max-1140{ max-width: 1140px; }
+.line-height-100{ line-height: 100%; }
+@font-face{
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(https://fonts.gstatic.com/s/materialicons/v50/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+}
+.mad{
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    transform: translateY(12.5%);
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+}
