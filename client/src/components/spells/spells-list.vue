@@ -1,13 +1,13 @@
 <template>
-    <div class="row grid">
-        <spell-card v-for="(spell, index) in spells" :key="index" v-bind="spell"/>
+    <div v-masonry item-selector=".spell-card" class="row spells-list">
+        <spell-card v-masonry-tile class="spell-card" v-for="(spell, index) in spells" :key="index" v-bind="spell"/>
     </div>
 </template>
 
 <script>
-
 // Components
 import spellcard from "./spell-card"
+
 // API
 import { RepositoryFactory } from "../../../api/repositories"
 const spellsRepository = RepositoryFactory.get('spells')
@@ -26,6 +26,8 @@ export default {
     created() {
         this.computeSpells()
     },
+    mounted() {
+    },
     methods: {
         async fetchSpells() {
             const { data } = await spellsRepository.getSpells()
@@ -43,4 +45,8 @@ export default {
 
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+    .spells-list {
+        animation: none !important;
+    }
+</style>

@@ -6,17 +6,11 @@
 
 <script>
   import spellslist from "../components/spells/spells-list"
+
   export default {
     name: 'spells',
     components: {
-      'spell-list': spellslist,
-    },
-    mounted(){
-      window.$(".grid").masonry({
-        itemSelector:".grid-item",
-        columnWidth:".grid-sizer",
-        percentPosition: true
-      });
+        'spell-list': spellslist,
     }
   }
 </script>

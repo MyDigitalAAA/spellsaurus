@@ -1,13 +1,26 @@
+// Core
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './app.vue'
 
+import { VueMasonryPlugin } from 'vue-masonry';
+
+// Router
 import routes from './routes'
 
-window.$ = window.jQuery = require('jquery');
+// Jquery
+import jquery from 'jquery'
+window.$ = jquery
+window.jquery = jquery
+
+// Bootstrap
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap/dist/js/bootstrap.js'
 
 Vue.config.productionTip = false
 Vue.use(VueRouter)
+Vue.use(VueMasonryPlugin)
+
 
 var filter = function(text, length, clamp){
     clamp = clamp || '...';
