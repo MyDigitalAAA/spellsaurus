@@ -1,5 +1,12 @@
 <template>
-    <article class="spell-card">
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4 grid-item grid-sizer">
+      <div class="bg-white p-4 rounded text-dark border-primary shadow-sm" style="border-left:4px solid;">
+        <div class="h3 font-display font-weight-bold text-wrap word-break line-height-100" :title="name"><a class="text-decoration-none text-primary" href="/spell/XXX">{{name}}</a></div>
+        <div class="font-weight-700 text-muted d-inline-block">Niveau {{level}}</div> <div class="text-muted d-inline-block">· <span v-for="(school, index) in schools" :key="index"><span v-if="index!=0">, </span>{{school.name}}</span></div>
+        <div class="small text-muted font-italic">{{description|truncate(256,"…")}}</div>
+      </div>
+    </div>
+    <!--<article class="spell-card">
         <div class="content">
             <header>
                 <h3>{{ name }}</h3>
@@ -54,7 +61,7 @@
                 </div>
             </footer>
         </div>
-    </article>
+    </article>-->
 </template>
 
 <script>
@@ -85,124 +92,4 @@ export default {
 
 </script>
 
-<style lang="scss">
-    /*
-    .spell-card {
-        max-width: 35rem;
-        padding: .5rem;
-        margin: .5rem auto .5rem;
-        background: $spell-card--innerborder;
-        border: solid 1px rgba($primary--base, .5);
-        border-radius: .5rem;
-        box-shadow: .0 .0 .75rem rgba($primary--base, .25);
-
-        > .content {
-            max-width: 35rem;
-            height: 100%;
-            padding: .75rem;
-            background: $white;
-
-            header {
-                h3 {
-                    padding: .5rem;
-                    text-align: center;
-                    color: $white;
-                    text-transform: uppercase;
-                    background: $black;
-                }
-            }
-
-            .casting-header {
-                display: flex;
-                > * {
-                    width: 50%;
-                }
-
-                .casting-infos {
-                    margin: .75rem 0;
-                    padding-right: .75rem;
-                    border-right: 1px solid rgba($black, .25);
-                    .type {
-                        margin-bottom: .5rem;
-                        display: flex;
-                        > * {
-                            width: 50%;
-                        }
-                        .level {
-                            .label {
-                                margin-right: .25rem;
-                                display: inline-block;
-                            }
-                            var {
-                                display: inline-block;
-                                font-size: 2.3em;
-                            }
-                        }
-                    }
-                    .cost, .charge {
-                        font-size: 0.9rem;
-                        > * {
-                            vertical-align: middle;
-                        }
-                        .label {
-                            display: inline-block;
-                            width: 30%;
-                            text-transform: uppercase;
-                        }
-                        var {
-                            display: inline-block;
-                        }
-                    }
-                }
-
-                .casting-ingredients {
-                    margin: .75rem 0;
-                    padding-left: .75rem;
-                    .title {
-                        margin-bottom: .25rem;
-                        font-size: .9rem;
-                        font-weight: bold;
-                        text-transform: uppercase;
-                    }
-                    .content {
-                        padding-top: 1rem;
-                        font-size: .85rem;
-                        text-align: justify;
-                        text-align-last: center;
-                    }
-                }
-            }
-
-            .spell-description {
-                padding: .75rem 0;
-                font-size: .85rem;
-                p {
-                    &:not(:last-of-type) {
-                        margin-bottom: .5rem;
-                    }
-                }
-            }
-
-            footer {
-                padding: .75rem 0 0;
-                display: flex;
-                align-items: center;
-                .label {
-                    margin-right: 1rem;
-                }
-                .variables {
-                    .xyz {
-                        span {
-                            font-size: 1.1rem;
-                            font-weight: bold;
-                            margin-right: 1rem;
-                        }
-                    }
-                }
-            }
-
-        }
-
-    }
-    */
-</style>
+<style lang="scss"></style>

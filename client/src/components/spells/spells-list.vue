@@ -1,5 +1,5 @@
 <template>
-    <div class="spells-list">
+    <div class="row grid">
         <spell-card v-for="(spell, index) in spells" :key="index" v-bind="spell"/>
     </div>
 </template>
@@ -36,13 +36,11 @@ export default {
             this.loading = true
             const displaySpells = await this.fetchSpells();
             this.loading = false
-            this.spells = displaySpells.slice(0, 10)
+            this.spells = displaySpells
         }
     }
 }
 
 </script>
 
-<style>
-
-</style>
+<style lang="scss"></style>
