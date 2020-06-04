@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container-fluid" id="index-container">
     <section class="fullpage">
       <div class="px-4">
         <div class="display-2 text-dark mb-4 font-display" style="line-height:100%;font-weight:900;">"C'est magique, ta gueule."</div>
@@ -20,9 +20,12 @@ export default {
 
 <style lang="scss">
   .fullpage{
-    min-height: 100vh;
+    min-height: calc(100vh - 56px);
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+  #index-container{
+    background: url('/img/bg1.png') center center fixed repeat;
   }
 </style>
