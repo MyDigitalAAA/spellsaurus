@@ -1,5 +1,5 @@
 <template>
-    <div v-masonry item-selector=".spell-card" class="row spells-list">
+    <div v-masonry transition-duration=".5s" item-selector=".spell-card" class="row spells-list">
         <spell-card v-masonry-tile class="spell-card" v-for="(spell, index) in spells" :key="index" v-bind="spell"/>
     </div>
 </template>
