@@ -46,7 +46,5 @@ export default {
 </script>
 
 <style lang="scss">
-    .spells-list {
-        animation: none !important;
-    }
+
 </style>
