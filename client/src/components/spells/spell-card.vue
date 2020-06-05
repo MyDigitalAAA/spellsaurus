@@ -1,5 +1,7 @@
 <template>
-    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4 grid-item grid-sizer">
+    <div
+        :class="main_school"
+        class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4 grid-item grid-sizer">
         <div class="bg-white p-4 rounded text-dark border-primary shadow-sm" style="border-left:4px solid;">
             <div class="h3 font-display font-weight-bold text-wrap word-break line-height-100" :title="name">
                 <a class="text-decoration-none text-primary" :href="'/spell/'+id">{{name}}</a>
@@ -20,10 +22,10 @@
                     <span v-for="(variable,index) in variables" :key="index"><span class="font-weight-bold"><span v-if="index!=0"><br></span>{{String.fromCharCode(120+index)}}</span> = {{variable.description}}</span>
                 </div>
             </div>
-            <!----><div class="text-right">
+            <div class="text-right">
                 <a class="h5 text-secondary mr-1" :href="'/spell/'+id+'/edit'"><i class="mad">edit</i></a>
                 <a class="h5 text-danger" :href="'/spell/'+id+'/delete'"><i class="mad">delete</i></a>
-            </div><!---->
+            </div>
         </div>
     </div>
 </template>
@@ -33,6 +35,7 @@
 export default {
     name: 'spell-card',
     props: {
+        // Model validation
         id: Number,
         name: String,
         description: String,
@@ -45,16 +48,25 @@ export default {
     },
     data() {
         return {
-            isFlipped: false,
+            main_school: this.schools[0].name,
         }
     },
+    created() {
+        this.main_school = this.main_school.toLowerCase();
+    },
     methods: {
-        toggleCard: async function() {
-            this.isFlipped = !this.isFlipped;
-        }
     },
 }
 
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+    .spell-card {
+        &.lumomancie {
+            .border-primary {
+                border-left-color: #99dada !important;
+                color: #99dada;
+            }
+        }
+    }
+</style>
