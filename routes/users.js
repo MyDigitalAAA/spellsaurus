@@ -1,3 +1,5 @@
+'use strict'
+
 // Router
 const express = require('express')
 let router = express.Router()
@@ -6,40 +8,18 @@ let router = express.Router()
 const connection = require('../database/connection')
 const db = connection.db
 
-// Hashing and passwords
-const bcrypt = require('bcrypt')
+// Repository
+const UserRepository = require('../repositories/user-repository');
+const Users = new UserRepository();
 
-// Validations
 const regexInt = RegExp(/^[1-9]\d*$/)
-const regexXSS = RegExp(/<[^>]*script/)
-
-// Model validation
-const Validator = require('jsonschema').Validator
-const v = new Validator()
-const User = require("../models/UserValidation")
-v.addSchema(User, "/UserModel")
-
-// Error handling
-const { HttpError } = require('../models/Errors')
 
 // ROUTES
 // GET ALL ------------------
 const getUsers = () => {
-    return new Promise((resolve, reject) => {
-
-        let query = "SELECT DISTINCT * FROM user"
-
-        db.query(query, async (err, result) => {
-            if (err) {
-                reject(new HttpError(500, 'Database error'))
-            } else if (result.length == 0) {
-                reject(new HttpError(404, 'No users were found'))
-            } else {
-                resolve(result)
-            }
-        })
-    })
+    return Users.getAll()
     .catch(err => {
+        console.log(err)
         throw err
     })
 }
@@ -62,21 +42,9 @@ router.get('/', async (req, res) => {
 
 // GET ONE ------------------
 const getUser = (id) => {
-    return new Promise((resolve, reject) => {
-
-        let query = "SELECT * FROM user WHERE id = " + db.escape(id)
-
-        db.query(query, async (err, result) => {
-            if (err) {
-                reject(new HttpError(500, 'Database error'))
-            } else if (result.length == 0) {
-                reject(new HttpError(404, 'No User matching this ID'))
-            } else {
-                resolve(result)
-            }
-        })
-    })
+    return Users.getOne(id)
     .catch(err => {
+        console.log(err)
         throw err
     })
 }
@@ -211,33 +179,11 @@ router.param('id', (req, res, next, id) => {
         if (regexInt.test(id)) {
             next()
         } else {
-            throw new HttpError(403, 'Provided ID must be an integer and not zero')
+            new Error
         }
     } catch (err) {
-        res.status(err.code).send(JSON.stringify(
-            {
-                "error": err.message,
-            })
-        )
+        throw new HttpError(403, 'Provided ID must be an integer and not zero')
     }
 })
-
-// Check if object is null
-const isEmptyObject = (obj) => {
-    if (Object.keys(obj).length === 0 && obj.constructor === Object) {
-        return true
-    } else {
-        return false
-    }
-}
-
-// Check if script injection attempt
-const isXSSAttempt = (string) => {
-    if (regexXSS.test(string)) {
-        return true
-    } else {
-        return false
-    }
-}
 
 module.exports = router
