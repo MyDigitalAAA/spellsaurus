@@ -16,8 +16,4 @@
   }
 </script>
 
-<style lang="scss">
-  #spell-container{
-    background: url('/img/bg1.png') center center fixed repeat;
-  }
-</style>
+<style lang="scss"></style>

@@ -61,3 +61,6 @@
     -webkit-font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
 }
+body{
+    background: url('/img/bg1.png') center center fixed repeat;
+}

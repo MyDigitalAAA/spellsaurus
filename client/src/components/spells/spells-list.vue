@@ -38,7 +38,7 @@ export default {
             this.loading = true
             const displaySpells = await this.fetchSpells();
             this.loading = false
-            this.spells = displaySpells
+            this.spells = displaySpells.slice(0,10)
         }
     }
 }
