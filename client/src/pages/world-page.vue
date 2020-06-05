@@ -35,7 +35,7 @@
                   </div>
                   <div class="form-group">
                     <label for="spell_ingredients" class="font-weight-bold col-form-label">Ingrédients&nbsp;:</label>
-                    <textarea class="form-control" name="spell_ingredients" id="spell_ingredients" placeholder="(1024 caractères max.)"></textarea>
+                    <textarea class="form-control" name="spell_ingredients" id="spell_ingredients" placeholder="(1024 caractères max., 1 ingrédient par ligne)"></textarea>
                   </div>
                   <div class="form-group">
                     <label for="spell_description" class="font-weight-bold col-form-label">Description&nbsp;:</label>
