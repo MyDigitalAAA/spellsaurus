@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Playfair+Display:400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&display=swap&subset=cyrillic,latin-ext');
+@import url('https://fonts.googleapis.com/css?family=Playfair+Display:400,400i,500,500i,600,600i,700,700i,800,800i,900,900i&subset=cyrillic,latin-ext');/*&display=swap*/
 @font-face {
   font-family: "stgeorge";
   src: url("/public/resources/stgeorge.woff2") format("woff2");
@@ -44,7 +44,7 @@
     font-family: 'Material Icons';
     font-style: normal;
     font-weight: 400;
-    src: url(https://fonts.gstatic.com/s/materialicons/v50/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+    src: url('/libs/material-design-icons.woff2') format('woff2');
 }
 .mad{
     font-family: 'Material Icons';
