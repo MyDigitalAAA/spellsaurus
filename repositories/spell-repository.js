@@ -214,6 +214,30 @@ class SpellRepository {
                 })
             })
             .catch(err => {
+                console.log(err)
+                reject(new HttpError(404, "Couldn't get spell"))
+            })
+        })
+    }
+
+    deleteOne(id) {
+        return new Promise((resolve, reject) => {
+            this._model.forge()
+            .where({ 'id' : id })
+            .fetch({require: true, withRelated: ['schools.meta_schools', 'variables', 'ingredients']})
+            .then(v => {
+                v.schools().detach();
+                v.variables().detach();
+                v.ingredients().detach();
+                v.destroy();
+            })
+            .then(() => {
+                resolve({
+                    'message': 'Spell with ID ' + id + ' successfully deleted !'
+                })
+            })
+            .catch(err => {
+                console.log(err)
                 reject(new HttpError(404, "Couldn't get spell"))
             })
         })
