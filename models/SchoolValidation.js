@@ -4,9 +4,9 @@ const School = {
     "properties": {
         "name": { "type": "string" },
         "description": { "type": "string" },
-        "id_meta_school": { "type": "number" },
+        "meta_school_id": { "type": "number" },
     },
-    "required": ["name", "description", "id_meta_school"]
+    "required": ["name", "description", "meta_school_id"]
 }
 
 module.exports = School

@@ -132,7 +132,7 @@ class SpellRepository {
                 })
                 .catch(err => {
                     console.log(err)
-                    reject(new HttpError(500, "Insert error"))
+                    reject(new HttpError(500, "Insert Spell error"))
                 })
             }
         })
@@ -140,83 +140,92 @@ class SpellRepository {
 
     updateOne(id, s) {
         return new Promise((resolve, reject) => {
-            this._model.forge({id: id})
-            .fetch({require: true, withRelated: ['schools.meta_schools', 'variables', 'ingredients']})
-            .then(v => {
-                bookshelf.transaction(t => {
-                    return v.save({
-                        'name': s.name,
-                        'description': s.description,
-                        'level': s.level,
-                        'charge' : s.charge,
-                        'cost' : s.cost,
-                        'is_ritual' : s.is_ritual
-                    }, {
-                        method: 'update',
-                        transacting: t
-                    })
-                    // Detaches AND attaches pivot tables, dw about it
-                    .tap(spell => {
-                        if (s.schools) {
-                            let schools = spell.related('school');
-                            return spell.schools().detach(schools, { transacting: t});
-                        }
-                        return
-                    })
-                    .tap(spell => {
-                        if (s.variables) {
-                            let variables = spell.related('variable');
-                            return spell.variables().detach(variables, { transacting: t});
-                        }
-                        return
-                    })
-                    .tap(spell => {
-                        if (s.ingredients) {
-                            let ingredients = spell.related('ingredient');
-                            return spell.ingredients().detach(ingredients, { transacting: t});
-                        }
-                    })
-                    .tap(spell => {
-                        return spell
-                        .schools()
-                        .attach(s.schools, {
+            // Checks if body exists and if the model fits, and throws errors if it doesn't
+            if (this.isEmptyObject(s)) {
+                reject(new HttpError(403, "Error: Spell cannot be nothing !"))
+            } else if (!v.validate(s, SpellModel).valid) {
+                reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(s, SpellModel).errors))
+            } else if (this.isXSSAttempt(s.name) || this.isXSSAttempt(s.description) || this.isXSSAttempt(s.cost)) {
+                reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
+            } else {
+                this._model.forge({id: id})
+                .fetch({require: true, withRelated: ['schools.meta_schools', 'variables', 'ingredients']})
+                .then(v => {
+                    bookshelf.transaction(t => {
+                        return v.save({
+                            'name': s.name,
+                            'description': s.description,
+                            'level': s.level,
+                            'charge' : s.charge,
+                            'cost' : s.cost,
+                            'is_ritual' : s.is_ritual
+                        }, {
+                            method: 'update',
                             transacting: t
-                        });
+                        })
+                        // Detaches AND attaches pivot tables, dw about it
+                        .tap(spell => {
+                            if (s.schools) {
+                                let schools = spell.related('school');
+                                return spell.schools().detach(schools, { transacting: t});
+                            }
+                            return
+                        })
+                        .tap(spell => {
+                            if (s.variables) {
+                                let variables = spell.related('variable');
+                                return spell.variables().detach(variables, { transacting: t});
+                            }
+                            return
+                        })
+                        .tap(spell => {
+                            if (s.ingredients) {
+                                let ingredients = spell.related('ingredient');
+                                return spell.ingredients().detach(ingredients, { transacting: t});
+                            }
+                        })
+                        .tap(spell => {
+                            return spell
+                            .schools()
+                            .attach(s.schools, {
+                                transacting: t
+                            });
+                        })
+                        .tap(spell => {
+                            return spell
+                            .variables()
+                            .attach(s.variables, {
+                                transacting: t
+                            });
+                        })
+                        .tap(spell => {
+                            return spell
+                            .ingredients()
+                            .attach(s.ingredients, {
+                                transacting: t
+                            });
+                        })
+                        .catch(err => {
+                            console.log(err)
+                            throw err
+                        })
                     })
-                    .tap(spell => {
-                        return spell
-                        .variables()
-                        .attach(s.variables, {
-                            transacting: t
-                        });
+                    .then(v => {
+                        return v.load(['schools.meta_schools', 'variables', 'ingredients'])
                     })
-                    .tap(spell => {
-                        return spell
-                        .ingredients()
-                        .attach(s.ingredients, {
-                            transacting: t
-                        });
+                    .then(v => {
+                        resolve(this.getOne(v.id))
                     })
                     .catch(err => {
                         console.log(err)
-                        throw err
+                        reject(new HttpError(500, "Update Spell error"))
                     })
-                })
-                .then(v => {
-                    return v.load(['schools.meta_schools', 'variables', 'ingredients'])
-                })
-                .then(v => {
-                    resolve(this.getOne(v.id))
                 })
                 .catch(err => {
                     console.log(err)
-                    reject(new HttpError(500, "Update error"))
+                    reject(new HttpError(404, "Couldn't get spell"))
                 })
-            })
-            .catch(err => {
-                console.log(err)
-                reject(new HttpError(404, "Couldn't get spell"))
-            })
+            }          
         })
     }
 

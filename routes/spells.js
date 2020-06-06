@@ -143,7 +143,7 @@ router.delete('/:id/', async (req, res) => {
 })
 
 
-// Param validation for single spell
+// Param validation for ID
     // (check if id is int) (could be refactored)
 router.param('id', (req, res, next, id) => {
     try {

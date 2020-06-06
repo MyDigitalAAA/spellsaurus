@@ -20,17 +20,4 @@ const knex = require('knex')({
 })
 const bookshelf = require('bookshelf')(knex)
 
-const db = mysql.createConnection({
-    host: credentials.host,
-    user: credentials.user,
-    password: credentials.password,
-    database: credentials.database,
-})
-
-db.on('error', err => {
-    if (err.errno == 'ECONNRESET') {
-        console.log("The connection was reset during your request. Please try again later.");
-    }
-})
-
-module.exports = { db, bookshelf }
+module.exports = { bookshelf }
