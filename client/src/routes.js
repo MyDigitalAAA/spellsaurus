@@ -2,9 +2,9 @@
 
 
 // Pages
-import index from "./pages/index-page";
-import spells from "./pages/spells-page";
-import world from "./pages/world-page";
+import Index from "./pages/index-page";
+import Spells from "./pages/spells-page";
+import World from "./pages/world-page";
 
 // Routes
 const routes = [
@@ -12,13 +12,13 @@ const routes = [
         path: "*", redirect: "/",
     },
     {
-        path: '/', component: index,
+        path: '/', component: Index,
     },
     {
-        path: '/spells', component: spells,
+        path: '/spells', component: Spells,
     },
     {
-        path: '/world', component: world,
+        path: '/world', component: World,
     }
 ];
 

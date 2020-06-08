@@ -36,12 +36,12 @@
 </template>
 
 <script>
-  import spellslist from "../components/spells/spells-list"
+  import SpellsList from "../components/spells/spells-list"
 
   export default {
     name: 'spells',
     components: {
-        'spell-list': spellslist,
+        'spell-list': SpellsList,
     }
   }
 </script>
