@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS `school` (
 CREATE TABLE IF NOT EXISTS `ingredient` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL DEFAULT "Langue de salamandre",
+    `description` VARCHAR(255) NOT NULL DEFAULT "Une langue de salamandre de feu qui bouge encore un peu.",
     PRIMARY KEY (`id`)
 );
 

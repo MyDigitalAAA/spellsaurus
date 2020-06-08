@@ -207,9 +207,9 @@ INSERT INTO `user` (name, mail, password) VALUES
 ('Kevin', '35.alexis.mail@gmail.com', 'sept777');
 
 -- INGREDIENTS
-INSERT INTO `ingredient` (name) VALUES
-('Volonté'),
-('Geste');
+INSERT INTO `ingredient` (name, description) VALUES
+('Volonté', 'La force de volonté du lanceur, concentrée sur un objectif'),
+('Geste', 'Un geste précis facilitant la canalisation magique');
 
 -- VARIABLES
 INSERT INTO `variable` (description) VALUES

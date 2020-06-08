@@ -3,8 +3,9 @@ const Ingredient = {
     "type": Object,
     "properties": {
         "name": { "type": "string" },
+        "description": { "type": "string" }
     },
-    "required": ["name"]
+    "required": ["name", "description"]
 }
 
 module.exports = Ingredient

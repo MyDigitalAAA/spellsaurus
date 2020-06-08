@@ -67,6 +67,81 @@ router.get('/:id/', async (req, res) => {
     })
 })
 
+
+// CREATE ONE ------------------
+const addIngredient = (igr) => {
+    return Ingredients.addOne(igr)
+    .catch(err => {
+        console.log(err)
+        throw err
+    })
+}
+router.post('/', async (req, res) => {
+    addIngredient(req.body)
+    .then(v => {
+        res.setHeader('Content-Type', 'application/json;charset=utf-8')
+        res.send(JSON.stringify(v))
+    })
+    .catch(err => {
+        res.status(err.code).send(JSON.stringify(
+            {
+                "error": err.message,
+                "code": err.code
+            })
+        )
+    })
+})
+
+
+// UPDATE ONE ------------------
+const updateIngredient = (id, igr) => {
+    return Ingredients.updateOne(id, igr)
+    .catch(err => {
+        console.log(err)
+        throw err
+    })
+}
+router.put('/:id/', async (req, res) => {
+    updateIngredient(req.params.id, req.body)
+    .then(v => {
+        res.setHeader('Content-Type', 'application/json;charset=utf-8')
+        res.send(JSON.stringify(v))
+    })
+    .catch(err => {
+        res.status(err.code).send(JSON.stringify(
+            {
+                "error": err.message,
+                "code": err.code
+            })
+        )
+    })
+})
+
+
+// DELETE ONE ------------------
+const deleteIngredient = (id) => {
+    return Ingredients.deleteOne(id)
+    .catch(err => {
+        console.log(err)
+        throw err
+    })
+}
+router.delete('/:id/', async (req, res) => {
+    deleteIngredient(req.params.id)
+    .then(v => {
+        res.setHeader('Content-Type', 'application/json;charset=utf-8')
+        res.send(JSON.stringify(v))
+    })
+    .catch(err => {
+        res.status(err.code).send(JSON.stringify(
+            {
+                "error": err.message,
+                "code": err.code
+            })
+        )
+    })
+})
+
 // Param validation for ID
 // (check if id is int) (could be refactored)
 router.param('id', (req, res, next, id) => {

@@ -68,6 +68,80 @@ router.get('/:id/', async (req, res) => {
 })
 
 
+// CREATE ONE ------------------
+const addVariable = (vr) => {
+    return Variables.addOne(vr)
+    .catch(err => {
+        console.log(err)
+        throw err
+    })
+}
+router.post('/', async (req, res) => {
+    addVariable(req.body)
+    .then(v => {
+        res.setHeader('Content-Type', 'application/json;charset=utf-8')
+        res.send(JSON.stringify(v))
+    })
+    .catch(err => {
+        res.status(err.code).send(JSON.stringify(
+            {
+                "error": err.message,
+                "code": err.code
+            })
+        )
+    })
+})
+
+
+// UPDATE ONE ------------------
+const updateVariable = (id, vr) => {
+    return Variables.updateOne(id, vr)
+    .catch(err => {
+        console.log(err)
+        throw err
+    })
+}
+router.put('/:id/', async (req, res) => {
+    updateVariable(req.params.id, req.body)
+    .then(v => {
+        res.setHeader('Content-Type', 'application/json;charset=utf-8')
+        res.send(JSON.stringify(v))
+    })
+    .catch(err => {
+        res.status(err.code).send(JSON.stringify(
+            {
+                "error": err.message,
+                "code": err.code
+            })
+        )
+    })
+})
+
+
+// DELETE ONE ------------------
+const deleteVariable = (id) => {
+    return Variables.deleteOne(id)
+    .catch(err => {
+        console.log(err)
+        throw err
+    })
+}
+router.delete('/:id/', async (req, res) => {
+    deleteVariable(req.params.id)
+    .then(v => {
+        res.setHeader('Content-Type', 'application/json;charset=utf-8')
+        res.send(JSON.stringify(v))
+    })
+    .catch(err => {
+        res.status(err.code).send(JSON.stringify(
+            {
+                "error": err.message,
+                "code": err.code
+            })
+        )
+    })
+})
+
 // Param validation for ID
 // (check if id is int) (could be refactored)
 router.param('id', (req, res, next, id) => {

@@ -50,6 +50,124 @@ class IngredientRepository {
         })
     }
 
+    addOne(igr) {
+        return new Promise((resolve, reject) => {
+            // Checks if body exists and if the model fits, and throws errors if it doesn't
+            if (this.isEmptyObject(igr)) {
+                reject(new HttpError(403, "Error: Ingredient cannot be nothing !"))
+            } else if (!v.validate(igr, IngredientValidation).valid) {
+                reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(igr, IngredientValidation).errors))
+            } else if (this.isXSSAttempt(igr.description)) {
+                reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
+            } else {
+                bookshelf.transaction(t => {
+                    return model.forge({
+                        'name': igr.name,
+                        'description': igr.description,
+                    }).save(null, {
+                        transacting: t
+                    })
+                    .catch(err => {
+                        throw err
+                    })
+                })
+                .then(v => {
+                    return v.load(['spells'])
+                })
+                .then(v => {
+                    resolve(this.getOne(v.id))
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject(new HttpError(500, "Insert Ingredient error"))
+                })
+            }
+        })
+    }
+
+    updateOne(id, igr) {
+        return new Promise((resolve, reject) => {
+            // Checks if body exists and if the model fits, and throws errors if it doesn't
+            if (this.isEmptyObject(igr)) {
+                reject(new HttpError(403, "Error: Ingredient cannot be nothing !"))
+            } else if (!v.validate(igr, IngredientValidation).valid) {
+                reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(igr, IngredientValidation).errors))
+            } else if (this.isXSSAttempt(igr.description)) {
+                reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
+            } else {
+                model.forge({id: id})
+                .fetch({require: true, withRelated: ['spells']})
+                .then(v => {
+                    bookshelf.transaction(t => {
+                        return v.save({
+                            'name': igr.name,
+                            'description': igr.description,
+                        }, {
+                            method: 'update',
+                            transacting: t
+                        })
+                        .catch(err => {
+                            console.log(err)
+                            throw err
+                        })
+                    })
+                    .then(v => {
+                        return v.load(['spells'])
+                    })
+                    .then(v => {
+                        resolve(this.getOne(v.id))
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        reject(new HttpError(500, "Update Ingredient error"))
+                    })
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject(new HttpError(404, "Couldn't get ingredient"))
+                })
+            }
+        })
+    }
+
+    deleteOne(id) {
+        return new Promise((resolve, reject) => {
+            model.forge()
+            .where({ 'id' : id })
+            .fetch({require: true, withRelated: ['spells']})
+            .then(v => {
+                v.spells().detach()
+                v.destroy()
+            })
+            .then(() => {
+                resolve({
+                    'message': 'Ingredient with ID ' + id + ' successfully deleted !'
+                })
+            })
+            .catch(err => {
+                console.log(err)
+                reject(new HttpError(404, "Couldn't get ingredient"))
+            })
+        })
+    }
+
+    // Check if object is null
+    isEmptyObject = (obj) => {
+        if (Object.keys(obj).length === 0 && obj.constructor === Object) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    // Check if script injection attempt
+    isXSSAttempt = (string) => {
+        if (regexXSS.test(string)) {
+            return true
+        } else {
+            return false
+        }
+    }
 }
 
 module.exports = IngredientRepository
