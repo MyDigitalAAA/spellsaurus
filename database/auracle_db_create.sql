@@ -29,15 +29,16 @@ CREATE TABLE IF NOT EXISTS `school` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL DEFAULT "Nom de l'école",
     `description` VARCHAR(255) DEFAULT "Description de l'école",
-    `id_meta_school` INT UNSIGNED NOT NULL,
+    `meta_school_id` INT UNSIGNED NOT NULL,
     PRIMARY KEY (`id`),
-    FOREIGN KEY(`id_meta_school`) REFERENCES meta_school(`id`)
+    FOREIGN KEY(`meta_school_id`) REFERENCES meta_school(`id`)
 );
 
 /* COMMON INGREDIENTS */
 CREATE TABLE IF NOT EXISTS `ingredient` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL DEFAULT "Langue de salamandre",
+    `description` VARCHAR(255) NOT NULL DEFAULT "Une langue de salamandre de feu qui bouge encore un peu.",
     PRIMARY KEY (`id`)
 );
 
@@ -63,30 +64,30 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 /* SPELLS' SCHOOLS */
 /* One spell can have multiple (up to 3) schools */
-CREATE TABLE IF NOT EXISTS `spells_schools` (
-    `id_spell` INT UNSIGNED NOT NULL,
-    `id_school` INT UNSIGNED NOT NULL,
-    PRIMARY KEY (`id_spell`, `id_school`),
-    FOREIGN KEY(`id_spell`) REFERENCES spell(`id`),
-    FOREIGN KEY(`id_school`) REFERENCES school(`id`)
+CREATE TABLE IF NOT EXISTS `spell_school` (
+    `spell_id` INT UNSIGNED NOT NULL,
+    `school_id` INT UNSIGNED NOT NULL,
+    PRIMARY KEY (`spell_id`, `school_id`),
+    FOREIGN KEY(`spell_id`) REFERENCES spell(`id`),
+    FOREIGN KEY(`school_id`) REFERENCES school(`id`)
 );
 
 /* SPELLS' VARIABLES */
 /* One spell can have multiple (up to 2) variables of cost */
-CREATE TABLE IF NOT EXISTS `spells_variables` (
-    `id_spell` INT UNSIGNED NOT NULL,
-    `id_variable` INT UNSIGNED NOT NULL,
-    PRIMARY KEY (`id_spell`, `id_variable`),
-    FOREIGN KEY(`id_spell`) REFERENCES spell(`id`),
-    FOREIGN KEY(`id_variable`) REFERENCES variable(`id`)
+CREATE TABLE IF NOT EXISTS `spell_variable` (
+    `spell_id` INT UNSIGNED NOT NULL,
+    `variable_id` INT UNSIGNED NOT NULL,
+    PRIMARY KEY (`spell_id`, `variable_id`),
+    FOREIGN KEY(`spell_id`) REFERENCES spell(`id`),
+    FOREIGN KEY(`variable_id`) REFERENCES variable(`id`)
 );
 
 /* SPELLS' VARIABLES */
 /* One spell can have multiple ingredients */
-CREATE TABLE IF NOT EXISTS `spells_ingredients` (
-    `id_spell` INT UNSIGNED NOT NULL,
-    `id_ingredient` INT UNSIGNED NOT NULL,
-    PRIMARY KEY (`id_spell`, `id_ingredient`),
-    FOREIGN KEY(`id_spell`) REFERENCES spell(`id`),
-    FOREIGN KEY(`id_ingredient`) REFERENCES ingredient(`id`)
+CREATE TABLE IF NOT EXISTS `spell_ingredient` (
+    `spell_id` INT UNSIGNED NOT NULL,
+    `ingredient_id` INT UNSIGNED NOT NULL,
+    PRIMARY KEY (`spell_id`, `ingredient_id`),
+    FOREIGN KEY(`spell_id`) REFERENCES spell(`id`),
+    FOREIGN KEY(`ingredient_id`) REFERENCES ingredient(`id`)
 );

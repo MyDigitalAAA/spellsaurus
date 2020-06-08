@@ -1,9 +1,15 @@
-const users = require('./users')
 const spells = require('./spells')
 const schools = require('./schools')
+const meta_schools = require('./meta_schools')
+const variables = require('./variables')
+const ingredients = require('./ingredients')
+const users = require('./users')
 
 module.exports = {
     spells,
     schools,
-    users
+    meta_schools,
+    ingredients,
+    variables,
+    users,
 }

@@ -1,5 +1,5 @@
 const Spell = {
-    "id": "/SpellModel",
+    "id": "/SpellValidation",
     "type": Object,
     "properties": {
         "name": { "type": "string" },

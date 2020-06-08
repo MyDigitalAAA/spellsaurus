@@ -9,8 +9,8 @@ const connection = require('../database/bookshelf')
 const db = connection.db
 
 // Repository
-const SpellReposity = require('../repositories/spell-repository');
-const Spells = new SpellReposity();
+const IngredientRepository = require('../repositories/ingredient-repository');
+const Ingredients = new IngredientRepository();
 
 const regexInt = RegExp(/^[1-9]\d*$/)
 
@@ -19,15 +19,15 @@ const { HttpError } = require('../validations/Errors')
 
 // ROUTES
 // GET ALL ------------------
-const getSpells = () => {
-    return Spells.getAll()
+const getIngredients = () => {
+    return Ingredients.getAll()
     .catch(err => {
         console.log(err)
         throw err
     })
 }
 router.get('/', async (req, res) => {
-    getSpells()
+    getIngredients()
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
         res.end(JSON.stringify(v))
@@ -44,15 +44,15 @@ router.get('/', async (req, res) => {
 
 
 // GET ONE ------------------
-const getSpell = (id) => {
-    return Spells.getOne(id)
+const getIngredient = (id) => {
+    return Ingredients.getOne(id)
     .catch(err => {
         console.log(err)
         throw err
     })
 }
 router.get('/:id/', async (req, res) => {
-    getSpell(req.params.id)
+    getIngredient(req.params.id)
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
         res.end(JSON.stringify(v))
@@ -69,15 +69,15 @@ router.get('/:id/', async (req, res) => {
 
 
 // CREATE ONE ------------------
-const addSpell = (s) => {
-    return Spells.addOne(s)
+const addIngredient = (igr) => {
+    return Ingredients.addOne(igr)
     .catch(err => {
         console.log(err)
         throw err
     })
 }
 router.post('/', async (req, res) => {
-    addSpell(req.body)
+    addIngredient(req.body)
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
         res.send(JSON.stringify(v))
@@ -94,15 +94,15 @@ router.post('/', async (req, res) => {
 
 
 // UPDATE ONE ------------------
-const updateSpell = (id, s) => {
-    return Spells.updateOne(id, s)
+const updateIngredient = (id, igr) => {
+    return Ingredients.updateOne(id, igr)
     .catch(err => {
         console.log(err)
         throw err
     })
 }
 router.put('/:id/', async (req, res) => {
-    updateSpell(req.params.id, req.body)
+    updateIngredient(req.params.id, req.body)
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
         res.send(JSON.stringify(v))
@@ -119,15 +119,15 @@ router.put('/:id/', async (req, res) => {
 
 
 // DELETE ONE ------------------
-const deleteSpell = (id) => {
-    return Spells.deleteOne(id)
+const deleteIngredient = (id) => {
+    return Ingredients.deleteOne(id)
     .catch(err => {
         console.log(err)
         throw err
     })
 }
 router.delete('/:id/', async (req, res) => {
-    deleteSpell(req.params.id)
+    deleteIngredient(req.params.id)
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
         res.send(JSON.stringify(v))
@@ -142,9 +142,8 @@ router.delete('/:id/', async (req, res) => {
     })
 })
 
-
 // Param validation for ID
-    // (check if id is int) (could be refactored)
+// (check if id is int) (could be refactored)
 router.param('id', (req, res, next, id) => {
     try {
         if (regexInt.test(id)) {
