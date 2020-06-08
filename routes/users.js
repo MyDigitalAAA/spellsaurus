@@ -5,7 +5,7 @@ const express = require('express')
 let router = express.Router()
 
 // Connection
-const connection = require('../database/connection')
+const connection = require('../database/bookshelf')
 const db = connection.db
 
 // Repository
@@ -15,7 +15,7 @@ const Users = new UserRepository();
 const regexInt = RegExp(/^[1-9]\d*$/)
 
 // Error handling
-const { HttpError } = require('../models/Errors')
+const { HttpError } = require('../validations/Errors')
 
 // ROUTES
 // GET ALL ------------------

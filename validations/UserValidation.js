@@ -1,5 +1,5 @@
 const User = {
-    "id": "/UserModel",
+    "id": "/UserValidation",
     "type": Object,
     "properties": {
         "name": { "type": "string" },

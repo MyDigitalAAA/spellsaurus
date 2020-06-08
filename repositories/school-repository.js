@@ -1,49 +1,28 @@
 'use strict'
 // Bookshelf
-const bookshelf = require('../database/connection').bookshelf
-
-const Spells = require('./spell-repository')
-
-const MetaSchoolRepository = require('./meta-school-repository')
-const MetaSchools = new MetaSchoolRepository()
+const bookshelf = require('../database/bookshelf').bookshelf
+const model = require('../models/school-model')
 
 // Model validation
 const Validator = require('jsonschema').Validator
 const v = new Validator()
-const SchoolModel = require("../models/SchoolValidation")
-v.addSchema(SchoolModel, "/SchoolModel")
+const SchoolValidation = require("../validations/SchoolValidation")
+v.addSchema(SchoolValidation, "/SchoolValidation")
 
 // Validations
 const regexXSS = RegExp(/<[^>]*script/)
 
 // Error handling
-const { HttpError } = require('../models/Errors')
+const { HttpError } = require('../validations/Errors')
 
 class SchoolRepository {
 
     constructor() {
-        this.model = bookshelf.Model.extend({
-            tableName: 'school',
-            spells() {
-                return this.belongsToMany( Spells._model, 'spell_school', 'school_id', 'spell_id')
-            },
-            meta_schools() {
-                return this.belongsTo( MetaSchools._model, 'meta_school_id')
-            }
-        })
-    }
-
-    set model(model) {
-        this._model = model
-    }
-
-    get model() {
-        return this._model
     }
 
     getAll() {
         return new Promise((resolve, reject) => {
-            this._model.forge()
+            model.forge()
             .fetchAll({ withRelated: ['meta_schools'] })
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }))
@@ -57,7 +36,7 @@ class SchoolRepository {
 
     getOne(id) {
         return new Promise((resolve, reject) => {
-            this._model.forge()
+            model.forge()
             .where({ 'id' : id })
             .fetch({ withRelated: ['meta_schools']})
             .then(v => {
@@ -75,13 +54,13 @@ class SchoolRepository {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
             if (this.isEmptyObject(s)) {
                 reject(new HttpError(403, "Error: School cannot be nothing !"))
-            } else if (!v.validate(s, SchoolModel).valid) {
-                reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(s, SchoolModel).errors))
+            } else if (!v.validate(s, SchoolValidation).valid) {
+                reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(s, SchoolValidation).errors))
             } else if (this.isXSSAttempt(s.name) || this.isXSSAttempt(s.description)) {
                 reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
             } else {
                 bookshelf.transaction(t => {
-                    return this._model.forge({
+                    return model.forge({
                         'name': s.name,
                         'description': s.description,
                         'meta_school_id': s.meta_school_id,
@@ -111,12 +90,12 @@ class SchoolRepository {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
             if (this.isEmptyObject(s)) {
                 reject(new HttpError(403, "Error: School cannot be nothing !"))
-            } else if (!v.validate(s, SchoolModel).valid) {
-                reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(s, SchoolModel).errors))
+            } else if (!v.validate(s, SchoolValidation).valid) {
+                reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(s, SchoolValidation).errors))
             } else if (this.isXSSAttempt(s.name) || this.isXSSAttempt(s.description)) {
                 reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
             } else {
-                this._model.forge({id: id})
+                model.forge({id: id})
                 .fetch({require: true, withRelated: ['meta_schools']})
                 .then(v => {
                     bookshelf.transaction(t => {
@@ -154,11 +133,12 @@ class SchoolRepository {
 
     deleteOne(id) {
         return new Promise((resolve, reject) => {
-            this._model.forge()
+            model.forge()
             .where({ 'id' : id })
             .fetch({require: true, withRelated: ['spells', 'meta_schools']})
             .then(v => {
-
+                v.spells().detach()
+                v.destroy()
             })
             .then(() => {
                 resolve({

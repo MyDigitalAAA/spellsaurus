@@ -1,5 +1,5 @@
 const School = {
-    "id": "/SchoolModel",
+    "id": "/SchoolValidation",
     "type": Object,
     "properties": {
         "name": { "type": "string" },

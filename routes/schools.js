@@ -5,7 +5,7 @@ const express = require('express')
 let router = express.Router()
 
 // Connection
-const connection = require('../database/connection')
+const connection = require('../database/bookshelf')
 const db = connection.db
 
 // Repository
@@ -15,7 +15,7 @@ const Schools = new SchoolRepository();
 const regexInt = RegExp(/^[1-9]\d*$/)
 
 // Error handling
-const { HttpError } = require('../models/Errors')
+const { HttpError } = require('../validations/Errors')
 
 // ROUTES
 // GET ALL ------------------
@@ -142,24 +142,23 @@ router.delete('/:id/', async (req, res) => {
 })
 
 // Param validation for ID
-    // (check if id is int) (could be refactored)
-    router.param('id', (req, res, next, id) => {
-        try {
-            if (regexInt.test(id)) {
-                next()
-            } else {
-                throw new Error;
-            }
-        } catch (err) {
-            err = new HttpError(403, 'Provided ID must be an integer and not zero')
-            res.status(err.code).send(JSON.stringify(
-                {
-                    "error": err.message,
-                    "code": err.code
-                })
-            )
+// (check if id is int) (could be refactored)
+router.param('id', (req, res, next, id) => {
+    try {
+        if (regexInt.test(id)) {
+            next()
+        } else {
+            throw new Error;
         }
-    })
-    
-    module.exports = router
-    
+    } catch (err) {
+        err = new HttpError(403, 'Provided ID must be an integer and not zero')
+        res.status(err.code).send(JSON.stringify(
+            {
+                "error": err.message,
+                "code": err.code
+            })
+        )
+    }
+})
+
+module.exports = router

@@ -8,7 +8,7 @@ const morgan = require('morgan')
 const cors = require('cors') // module to format the json response
 
 // Creates instances of database connections
-const connection = require('./database/connection')
+const connection = require('./database/bookshelf')
 const db = connection.db
 
 // CONSTANTS
@@ -30,4 +30,7 @@ const server = app.listen( port, () => {console.log(`App listening on port ${por
 // Routing
 app.use('/api/spells', routes.spells)
 app.use('/api/schools', routes.schools)
+app.use('/api/meta_schools', routes.meta_schools)
+app.use('/api/variables', routes.variables)
+app.use('/api/ingredients', routes.ingredients)
 app.use('/api/users', routes.users)

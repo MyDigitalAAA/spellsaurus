@@ -1,7 +1,7 @@
 'use strict'
-
 // Bookshelf
-const bookshelf = require('../database/connection').bookshelf
+const bookshelf = require('../database/bookshelf').bookshelf
+const model = require('../models/user-model')
 
 // Hashing and passwords
 const bcrypt = require('bcrypt')
@@ -9,29 +9,18 @@ const bcrypt = require('bcrypt')
 // Model validation
 const Validator = require('jsonschema').Validator
 const v = new Validator()
-const UserModel = require("../models/UserValidation")
-v.addSchema(UserModel, "/UserModel")
+const UserValidation = require("../validations/UserValidation")
+v.addSchema(UserValidation, "/UserValidation")
 
 // Validations
-const regexInt = RegExp(/^[1-9]\d*$/)
 const regexXSS = RegExp(/<[^>]*script/)
 
 // Error handling
-const { HttpError } = require('../models/Errors')
+const { HttpError } = require('../validations/Errors')
 
 class UserRepository {
-    constructor() {
-        this.model = bookshelf.Model.extend({
-            tableName: 'user',
-        })
-    }
-    
-    set model(model) {
-        this._model = model
-    }
 
-    get model() {
-        return this._model
+    constructor() {
     }
 
     getAll() {

@@ -1,26 +1,47 @@
 'use strict'
 // Bookshelf
-const bookshelf = require('../database/connection').bookshelf
+const bookshelf = require('../database/bookshelf').bookshelf
+const model = require('../models/variable-model')
 
-const Spells = require('./spell-repository')
+// Model validation
+const Validator = require('jsonschema').Validator
+const v = new Validator()
+const VariableValidation = require("../validations/VariableValidation")
+v.addSchema(VariableValidation, "/VariableValidation")
 
 class VariableRepository {
 
     constructor() {
-        this.model = bookshelf.Model.extend({
-            tableName: 'variable',
-            spells() {
-                return this.belongsToMany( Spells._model, 'spell_variable', 'variable_id', 'spell_id')
-            }
+    }
+    
+    getAll() {
+        return new Promise((resolve, reject) => {
+            model.forge()
+            .fetchAll({ withRelated: ['spells'] })
+            .then(v => {
+                resolve(v.toJSON({ omitPivot: true }))
+            })
+            .catch(err => {
+                console.log(err)
+                reject(new HttpError(500, "Couldn't get variables"))
+            })
         })
     }
 
-    set model(model) {
-        this._model = model
-    }
-
-    get model() {
-        return this._model
+    
+    getOne(id) {
+        return new Promise((resolve, reject) => {
+            model.forge()
+            .where({ 'id' : id })
+            .fetch({ withRelated: ['spells']})
+            .then(v => {
+                resolve(v.toJSON({ omitPivot: true }))
+            })
+            .catch(err => {
+                console.log(err)
+                reject(new HttpError(500, "Couldn't get variable"))
+            })
+        })
     }
 }
 

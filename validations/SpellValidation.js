@@ -1,5 +1,5 @@
-const SpellModel = {
-    "id": "/SpellModel",
+const Spell = {
+    "id": "/SpellValidation",
     "type": Object,
     "properties": {
         "name": { "type": "string" },
@@ -36,4 +36,4 @@ const SpellModel = {
     "required": ["name", "description"]
 }
 
-module.exports = SpellModel
+module.exports = Spell

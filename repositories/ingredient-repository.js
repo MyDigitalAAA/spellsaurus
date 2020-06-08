@@ -1,27 +1,55 @@
 'use strict'
 // Bookshelf
-const bookshelf = require('../database/connection').bookshelf
+const bookshelf = require('../database/bookshelf').bookshelf
+const model = require('../models/ingredient-model')
 
-const Spells = require('./spell-repository')
+// Model validation
+const Validator = require('jsonschema').Validator
+const v = new Validator()
+const IngredientValidation = require("../validations/IngredientValidation")
+v.addSchema(IngredientValidation, "/IngredientValidation")
+
+// Validations
+const regexXSS = RegExp(/<[^>]*script/)
+
+// Error handling
+const { HttpError } = require('../validations/Errors')
 
 class IngredientRepository {
 
     constructor() {
-        this.model = bookshelf.Model.extend({
-            tableName: 'ingredient',
-            spells() {
-                return this.belongsToMany( Spells._model, 'spell_ingredient', 'ingredient_id', 'spell_id')
-            }
+    }
+
+    getAll() {
+        return new Promise((resolve, reject) => {
+            model.forge()
+            .fetchAll({ withRelated: ['spells'] })
+            .then(v => {
+                resolve(v.toJSON({ omitPivot: true }))
+            })
+            .catch(err => {
+                console.log(err)
+                reject(new HttpError(500, "Couldn't get ingredients"))
+            })
         })
     }
 
-    set model(model) {
-        this._model = model
+    
+    getOne(id) {
+        return new Promise((resolve, reject) => {
+            model.forge()
+            .where({ 'id' : id })
+            .fetch({ withRelated: ['spells']})
+            .then(v => {
+                resolve(v.toJSON({ omitPivot: true }))
+            })
+            .catch(err => {
+                console.log(err)
+                reject(new HttpError(500, "Couldn't get ingredient"))
+            })
+        })
     }
 
-    get model() {
-        return this._model
-    }
 }
 
 module.exports = IngredientRepository
