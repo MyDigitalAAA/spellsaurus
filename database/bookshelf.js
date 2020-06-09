@@ -16,7 +16,6 @@ const knex = require('knex')({
       database : credentials.database,
       charset  : credentials.charset
     },
-    debug: true
 })
 const bookshelf = require('bookshelf')(knex)
 
