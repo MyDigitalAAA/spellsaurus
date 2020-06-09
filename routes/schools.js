@@ -68,6 +68,31 @@ router.get('/:id/', async (req, res) => {
 })
 
 
+// GET SPELLS FROM ONE ------------------
+const getSpellsFromOne = (id) => {
+    return Schools.getSpellsFromOne(id)
+    .catch(err => {
+        console.log(err)
+        throw err
+    })
+}
+router.get('/:id/spells', async (req, res) => {
+    getSpellsFromOne(req.params.id)
+    .then(v => {
+        res.setHeader('Content-Type', 'application/json;charset=utf-8')
+        res.end(JSON.stringify(v))
+    })
+    .catch(err => {
+        res.status(err.code).send(JSON.stringify(
+            {
+                "error": err.message,
+                "code": err.code
+            })
+        )
+    })
+})
+
+
 // CREATE ONE ------------------
 const addSchool = (s) => {
     return Schools.addOne(s)

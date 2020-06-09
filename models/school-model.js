@@ -7,10 +7,10 @@ require('./meta-school-model')
 let School = bookshelf.Model.extend({
     tableName: 'school',
     spells() {
-        return this.belongsToMany( 'Spell', 'spell_school')
+        return this.belongsToMany( 'Spell', 'spell_school' )
     },
     meta_schools() {
-        return this.belongsTo( 'MetaSchool', 'meta_school_id')
+        return this.belongsTo( 'MetaSchool', 'meta_school_id' )
     }
 })
 

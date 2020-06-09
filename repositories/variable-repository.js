@@ -49,6 +49,21 @@ class VariableRepository {
         })
     }
 
+    getSpellsFromOne(id) {
+        return new Promise((resolve, reject) => {
+            model.forge()
+            .where({ 'id' : id })
+            .fetch({ withRelated: ['spells']})
+            .then(v => {
+                resolve(v.toJSON({ omitPivot: true }))
+            })
+            .catch(err => {
+                console.log(err)
+                reject(new HttpError(500, "Couldn't get variable"))
+            })
+        })
+    }
+
     addOne(vr) {
         return new Promise((resolve, reject) => {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
