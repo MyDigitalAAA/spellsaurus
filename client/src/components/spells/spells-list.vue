@@ -3,7 +3,7 @@
         <div v-masonry transition-duration=".5s" item-selector=".spell-card" class="row spells-list">
             <spell-card v-masonry-tile class="spell-card" v-for="(spell, index) in spells" :key="index" v-bind:spell="spell" @editSpell="editSpell"/>
         </div>
-        <edit-spell-card v-bind:spell="active_spell"/>
+        <edit-spell-card v-if="Object.keys(active_spell).length > 0" v-bind:spell="active_spell"/>
     </div>
 </template>
 
@@ -14,7 +14,7 @@ import EditSpellCard from "./edit-spell-card"
 
 // API
 import { RepositoryFactory } from "../../../api/repositories"
-const spellsRepository = RepositoryFactory.get('spells')
+const Spells = RepositoryFactory.get('spells')
 
 export default {
     name: 'spellslist',
@@ -36,11 +36,7 @@ export default {
     },
     methods: {
         async fetchSpells() {
-            const { data } = await spellsRepository.getSpells()
-            return data
-        },
-        async fetchSpell(id) {
-            const { data } = await spellsRepository.getSpell(id)
+            const { data } = await Spells.getSpells()
             return data
         },
         async computeSpells() {
@@ -51,7 +47,6 @@ export default {
         },
         async editSpell(e) {
             this.active_spell = e;
-            console.log(this.active_spell)
         }
     }
 }

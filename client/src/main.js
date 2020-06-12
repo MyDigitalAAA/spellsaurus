@@ -17,6 +17,9 @@ window.jquery = jquery
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap.js'
 
+// Styles
+import './assets/scss/_global.scss'
+
 Vue.config.productionTip = false
 Vue.use(VueRouter)
 Vue.use(VueMasonryPlugin)

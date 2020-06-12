@@ -11,4 +11,10 @@ export default {
     getSpell(id) {
         return api.get(`${resource}/${id}`)
     },
+    addSpell(data) {
+        return api.post(`${resource}`, data)
+    },
+    updateSpell(id, data) {
+        return api.put(`${resource}/${id}`, data)
+    }
 }
