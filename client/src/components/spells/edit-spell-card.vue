@@ -33,8 +33,8 @@
                   </div>
                   <div class="form-group">
                     <label for="spell_schools" class="font-weight-bold col-form-label">École(s)&nbsp;:</label>
-                    <select class="form-control" id="spell_schools" name="spell_schools" multiple v-model="spell_school_ids">
-                        <option v-for="(school,index) in all_schools" :key="index" :value="'school_' + school.id">{{school.name}}</option>
+                    <select class="form-control" id="spell_schools" name="spell_schools" multiple v-model="spell.spell_school_ids_value">
+                        <option v-for="(school, index) in all_schools" :key="index" :value="'school_' + school.id">{{school.name}}</option>
                     </select>
                   </div>
                   <div class="form-group">
@@ -43,7 +43,7 @@
                   </div>
                   <div class="form-group">
                     <label for="spell_ingredients" class="font-weight-bold col-form-label">Ingrédient(s)&nbsp;:</label>
-                    <select class="form-control" id="spell_ingredients" name="spell_ingredients" multiple v-model="spell_ingredient_ids">
+                    <select class="form-control" id="spell_ingredients" name="spell_ingredients" multiple v-model="spell.spell_ingredient_ids_value">
                         <option v-for="(ingredient,index) in all_ingredients" :key="index" :value="'ingredient_' + ingredient.id">{{ingredient.name}}</option>
                     </select>
                   </div>
@@ -53,7 +53,7 @@
                   </div>
                   <div class="form-group">
                     <label for="spell_variables" class="font-weight-bold col-form-label">Variables(s)&nbsp;:</label>
-                    <select class="form-control" id="spell_variables" name="spell_variables" multiple v-model="spell_variable_ids">
+                    <select class="form-control" id="spell_variables" name="spell_variables" multiple v-model="spell.spell_variable_ids_value">
                         <option v-for="(variable,index) in all_variables" :key="index" :value="'variable_' + variable.id">{{variable.description}}</option>
                     </select>
                   </div>
@@ -94,25 +94,51 @@ export default {
             ingredients: Array,
         },
     },
+    model: {
+        event: 'change'
+    },
     data() {
         return {
             all_schools: [],
             all_variables: [],
             all_ingredients: [],
-
-            spell_school_ids: [],
-            spell_variable_ids: [],
-            spell_ingredient_ids: [],
         }
     },
     computed: {
         computeSpell() {
             let output = this.spell
-            console.log(output)
+            output.spell_school_ids = []
+            output.spell_variable_ids = []
+            output.spell_ingredient_ids = []
+            output.spell_school_ids_value = []
+            output.spell_variable_ids_value = []
+            output.spell_ingredient_ids_value = []
+
+            output.schools.forEach(element => {
+                output.spell_school_ids.push(element['id'])
+            })
+            output.variables.forEach(element => {
+                output.spell_variable_ids.push(element['id'])
+            })
+            output.ingredients.forEach(element => {
+                output.spell_ingredient_ids.push(element['id'])
+            })
+
+            output.spell_school_ids.forEach(element => {
+                output.spell_school_ids_value.push("school_" + element)
+            })
+            output.spell_variable_ids.forEach(element => {
+                output.spell_variable_ids_value.push("variable_" + element)
+            })
+            output.spell_ingredient_ids.forEach(element => {
+                output.spell_ingredient_ids_value.push("ingredient_" + element)
+            })
+
             return output
         }
     },
     created() {
+        // Gets all relevant info for multiple selects
         let fetchSchools = Schools.getSchools()
         let fetchVariables = Variables.getVariables()
         let fetchIngredients = Ingredients.getIngredients()
@@ -122,48 +148,32 @@ export default {
             this.all_schools = v[0].data
             this.all_variables = v[1].data
             this.all_ingredients = v[2].data
-            this.getAssociatedValues(this.spell)
         })
         .catch(err => {
             console.log(err)
         })
     },
     mounted() {
-
+        console.log(this.spell)
     },
     watch: {
-        spell: {
+        computeSpell: {
             deep: true,
             handler() {
-                this.getAssociatedValues(this.spell)
+                console.log(this.spell)
             }
         }
     },
     methods: {
-        setSpell(spell) {
-            this.spell = spell
-        },
-        getAssociatedValues(spell) {
-            this.spell_school_ids = []
-            this.spell_variable_ids = []
-            this.spell_ingredient_ids = []
-
-            spell.schools.forEach(element => {
-                this.spell_school_ids.push(element['id'])
-            })
-            spell.variables.forEach(element => {
-                this.spell_variable_ids.push(element['id'])
-            })
-            spell.ingredients.forEach(element => {
-                this.spell_ingredient_ids.push(element['id'])
-            })
+        changeSchools() {
+            console.log(this.spell.spell_school_ids_value)
         },
         updateSpell(e) {
             e.preventDefault()
 
-            let schoolsData = Object.values(this.spell_school_ids).map(v => { return parseInt(v.slice(7)) })
-            let variablesData = Object.values(this.spell_variable_ids).map(v => { return parseInt(v.slice(9)) })
-            let ingredientsData = Object.values(this.spell_ingredient_ids).map(v => { return parseInt(v.slice(11)) })
+            let schoolsData = Object.values(this.spell.spell_school_ids_value).map(v => { return parseInt(v.slice(7)) })
+            let variablesData = Object.values(this.spell.spell_variable_ids_value).map(v => { return parseInt(v.slice(9)) })
+            let ingredientsData = Object.values(this.spell.spell_ingredient_ids_value).map(v => { return parseInt(v.slice(11)) })
 
             let data = {
                 name: this.spell.name,
@@ -174,9 +184,11 @@ export default {
                 ingredients: ingredientsData,
             }
 
+            console.log(data)
+
             Spells.updateSpell(this.spell.id, data)
             .then(v => {
-                this.setSpell(v.data)
+                this.$emit('editSpell', v.data)
             })
         }
     }
