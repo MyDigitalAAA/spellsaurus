@@ -1,7 +1,6 @@
 <template>
     <div
         :class="main_school"
-        @click="editSpell(spell)"
         class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4 grid-item grid-sizer">
         <div class="spellcard bg-white p-4 rounded text-dark shadow" style="border-left-width:4px;border-left-style:solid;">
             <div class="h3 font-display font-weight-bold text-wrap word-break" :title="spell.name" style="line-height:100%;">
@@ -22,12 +21,23 @@
                 <div class=small>
                     <span v-for="(variable,index) in spell.variables" :key="index"><span class="font-weight-bold"><span v-if="index!=0"><br></span>{{String.fromCharCode(120+index)}}</span> = {{variable.description}}</span>
                 </div>
+                <div class="text-right">
+                    <a class="h5 text-secondary mr-1">
+                        <i class="mad" @click="editSpell(spell)">edit</i>
+                    </a>
+                    <a class="h5 text-danger">
+                        <i class="mad" @click="deleteSpell(spell)">delete</i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+// API
+import { RepositoryFactory } from "../../../api/repositories"
+const Spells = RepositoryFactory.get('spells')
 
 export default {
     name: 'spell-card',
@@ -45,6 +55,12 @@ export default {
     methods: {
         editSpell(spell) {
             this.$emit('editSpell', spell)
+        },
+        deleteSpell(spell) {
+            Spells.deleteSpell(this.spell.id)
+            .then(() => {
+                this.$emit('deleteSpell', spell)
+            })
         }
     },
 }

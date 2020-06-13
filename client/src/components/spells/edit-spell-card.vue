@@ -55,7 +55,6 @@
         <template v-slot:modal-footer="{ close }">
             <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="close()">Fermer</button>
             <input type="submit" class="btn btn-primary" value="Enregistrer" form="update-spell">
-            <button type="button" class="btn btn-danger" @click="deleteSpell()">Supprimer</button>
         </template>
     </b-modal>
 </template>
@@ -171,16 +170,10 @@ export default {
             }
 
             Spells.updateSpell(this.spell.id, data)
-            .then(() => {
-                this.$refs["edit_spell_modal"].hide()
+            .then(v => {
+                this.$emit('updateSpell', v.data)
             })
         },
-        deleteSpell() {
-            Spells.deleteSpell(this.spell.id)
-            .then(() => {
-                this.$refs["edit_spell_modal"].hide()
-            })
-        }
     }
 }
 </script>
