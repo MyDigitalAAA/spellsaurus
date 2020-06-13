@@ -29,7 +29,6 @@
           </div>
         </div>
       </form>
-      <button type="button" class="btn font-display font-weight-bold btn-lg btn-outline-dark btn-block shadow-sm"><i class="mad">add</i> Ajouter un sort</button>
     </div>
     <spell-list/>
   </div>

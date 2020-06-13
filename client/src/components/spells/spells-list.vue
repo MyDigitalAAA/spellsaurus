@@ -1,9 +1,11 @@
 <template>
     <div class="spell-list-wrapper">
+        <button type="button" class="btn font-display font-weight-bold btn-lg btn-outline-dark btn-block shadow-sm mb-4" @click="showAdd"><i class="mad">add</i> Ajouter un sort</button>
         <div v-masonry transition-duration=".5s" item-selector=".spell-card" class="row spells-list">
             <spell-card v-masonry-tile class="spell-card" v-for="(spell) in spells" :key="spell.id" v-bind:spell="spell" @editSpell="editSpell" @deleteSpell="deleteSpell"/>
         </div>
-        <edit-spell-card v-if="Object.keys(active_spell).length > 0" v-bind:spell="active_spell" @updateSpell="updateSpell"/>
+        <edit-spell-card v-if="Object.keys(current_edit_spell).length > 0" v-bind:spell="current_edit_spell" @editSpell="editSpell" @updateSpell="updateSpell"/>
+        <add-spell-card v-if="adding_spell" @cancelAdd="cancelAdd" @addSpell="addSpell"/>
     </div>
 </template>
 
@@ -11,6 +13,7 @@
 // Components
 import SpellCard from "./spell-card"
 import EditSpellCard from "./edit-spell-card"
+import AddSpellCard from "./add-spell-card"
 
 // API
 import { RepositoryFactory } from "../../../api/repositories"
@@ -21,12 +24,14 @@ export default {
     components: {
         'spell-card': SpellCard,
         'edit-spell-card': EditSpellCard,
+        'add-spell-card': AddSpellCard,
     },
     data() {
         return {
             loading: false,
             spells: [],
-            active_spell: {},
+            current_edit_spell: {},
+            adding_spell: false,
         }
     },
     created() {
@@ -44,16 +49,35 @@ export default {
             this.spells = displaySpells
         },
         editSpell(e) {
-            this.active_spell = e;
+            this.current_edit_spell = e;
+        },
+        showAdd() {
+            this.adding_spell = true
+        },
+        cancelAdd() {
+            this.adding_spell = false
+        },
+        addSpell(e) {
+            console.log(e)
+            Spells.getSpell(e.id)
+            .then(v => {
+                this.spells.push(v.data)
+            })
+            .then(() => {
+                this.adding_spell = false
+            })
+            .catch(err => {
+                console.log(err)
+            })
         },
         updateSpell(e) {
             let oldSpell = this.spells.find(x => x.id === e.id)
             this.spells.splice(this.spells.indexOf(oldSpell), 1, e)
-            this.active_spell = {}
+            this.current_edit_spell = {}
         },
         deleteSpell(e) {
             this.spells.splice(this.spells.indexOf(e), 1)
-            this.active_spell = {}
+            this.current_edit_spell = {}
         }
     }
 }
