@@ -5,6 +5,7 @@ import App from './app.vue'
 
 import { VueMasonryPlugin } from 'vue-masonry';
 
+import { BootstrapVue } from 'bootstrap-vue'
 // Router
 import routes from './routes'
 
@@ -15,6 +16,7 @@ window.jquery = jquery
 
 // Bootstrap
 import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 import 'bootstrap/dist/js/bootstrap.js'
 
 // Styles
@@ -23,6 +25,8 @@ import './assets/scss/_global.scss'
 Vue.config.productionTip = false
 Vue.use(VueRouter)
 Vue.use(VueMasonryPlugin)
+Vue.use(BootstrapVue)
+
 
 
 var filter = function(text, length, clamp){

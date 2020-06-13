@@ -3,7 +3,7 @@
         <div v-masonry transition-duration=".5s" item-selector=".spell-card" class="row spells-list">
             <spell-card v-masonry-tile class="spell-card" v-for="(spell, index) in spells" :key="index" v-bind:spell="spell" @editSpell="editSpell"/>
         </div>
-        <edit-spell-card v-if="Object.keys(active_spell).length > 0" v-bind:spell="active_spell"/>
+        <edit-spell-card v-if="Object.keys(active_spell).length > 0" v-bind:spell="active_spell" @editSpell="editSpell"/>
     </div>
 </template>
 
@@ -31,8 +31,6 @@ export default {
     },
     created() {
         this.computeSpells()
-    },
-    mounted() {
     },
     methods: {
         async fetchSpells() {

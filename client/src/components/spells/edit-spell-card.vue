@@ -1,74 +1,63 @@
 <template>
-    <div
-        :spell="computeSpell"
-        class="container-fluid">
-      <div class="p-4">
-        <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#spell_show_edit_modal">Spell show/edit modal</button>-->
-        <div class="" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="spell_show_edit_modal" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <div class="h1 modal-title font-display font-weight-bold" id="spell_show_edit_modal"><div class="line-height-100">{{spell.name}}#{{spell.id}}</div></div>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <form id="update-spell" @submit="updateSpell">
-                  <div class="form-group">
+    <b-modal ref="edit_spell_modal" :spell="computeSpell">
+        <template v-slot:modal-header="{ close }">
+            <div class="h1 modal-title font-display font-weight-bold" id="spell_show_edit_modal"><div class="line-height-100">{{spell.name}}#{{spell.id}}</div></div>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="close()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </template>
+        <template v-slot:default>
+            <form id="update-spell" @submit="updateSpell">
+                <div class="form-group">
                     <label for="spell_name" class="font-weight-bold col-form-label">Nom&nbsp;:</label>
                     <input type="text" class="form-control" name="spell_name" id="spell_name" placeholder="(256 caractères max.)" v-model="spell.name">
-                  </div>
-                  <div class="form-group">
+                </div>
+                <div class="form-group">
                     <label for="spell_description" class="font-weight-bold col-form-label">Description&nbsp;:</label>
                     <textarea class="form-control" name="spell_description" id="spell_description" placeholder="(2048 caractères max.)" v-model="spell.description"></textarea>
-                  </div>
-                  <div class="form-check">
+                </div>
+                <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="spell_rituel" v-model="spell.is_ritual">
                     <label for="spell_ritual" class="font-weight-bold col-form-label">Rituel ?&nbsp;:</label>
-                  </div>
-                  <div class="form-group">
+                </div>
+                <div class="form-group">
                     <label for="spell_level" class="font-weight-bold col-form-label">Niveau&nbsp;:</label>
                     <input type="number" class="form-control" name="spell_level" id="spell_level" min="0" max="100" step="1" placeholder="(Nombre entier de 0 à 100)" v-model="spell.level">
-                  </div>
-                  <div class="form-group">
+                </div>
+                <div class="form-group">
                     <label for="spell_schools" class="font-weight-bold col-form-label">École(s)&nbsp;:</label>
                     <select class="form-control" id="spell_schools" name="spell_schools" multiple v-model="spell.spell_school_ids_value">
                         <option v-for="(school, index) in all_schools" :key="index" :value="'school_' + school.id">{{school.name}}</option>
                     </select>
-                  </div>
-                  <div class="form-group">
+                </div>
+                <div class="form-group">
                     <label for="spell_charge" class="font-weight-bold col-form-label">Charge&nbsp;:</label>
                     <input type="number" class="form-control" name="spell_charge" id="spell_charge" min="0" max="100" step="1" placeholder="(Nombre entier de 0 à 100)" v-model="spell.charge">
-                  </div>
-                  <div class="form-group">
+                </div>
+                <div class="form-group">
                     <label for="spell_ingredients" class="font-weight-bold col-form-label">Ingrédient(s)&nbsp;:</label>
                     <select class="form-control" id="spell_ingredients" name="spell_ingredients" multiple v-model="spell.spell_ingredient_ids_value">
                         <option v-for="(ingredient,index) in all_ingredients" :key="index" :value="'ingredient_' + ingredient.id">{{ingredient.name}}</option>
                     </select>
-                  </div>
-                  <div class="form-group">
+                </div>
+                <div class="form-group">
                     <label for="spell_cost" class="font-weight-bold col-form-label">Coût&nbsp;:</label>
                     <input type="text" class="form-control" name="spell_cost" id="spell_cost" placeholder="(32 caractères max.)" v-model="spell.cost">
-                  </div>
-                  <div class="form-group">
+                </div>
+                <div class="form-group">
                     <label for="spell_variables" class="font-weight-bold col-form-label">Variables(s)&nbsp;:</label>
                     <select class="form-control" id="spell_variables" name="spell_variables" multiple v-model="spell.spell_variable_ids_value">
                         <option v-for="(variable,index) in all_variables" :key="index" :value="'variable_' + variable.id">{{variable.description}}</option>
                     </select>
-                  </div>
-                </form>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                <input type="submit" class="btn btn-primary" value="Enregistrer" form="update-spell">
-                <button type="button" class="btn btn-danger">Supprimer</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+                </div>
+            </form>
+        </template>
+        <template v-slot:modal-footer="{ close }">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="close()">Fermer</button>
+            <input type="submit" class="btn btn-primary" value="Enregistrer" form="update-spell">
+            <button type="button" class="btn btn-danger" @click="deleteSpell()">Supprimer</button>
+        </template>
+    </b-modal>
 </template>
 
 <script>
@@ -93,9 +82,6 @@ export default {
             variables: Array,
             ingredients: Array,
         },
-    },
-    model: {
-        event: 'change'
     },
     data() {
         return {
@@ -154,20 +140,20 @@ export default {
         })
     },
     mounted() {
-        console.log(this.spell)
+        this.$refs["edit_spell_modal"].show()
+        this.$root.$on('bv::modal::hide', () => {
+            this.$emit('editSpell', {})
+        })
     },
     watch: {
         computeSpell: {
             deep: true,
             handler() {
-                console.log(this.spell)
+                this.$refs["edit_spell_modal"].show()
             }
         }
     },
     methods: {
-        changeSchools() {
-            console.log(this.spell.spell_school_ids_value)
-        },
         updateSpell(e) {
             e.preventDefault()
 
@@ -184,11 +170,15 @@ export default {
                 ingredients: ingredientsData,
             }
 
-            console.log(data)
-
             Spells.updateSpell(this.spell.id, data)
-            .then(v => {
-                this.$emit('editSpell', v.data)
+            .then(() => {
+                this.$refs["edit_spell_modal"].hide()
+            })
+        },
+        deleteSpell() {
+            Spells.deleteSpell(this.spell.id)
+            .then(() => {
+                this.$refs["edit_spell_modal"].hide()
             })
         }
     }

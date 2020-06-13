@@ -16,5 +16,8 @@ export default {
     },
     updateSpell(id, data) {
         return api.put(`${resource}/${id}`, data)
+    },
+    deleteSpell(id) {
+        return api.delete(`${resource}/${id}`)
     }
 }
