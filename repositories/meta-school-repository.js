@@ -48,25 +48,6 @@ class MetaSchoolRepository {
             })
         })
     }
-
-    // Check if object is null
-    isEmptyObject = (obj) => {
-        if (Object.keys(obj).length === 0 && obj.constructor === Object) {
-            return true
-        } else {
-            return false
-        }
-    }
-
-    // Check if script injection attempt
-    isXSSAttempt = (string) => {
-        if (regexXSS.test(string)) {
-            return true
-        } else {
-            return false
-        }
-    }
-
 }
 
 module.exports = MetaSchoolRepository

@@ -164,7 +164,7 @@ class VariableRepository {
     }
 
     // Check if object is null
-    isEmptyObject = (obj) => {
+    isEmptyObject(obj) {
         if (Object.keys(obj).length === 0 && obj.constructor === Object) {
             return true
         } else {
@@ -173,7 +173,7 @@ class VariableRepository {
     }
 
     // Check if script injection attempt
-    isXSSAttempt = (string) => {
+    isXSSAttempt(string) {
         if (regexXSS.test(string)) {
             return true
         } else {

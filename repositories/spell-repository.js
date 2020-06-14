@@ -224,7 +224,7 @@ class SpellRepository {
     }
 
     // Check if object is null
-    isEmptyObject = (obj) => {
+    isEmptyObject(obj) {
         if (Object.keys(obj).length === 0 && obj.constructor === Object) {
             return true
         } else {
@@ -233,7 +233,7 @@ class SpellRepository {
     }
 
     // Check if script injection attempt
-    isXSSAttempt = (string) => {
+    isXSSAttempt(string) {
         if (regexXSS.test(string)) {
             return true
         } else {
