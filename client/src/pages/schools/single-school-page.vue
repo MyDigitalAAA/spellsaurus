@@ -1,6 +1,7 @@
 <template>
   <div class="container-fluid p-4" id="spell-container">
     <h1 class="display-3 font-display mb-3">{{ school.name }}</h1>
+    <p>{{ school.description }}</p>
     <spell-list :school_id="id"/>
   </div>
 </template>
@@ -38,9 +39,6 @@ export default {
             this.loading = false
             this.school = displaySchool
         },
-        console() {
-            console.log(this.school)
-        }
     }
 }
 </script>
