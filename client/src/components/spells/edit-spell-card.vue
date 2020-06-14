@@ -1,11 +1,17 @@
 <template>
-    <b-modal ref="edit_spell_modal" :spell="computeSpell">
+    <b-modal
+    ref="edit_spell_modal"
+    size="lg"
+    modal-class="b-modal"
+    :spell="computeSpell">
+
         <template v-slot:modal-header="{ close }">
             <div class="h1 modal-title font-display font-weight-bold" id="spell_show_edit_modal"><div class="line-height-100">{{spell.name}}#{{spell.id}}</div></div>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="close()">
                 <span aria-hidden="true">&times;</span>
             </button>
         </template>
+
         <template v-slot:default>
             <form id="update-spell" @submit="updateSpell">
                 <div class="form-group">
@@ -16,9 +22,9 @@
                     <label for="spell_description" class="font-weight-bold col-form-label">Description&nbsp;:</label>
                     <textarea class="form-control" name="spell_description" id="spell_description" placeholder="(2048 caractères max.)" v-model="spell.description"></textarea>
                 </div>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="spell_rituel" v-model="spell.is_ritual">
-                    <label for="spell_ritual" class="font-weight-bold col-form-label">Rituel ?&nbsp;:</label>
+                <div class="form-check form-check-inline">
+                    <input type="checkbox" class="form-check-input" id="spell_ritual" name="spell_ritual" v-model="spell.is_ritual">
+                    <label for="spell_ritual" class="font-weight-bold col-form-label">Rituel ?&nbsp;</label>
                 </div>
                 <div class="form-group">
                     <label for="spell_level" class="font-weight-bold col-form-label">Niveau&nbsp;:</label>
@@ -52,6 +58,7 @@
                 </div>
             </form>
         </template>
+        
         <template v-slot:modal-footer="{ close }">
             <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="close()">Fermer</button>
             <input type="submit" class="btn btn-primary" value="Enregistrer" form="update-spell">

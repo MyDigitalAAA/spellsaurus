@@ -18,6 +18,7 @@ import AddSpellCard from "./add-spell-card"
 // API
 import { RepositoryFactory } from "../../../api/repositories"
 const Spells = RepositoryFactory.get('spells')
+const Schools = RepositoryFactory.get('schools')
 
 export default {
     name: 'spellslist',
@@ -25,6 +26,9 @@ export default {
         'spell-card': SpellCard,
         'edit-spell-card': EditSpellCard,
         'add-spell-card': AddSpellCard,
+    },
+    props: {
+        school_id: String
     },
     data() {
         return {
@@ -39,8 +43,14 @@ export default {
     },
     methods: {
         async fetchSpells() {
-            const { data } = await Spells.getSpells()
-            return data
+            if (!this.school_id) {
+                const { data } = await Spells.getSpells()
+                return data
+            } else {
+                const { data } = await Schools.getSpellsFromSchool(this.school_id)
+                console.log(data.spells)
+                return data.spells
+            }
         },
         async computeSpells() {
             this.loading = true

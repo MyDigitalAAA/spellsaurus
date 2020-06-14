@@ -11,4 +11,7 @@ export default {
     getSchool(id) {
         return api.get(`${resource}/${id}`)
     },
+    getSpellsFromSchool(id) {
+        return api.get(`${resource}/${id}/spells`)
+    }
 }

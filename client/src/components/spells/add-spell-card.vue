@@ -1,5 +1,9 @@
 <template>
-    <b-modal ref="add_spell_modal">
+    <b-modal
+    ref="add_spell_modal"
+    size="lg"
+    modal-class="b-modal">
+
         <template v-slot:modal-header="{ close }">
             <div class="h1 modal-title font-display font-weight-bold" id="spell_show_edit_modal">
                 <div class="line-height-100">
@@ -11,6 +15,7 @@
                 <span aria-hidden="true">&times;</span>
             </button>
         </template>
+
         <template v-slot:default>
             <form id="add-spell" @submit="addSpell">
                 <div class="form-group">
@@ -21,9 +26,9 @@
                     <label for="spell_description" class="font-weight-bold col-form-label">Description&nbsp;:</label>
                     <textarea class="form-control" name="spell_description" id="spell_description" placeholder="(2048 caractères max.)" v-model="spell.description"></textarea>
                 </div>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="spell_rituel" v-model="spell.is_ritual">
-                    <label for="spell_ritual" class="font-weight-bold col-form-label">Rituel ?&nbsp;:</label>
+                <div class="form-check form-check-inline">
+                    <input type="checkbox" class="form-check-input" id="spell_ritual" name="spell_ritual" v-model="spell.is_ritual">
+                    <label for="spell_ritual" class="font-weight-bold col-form-label">Rituel ?&nbsp;</label>
                 </div>
                 <div class="form-group">
                     <label for="spell_level" class="font-weight-bold col-form-label">Niveau&nbsp;:</label>
@@ -57,10 +62,12 @@
                 </div>
             </form>
         </template>
+
         <template v-slot:modal-footer="{ close }">
             <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="close()">Fermer</button>
             <input type="submit" class="btn btn-primary" value="Enregistrer" form="add-spell">
         </template>
+        
     </b-modal>
 </template>
 
@@ -82,6 +89,9 @@ export default {
                 name: "",
                 description: "",
                 is_ritual: false,
+                level: 0,
+                cost: "0",
+                charge: 0,
                 schools: [],
                 variables: [],
                 ingredients: [],

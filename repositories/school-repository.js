@@ -53,7 +53,7 @@ class SchoolRepository {
         return new Promise((resolve, reject) => {
             model.forge()
             .where({ 'id' : id })
-            .fetch({ withRelated: ['spells', 'meta_schools']})
+            .fetch({ withRelated: ['spells', 'spells.schools', 'spells.variables', 'spells.ingredients', 'spells.schools.meta_schools']})
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }))
             })
