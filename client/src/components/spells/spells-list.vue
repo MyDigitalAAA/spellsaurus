@@ -58,10 +58,9 @@ export default {
             this.adding_spell = false
         },
         addSpell(e) {
-            console.log(e)
             Spells.getSpell(e.id)
             .then(v => {
-                this.spells.push(v.data)
+                this.spells.unshift(v.data)
             })
             .then(() => {
                 this.adding_spell = false

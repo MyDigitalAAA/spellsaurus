@@ -27,8 +27,6 @@ Vue.use(VueRouter)
 Vue.use(VueMasonryPlugin)
 Vue.use(BootstrapVue)
 
-
-
 var filter = function(text, length, clamp){
     clamp = clamp || '...';
     var node = document.createElement('div');
