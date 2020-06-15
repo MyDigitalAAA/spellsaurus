@@ -3,29 +3,37 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './app.vue'
 
-import { VueMasonryPlugin } from 'vue-masonry';
+// Auth
+require('dotenv').config()
 
-import { BootstrapVue } from 'bootstrap-vue'
 // Router
 import routes from './routes'
+Vue.use(VueRouter)
 
 // Jquery
 import jquery from 'jquery'
 window.$ = jquery
 window.jquery = jquery
 
+// Global styles
+import './assets/scss/_global.scss'
+
 // Bootstrap
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import 'bootstrap/dist/js/bootstrap.js'
+import { BootstrapVue } from 'bootstrap-vue'
+Vue.use(BootstrapVue)
 
-// Styles
-import './assets/scss/_global.scss'
+// Masonry
+import { VueMasonryPlugin } from 'vue-masonry';
+Vue.use(VueMasonryPlugin)
+
+// Clipboard plugin
+import clipboard from 'v-clipboard'
+Vue.use(clipboard)
 
 Vue.config.productionTip = false
-Vue.use(VueRouter)
-Vue.use(VueMasonryPlugin)
-Vue.use(BootstrapVue)
 
 var filter = function(text, length, clamp){
     clamp = clamp || '...';

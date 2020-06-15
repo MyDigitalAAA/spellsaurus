@@ -3,23 +3,55 @@
         :class="main_school"
         class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4 grid-item grid-sizer">
         <div class="spellcard bg-white p-4 rounded text-dark shadow" style="border-left-width:4px;border-left-style:solid;">
-            <div class="h3 font-display font-weight-bold text-wrap word-break" :title="spell.name" style="line-height:100%;">
+
+            <div :title="spell.name" class="h3 font-display font-weight-bold text-wrap word-break" style="line-height:100%;">
                 <a class="text-decoration-none" href="#">{{spell.name}}</a>
             </div>
+
             <div>
-                <div class="font-weight-700 text-muted d-inline-block">Niveau {{spell.level}}</div><span> · </span>
+                <div class="font-weight-700 text-muted d-inline-block">Niveau {{spell.level}}</div>
+                <span> · </span>
                 <div class="text-muted d-inline-block">
-                    <span v-for="(school,index) in spell.schools" :key="index"><span v-if="index!=0">, </span><a :href="'/school/'+school.id" class="text-secondary">{{school.name}}</a></span>
+                    <span v-for="(school,index) in spell.schools" :key="index">
+                        <span v-if="index!=0">, </span>
+                        <a :href="'/school/'+school.id" class="text-secondary">{{school.name}}</a>
+                    </span>
                 </div>
             </div>
-            <div v-if="spell.charge!=0" class="small font-weight-bold">Charge {{spell.charge}} tour(s)</div>
-            <div v-if="spell.ingredients.length>0" class="small"><span class="font-weight-bold">Nécessite</span> <span v-for="(ingredient,index) in spell.ingredients" :key="index"><span v-if="index!=0">, </span>{{ingredient.name}}</span></div>
-            <div class="small text-muted font-italic mt-2">{{spell.description}}</div>
+
+            <div v-if="spell.charge!=0" class="small font-weight-bold">
+                <span>Charge {{spell.charge}} tour(s)</span>
+            </div>
+
+            <div v-if="spell.ingredients.length>0" class="small">
+                <span class="font-weight-bold">Nécessite</span>
+                <span v-for="(ingredient,index) in spell.ingredients" :key="index">
+                    <span v-if="index!=0">, </span>
+                    <span>{{ingredient.name}}</span>
+                </span>
+            </div>
+
+            <div
+                v-clipboard="spell.description"
+                :id="'spell_description_' + spell.id"
+                v-b-tooltip.click
+                placement="bottom"
+                title="Description copiée !"
+                class="small text-muted font-italic mt-2">
+                <span>{{spell.description}}</span>
+            </div>
+
             <div class="mt-2">
-                <div class="font-weight-bold d-inline-block">Coût {{spell.cost}}</div>
+                <div class="font-weight-bold d-inline-block"><span>Coût </span>{{spell.cost}}</div>
                 <div v-if="spell.variables.length>0" class="small d-inline-block">, où&nbsp;:</div>
                 <div class=small>
-                    <span v-for="(variable,index) in spell.variables" :key="index"><span class="font-weight-bold"><span v-if="index!=0"><br></span>{{String.fromCharCode(120+index)}}</span> = {{variable.description}}</span>
+                    <span v-for="(variable,index) in spell.variables" :key="index">
+                        <span class="font-weight-bold">
+                            <span v-if="index!=0"><br></span>
+                            <span>{{String.fromCharCode(120+index)}}</span>
+                        </span>
+                        <span> = {{variable.description}}</span>
+                    </span>
                 </div>
                 <div class="text-right">
                     <a class="h5 text-secondary mr-1">

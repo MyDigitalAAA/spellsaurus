@@ -33,6 +33,7 @@
         "core-js": "^3.6.4",
         "jquery": "^3.5.1",
         "popper.js": "^1.16.1",
+        "v-clipboard": "^2.2.3",
         "vue": "^2.6.11",
         "vue-masonry": "^0.11.8"
     },

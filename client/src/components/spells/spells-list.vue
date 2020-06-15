@@ -1,6 +1,9 @@
 <template>
     <div class="spell-list-wrapper">
-        <button type="button" class="btn font-display font-weight-bold btn-lg btn-outline-dark btn-block shadow-sm mb-4" @click="showAdd"><i class="mad">add</i> Ajouter un sort</button>
+        <button type="button" class="btn font-display font-weight-bold btn-lg btn-outline-dark btn-block shadow-sm mb-4" @click="showAdd">
+            <i class="mad">add</i>
+            <span>Ajouter un sort</span>
+        </button>
         <div v-masonry transition-duration=".5s" item-selector=".spell-card" class="row spells-list">
             <spell-card v-masonry-tile class="spell-card" v-for="(spell) in spells" :key="spell.id" v-bind:spell="spell" @editSpell="editSpell" @deleteSpell="deleteSpell"/>
         </div>
