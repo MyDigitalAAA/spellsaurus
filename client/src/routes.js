@@ -5,7 +5,6 @@
 import Index from "./pages/index-page";
 import Spells from "./pages/spells-page";
 import SchoolSingle from "./pages/schools/single-school-page";
-import World from "./pages/world-page";
 
 // Routes
 const routes = [
@@ -20,9 +19,6 @@ const routes = [
     },
     {
         path: '/school/:id', component: SchoolSingle, props: true
-    },
-    {
-        path: '/world', component: World,
     }
 ];
 

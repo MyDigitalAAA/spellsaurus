@@ -24,10 +24,6 @@
                         text: 'Sortilèges',
                         url: '/spells',
                     },
-                    {
-                        text: 'Monde',
-                        url: '/world',
-                    },
                 ]
             }
         }
