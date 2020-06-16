@@ -51,7 +51,6 @@ export default {
                 return data
             } else {
                 const { data } = await Schools.getSpellsFromSchool(this.school_id)
-                console.log(data.spells)
                 return data.spells
             }
         },

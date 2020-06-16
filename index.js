@@ -28,20 +28,33 @@ app.use(helmet())
 // Serves
 const server = app.listen( port, () => {console.log(`App listening on port ${port}`)})
 
-// Auth
-app.all('*', (req, res, next) => {
-    if (req.headers.auracle_key !== process.env.API_KEY) {
-        return res.status(401).send('The API is either missing or incorrect.')
+// Get credentials
+// app.get('/api/login', (req, res, next) => {
+//     if (req.headers.auracle_key !== process.env.API_KEY_PUBLIC) {
+//         return res.status(401).send('Credentials error !')
+//     } else {
+//         return res.status(200).send(JSON.stringify(
+//             {
+//                 "secret_key": process.env.API_KEY_PRIVATE,
+//             })
+//         )
+//     }
+// })
+
+// Auth guard
+const authguard = (req, res, next) => {
+    if (req.headers.auracle_key !== process.env.API_KEY_PUBLIC) {
+        return res.status(401).send('The API key is either missing or incorrect.')
     } else {
         next()
     }
-})
+}
 
 // Routing
-app.use('/api/spells', routes.spells)
-app.use('/api/schools', routes.schools)
-app.use('/api/meta_schools', routes.meta_schools)
-app.use('/api/variables', routes.variables)
-app.use('/api/ingredients', routes.ingredients)
-app.use('/api/users', routes.users)
+app.use('/api/spells', authguard,routes.spells)
+app.use('/api/schools', authguard, routes.schools)
+app.use('/api/meta_schools', authguard, routes.meta_schools)
+app.use('/api/variables', authguard, routes.variables)
+app.use('/api/ingredients', authguard, routes.ingredients)
+app.use('/api/users', authguard, routes.users)
 
