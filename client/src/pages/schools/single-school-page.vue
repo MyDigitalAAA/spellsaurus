@@ -7,10 +7,10 @@
 </template>
 
 <script>
-import SpellsList from "../../components/spells/spells-list"
+import SpellsList from "~/components/spells/spells-list"
 
 // API
-import { RepositoryFactory } from "../../../api/repositories"
+import { RepositoryFactory } from "~/api/repositories"
 const Schools = RepositoryFactory.get('schools')
 
 export default {

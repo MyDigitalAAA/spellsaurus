@@ -19,7 +19,7 @@ import EditSpellCard from "./edit-spell-card"
 import AddSpellCard from "./add-spell-card"
 
 // API
-import { RepositoryFactory } from "../../../api/repositories"
+import { RepositoryFactory } from "~/api/repositories"
 const Spells = RepositoryFactory.get('spells')
 const Schools = RepositoryFactory.get('schools')
 
