@@ -1,8 +1,8 @@
 import axios from "axios"
 
-const url = "http://localhost:2814/api"
+const url = process.env.VUE_APP_API_URL
 
-axios.defaults.headers.common['auracle_key'] = process.env.VUE_APP_API_KEY
+axios.defaults.headers.common[process.env.VUE_APP_API_KEY_NAME] = process.env.VUE_APP_API_KEY_VALUE
 
 export default axios.create({
     baseURL: url
