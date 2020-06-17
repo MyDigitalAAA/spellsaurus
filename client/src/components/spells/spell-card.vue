@@ -23,6 +23,10 @@
                 <span>Charge {{spell.charge}} tour(s)</span>
             </div>
 
+            <div v-if="spell.is_ritual" class="small font-weight-bold">
+                <span>Rituel</span>
+            </div>
+
             <div v-if="spell.ingredients.length>0" class="small">
                 <span class="font-weight-bold">Nécessite </span>
                 <span v-for="(ingredient,index) in spell.ingredients" :key="index">
