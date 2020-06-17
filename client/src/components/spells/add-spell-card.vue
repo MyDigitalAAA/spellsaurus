@@ -143,8 +143,6 @@ export default {
                 ingredients: ingredientsData,
             }
 
-            console.log(data)
-
             Spells.addSpell(data)
             .then(v => {
                 this.$emit('addSpell', v.data)
