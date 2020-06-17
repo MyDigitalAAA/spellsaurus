@@ -1,6 +1,3 @@
-// App router
-
-
 // Pages
 import Index from "./pages/index-page";
 import Spells from "./pages/spells-page";
