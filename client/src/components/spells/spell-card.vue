@@ -24,7 +24,7 @@
             </div>
 
             <div v-if="spell.ingredients.length>0" class="small">
-                <span class="font-weight-bold">Nécessite</span>
+                <span class="font-weight-bold">Nécessite </span>
                 <span v-for="(ingredient,index) in spell.ingredients" :key="index">
                     <span v-if="index!=0">, </span>
                     <span>{{ingredient.name}}</span>
@@ -53,14 +53,14 @@
                         <span> = {{variable.description}}</span>
                     </span>
                 </div>
-                <div class="text-right">
+                <footer class="text-right">
                     <a class="h5 text-secondary mr-1">
                         <i class="mad" @click="editSpell(spell)">edit</i>
                     </a>
                     <a class="h5 text-danger">
                         <i class="mad" @click="deleteSpell(spell)">delete</i>
                     </a>
-                </div>
+                </footer>
             </div>
         </div>
     </div>
@@ -101,6 +101,11 @@ export default {
 
 <style lang="scss" scoped>
   .spell-card {
+    footer {
+      a {
+        cursor: pointer;
+      }
+    }
     @mixin colorschool($sname,$scolor) {
       &.#{$sname} {
         .spellcard { border-left-color: $scolor; }

@@ -55,7 +55,7 @@
                     <input type="text" class="form-control" name="spell_cost" id="spell_cost" placeholder="(32 caractères max.)" v-model="spell.cost">
                 </div>
                 <div class="form-group">
-                    <label for="spell_variables" class="font-weight-bold col-form-label">Variables(s)&nbsp;:</label>
+                    <label for="spell_variables" class="font-weight-bold col-form-label">Variable(s)&nbsp;:</label>
                     <select class="form-control" id="spell_variables" name="spell_variables" multiple v-model="spell.variables">
                         <option v-for="(variable,index) in all_variables" :key="index" :value="'variable_' + variable.id">{{variable.description}}</option>
                     </select>
