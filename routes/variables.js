@@ -9,8 +9,8 @@ const connection = require('../database/bookshelf')
 const db = connection.db
 
 // Repository
-const SchoolRepository = require('../repositories/school-repository');
-const Schools = new SchoolRepository();
+const VariableRepository = require('../repositories/variable-repository');
+const Variables = new VariableRepository();
 
 const regexInt = RegExp(/^[1-9]\d*$/)
 
@@ -19,15 +19,15 @@ const { HttpError } = require('../validations/Errors')
 
 // ROUTES
 // GET ALL ------------------
-const getSchools = () => {
-    return Schools.getAll()
+const getvariables = () => {
+    return Variables.getAll()
     .catch(err => {
         console.log(err)
         throw err
     })
 }
 router.get('/', async (req, res) => {
-    getSchools()
+    getvariables()
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
         res.end(JSON.stringify(v))
@@ -44,15 +44,15 @@ router.get('/', async (req, res) => {
 
 
 // GET ONE ------------------
-const getSchool = (id) => {
-    return Schools.getOne(id)
+const getVariable = (id) => {
+    return Variables.getOne(id)
     .catch(err => {
         console.log(err)
         throw err
     })
 }
 router.get('/:id/', async (req, res) => {
-    getSchool(req.params.id)
+    getVariable(req.params.id)
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
         res.end(JSON.stringify(v))
@@ -70,7 +70,7 @@ router.get('/:id/', async (req, res) => {
 
 // GET SPELLS FROM ONE ------------------
 const getSpellsFromOne = (id) => {
-    return Schools.getSpellsFromOne(id)
+    return Variables.getSpellsFromOne(id)
     .catch(err => {
         console.log(err)
         throw err
@@ -94,15 +94,15 @@ router.get('/:id/spells', async (req, res) => {
 
 
 // CREATE ONE ------------------
-const addSchool = (s) => {
-    return Schools.addOne(s)
+const addVariable = (vr) => {
+    return Variables.addOne(vr)
     .catch(err => {
         console.log(err)
         throw err
     })
 }
 router.post('/', async (req, res) => {
-    addSchool(req.body)
+    addVariable(req.body)
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
         res.send(JSON.stringify(v))
@@ -117,16 +117,17 @@ router.post('/', async (req, res) => {
     })
 })
 
+
 // UPDATE ONE ------------------
-const updateSchool = (id, s) => {
-    return Schools.updateOne(id, s)
+const updateVariable = (id, vr) => {
+    return Variables.updateOne(id, vr)
     .catch(err => {
         console.log(err)
         throw err
     })
 }
 router.put('/:id/', async (req, res) => {
-    updateSchool(req.params.id, req.body)
+    updateVariable(req.params.id, req.body)
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
         res.send(JSON.stringify(v))
@@ -143,15 +144,15 @@ router.put('/:id/', async (req, res) => {
 
 
 // DELETE ONE ------------------
-const deleteSchool = (id) => {
-    return Schools.deleteOne(id)
+const deleteVariable = (id) => {
+    return Variables.deleteOne(id)
     .catch(err => {
         console.log(err)
         throw err
     })
 }
 router.delete('/:id/', async (req, res) => {
-    deleteSchool(req.params.id)
+    deleteVariable(req.params.id)
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
         res.send(JSON.stringify(v))

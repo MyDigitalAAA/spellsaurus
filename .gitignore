@@ -21,4 +21,4 @@ yarn-error.log*
 *.sw?
 
 # creds
-/database/credentials.json
+.env

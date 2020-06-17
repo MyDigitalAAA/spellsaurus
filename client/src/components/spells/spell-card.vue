@@ -1,208 +1,135 @@
 <template>
-    <article class="spell-card">
-        <div class="content">
-            <header>
-                <h3>{{ name }}</h3>
-            </header>
-            <section class="casting-header">
-                <div class="casting-infos">
-                    <div class="type">
-                        <div class="level">
-                            <div class="label">
-                                <span>LV.</span>
-                                <br>
-                                <span>MIN</span>
-                            </div>
-                            <var>{{ level }}</var>
-                        </div>
-                        <ul class="schools">
-                            <li v-for="(school, index) in schools" :key="index">
-                                {{ school.name }}
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="cost">
-                        <span class="label">Malus</span>
-                        <var>{{ cost }}</var>
-                    </div>
-                    <div class="charge">
-                        <span class="label">Charge</span>
-                        <var>{{ charge }}</var>
-                    </div>
+    <div
+        :class="main_school"
+        class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-4 grid-item grid-sizer">
+        <div class="spellcard bg-white p-4 rounded text-dark shadow" style="border-left-width:4px;border-left-style:solid;">
+
+            <div :title="spell.name" class="h3 font-display font-weight-bold text-wrap word-break" style="line-height:100%;">
+                <a class="text-decoration-none" href="#">{{spell.name}}</a>
+            </div>
+
+            <div>
+                <div class="font-weight-700 text-muted d-inline-block">Niveau {{spell.level}}</div>
+                <span> · </span>
+                <div class="text-muted d-inline-block">
+                    <span v-for="(school,index) in spell.schools" :key="index">
+                        <span v-if="index!=0">, </span>
+                        <a :href="'/school/'+school.id" class="text-secondary">{{school.name}}</a>
+                    </span>
                 </div>
-                <div class="casting-ingredients">
-                    <p class="title">Nécessite :</p>
-                    <p class="content">
-                        <span v-for="(ingredient, index) in ingredients" :key="index">
-                            {{ ingredient.name }}<span v-if="index != Object.keys(ingredients).length - 1">, </span>
+            </div>
+
+            <div v-if="spell.charge!=0" class="small font-weight-bold">
+                <span>Charge {{spell.charge}} tour(s)</span>
+            </div>
+
+            <div v-if="spell.ingredients.length>0" class="small">
+                <span class="font-weight-bold">Nécessite</span>
+                <span v-for="(ingredient,index) in spell.ingredients" :key="index">
+                    <span v-if="index!=0">, </span>
+                    <span>{{ingredient.name}}</span>
+                </span>
+            </div>
+
+            <div
+                v-clipboard="spell.description"
+                :id="'spell_description_' + spell.id"
+                v-b-tooltip.click
+                placement="bottom"
+                title="Description copiée !"
+                class="small text-muted font-italic mt-2">
+                <span>{{spell.description}}</span>
+            </div>
+
+            <div class="mt-2">
+                <div class="font-weight-bold d-inline-block"><span>Coût </span>{{spell.cost}}</div>
+                <div v-if="spell.variables.length>0" class="small d-inline-block">, où&nbsp;:</div>
+                <div class=small>
+                    <span v-for="(variable,index) in spell.variables" :key="index">
+                        <span class="font-weight-bold">
+                            <span v-if="index!=0"><br></span>
+                            <span>{{String.fromCharCode(120+index)}}</span>
                         </span>
-                    </p>
+                        <span> = {{variable.description}}</span>
+                    </span>
                 </div>
-            </section>
-            <hr>
-            <section class="spell-description">
-                <p>{{ description }}</p>
-            </section>
-            <hr>
-            <footer v-if="variables">
-                <div class="label">Variables</div>
-                <div class="variables">
-                    <div v-for="(variable, index) in variables" :key="index" class="xyz">
-                        <span>{{ variable.name }}</span>
-                        <var>{{ variable.description }}</var>
-                    </div>
+                <div class="text-right">
+                    <a class="h5 text-secondary mr-1">
+                        <i class="mad" @click="editSpell(spell)">edit</i>
+                    </a>
+                    <a class="h5 text-danger">
+                        <i class="mad" @click="deleteSpell(spell)">delete</i>
+                    </a>
                 </div>
-            </footer>
+            </div>
         </div>
-    </article>
+    </div>
 </template>
 
 <script>
+// API
+import { RepositoryFactory } from "~/api/repositories"
+const Spells = RepositoryFactory.get('spells')
 
 export default {
     name: 'spell-card',
     props: {
-        name: String,
-        description: String,
-        level: Number,
-        charge: Number,
-        cost: String,
-        schools: Array,
-        ingredients: Array,
-        variables: Array,
+        spell: Object,
     },
     data() {
         return {
-            isFlipped: false,
+            main_school: this.spell.schools[0].name,
         }
     },
+    created() {
+        this.main_school = this.main_school.toLowerCase();
+    },
     methods: {
-        toggleCard: async function() {
-            this.isFlipped = !this.isFlipped;
+        editSpell(spell) {
+            this.$emit('editSpell', spell)
+        },
+        deleteSpell(spell) {
+            Spells.deleteSpell(this.spell.id)
+            .then(() => {
+                this.$emit('deleteSpell', spell)
+            })
         }
     },
 }
 
 </script>
 
-<style lang="scss">
-
-    .spell-card {
-        max-width: 35rem;
-        padding: .5rem;
-        margin: .5rem auto .5rem;
-        background: $spell-card--innerborder;
-        border: solid 1px rgba($primary--base, .5);
-        border-radius: .5rem;
-        box-shadow: .0 .0 .75rem rgba($primary--base, .25);
-
-        > .content {
-            max-width: 35rem;
-            height: 100%;
-            padding: .75rem;
-            background: $white;
-
-            header {
-                h3 {
-                    padding: .5rem;
-                    text-align: center;
-                    color: $white;
-                    text-transform: uppercase;
-                    background: $black;
-                }
-            }
-
-            .casting-header {
-                display: flex;
-                > * {
-                    width: 50%;
-                }
-
-                .casting-infos {
-                    margin: .75rem 0;
-                    padding-right: .75rem;
-                    border-right: 1px solid rgba($black, .25);
-                    .type {
-                        margin-bottom: .5rem;
-                        display: flex;
-                        > * {
-                            width: 50%;
-                        }
-                        .level {
-                            .label {
-                                margin-right: .25rem;
-                                display: inline-block;
-                            }
-                            var {
-                                display: inline-block;
-                                font-size: 2.3em;
-                            }
-                        }
-                    }
-                    .cost, .charge {
-                        font-size: 0.9rem;
-                        > * {
-                            vertical-align: middle;
-                        }
-                        .label {
-                            display: inline-block;
-                            width: 30%;
-                            text-transform: uppercase;
-                        }
-                        var {
-                            display: inline-block;
-                        }
-                    }
-                }
-
-                .casting-ingredients {
-                    margin: .75rem 0;
-                    padding-left: .75rem;
-                    .title {
-                        margin-bottom: .25rem;
-                        font-size: .9rem;
-                        font-weight: bold;
-                        text-transform: uppercase;
-                    }
-                    .content {
-                        padding-top: 1rem;
-                        font-size: .85rem;
-                        text-align: justify;
-                        text-align-last: center;
-                    }
-                }
-            }
-
-            .spell-description {
-                padding: .75rem 0;
-                font-size: .85rem;
-                p {
-                    &:not(:last-of-type) {
-                        margin-bottom: .5rem;
-                    }
-                }
-            }
-
-            footer {
-                padding: .75rem 0 0;
-                display: flex;
-                align-items: center;
-                .label {
-                    margin-right: 1rem;
-                }
-                .variables {
-                    .xyz {
-                        span {
-                            font-size: 1.1rem;
-                            font-weight: bold;
-                            margin-right: 1rem;
-                        }
-                    }
-                }
-            }
-
-        }
-
+<style lang="scss" scoped>
+  .spell-card {
+    @mixin colorschool($sname,$scolor) {
+      &.#{$sname} {
+        .spellcard { border-left-color: $scolor; }
+        .h3>a { color: $scolor; }
+      }
     }
-
+    @include colorschool(lumomancie,#babaa4);
+    @include colorschool(vitamancie,#57ab6e);
+    @include colorschool(obstrumancie,#bd4a66);
+    @include colorschool(tenebromancie,#404842);
+    @include colorschool(necromancie,#5d4777);
+    @include colorschool(morbomancie,#d8733d);
+    @include colorschool(pyromancie,#b6362a);
+    @include colorschool(hydromancie,#3f68c7);
+    @include colorschool(electromancie,#cd9731);
+    @include colorschool(terramancie,#7e5540);
+    @include colorschool(caelomancie,#a8a8a8);
+    @include colorschool(légimancie,#5dbabd);
+    @include colorschool(illusiomancie,#9f63a1);
+    @include colorschool(cruciomancie,#252451);
+    @include colorschool(chronomancie,#79896a);
+    @include colorschool(spatiomancie,#2d4776);
+    @include colorschool(kénomancie,#101010);
+    @include colorschool(lutomancie,#4e2827);
+    @include colorschool(échomancie,#6d9fd1);
+    @include colorschool(protomancie,#4f5751);
+    @include colorschool(rebumancie,#8e7245);
+    @include colorschool(vocamancie,#247864);
+    @include colorschool(somamancie,#976c67);
+    @include colorschool(antimancie,#ad95c1);
+  }
 </style>
