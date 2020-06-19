@@ -41,8 +41,8 @@
                 v-b-tooltip.click
                 placement="bottom"
                 title="Description copiée !"
-                class="small text-muted font-italic mt-2">
-                <span>{{spell.description}}</span>
+                class="small text-muted mt-2">
+                <span style="white-space: pre-wrap;">{{spell.description}}</span>
             </div>
 
             <div class="mt-2">
