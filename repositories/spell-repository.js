@@ -10,7 +10,8 @@ const SpellValidation = require("../validations/SpellValidation")
 v.addSchema(SpellValidation, "/SpellValidation")
 
 // Validations
-const regexXSS = RegExp(/<[^>]*script/)
+const isXSSAttempt = require('../functions').isXSSAttempt
+const isEmptyObject = require('../functions').isEmptyObject
 
 // Error handling
 const { HttpError } = require('../validations/Errors')
@@ -34,6 +35,40 @@ class SpellRepository {
         })
     }
 
+    getAllPublic() {
+        return new Promise((resolve, reject) => {
+            model.forge()
+            .where({ 'public' : 1 })
+            .fetchAll({ withRelated: ['schools.meta_schools', 'variables', 'ingredients'] })
+            .then(v => {
+                resolve(v.toJSON({ omitPivot: true }))
+            })
+            .catch(err => {
+                console.log(err)
+                reject(new HttpError(500, "Couldn't get public spells"))
+            })
+        })
+    }
+
+    getPage(page) {
+        return new Promise((resolve, reject) => {
+            model.forge()
+            .where({ 'public' : 1 })
+            .fetchPage({
+                pageSize: 20,
+                page: page,
+                withRelated: ['schools.meta_schools', 'variables', 'ingredients'],
+            })
+            .then(v => {
+                resolve(v.toJSON({ omitPivot: true }))
+            })
+            .catch(err => {
+                console.log(err)
+                reject(new HttpError(500, "Couldn't get public spells"))
+            })
+        })
+    }
+
     getOne(id) {
         return new Promise((resolve, reject) => {
             model.forge()
@@ -52,11 +87,11 @@ class SpellRepository {
     addOne(s) {
         return new Promise((resolve, reject) => {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
-            if (this.isEmptyObject(s)) {
+            if (isEmptyObject(s)) {
                 reject(new HttpError(403, "Error: Spell cannot be nothing !"))
             } else if (!v.validate(s, SpellValidation).valid) {
                 reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(s, SpellValidation).errors))
-            } else if (this.isXSSAttempt(s.name) || this.isXSSAttempt(s.description) || this.isXSSAttempt(s.cost)) {
+            } else if (isXSSAttempt(s.name) || isXSSAttempt(s.description) || isXSSAttempt(s.cost)) {
                 reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
             } else {
                 bookshelf.transaction(t => {
@@ -112,11 +147,11 @@ class SpellRepository {
     updateOne(id, s) {
         return new Promise((resolve, reject) => {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
-            if (this.isEmptyObject(s)) {
+            if (isEmptyObject(s)) {
                 reject(new HttpError(403, "Error: Spell cannot be nothing !"))
             } else if (!v.validate(s, SpellValidation).valid) {
                 reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(s, SpellValidation).errors))
-            } else if (this.isXSSAttempt(s.name) || this.isXSSAttempt(s.description) || this.isXSSAttempt(s.cost)) {
+            } else if (isXSSAttempt(s.name) || isXSSAttempt(s.description) || isXSSAttempt(s.cost)) {
                 reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
             } else {
                 model.forge({id: id})
@@ -221,24 +256,6 @@ class SpellRepository {
                 reject(new HttpError(404, "Couldn't get spell"))
             })
         })
-    }
-
-    // Check if object is null
-    isEmptyObject(obj) {
-        if (Object.keys(obj).length === 0 && obj.constructor === Object) {
-            return true
-        } else {
-            return false
-        }
-    }
-
-    // Check if script injection attempt
-    isXSSAttempt(string) {
-        if (regexXSS.test(string)) {
-            return true
-        } else {
-            return false
-        }
     }
 }
 

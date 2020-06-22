@@ -126,6 +126,7 @@ export default {
     @include colorschool(hydromancie,#3f68c7);
     @include colorschool(electromancie,#cd9731);
     @include colorschool(terramancie,#7e5540);
+    @include colorschool(sidéromancie,#58697a);
     @include colorschool(caelomancie,#a8a8a8);
     @include colorschool(légimancie,#5dbabd);
     @include colorschool(illusiomancie,#9f63a1);

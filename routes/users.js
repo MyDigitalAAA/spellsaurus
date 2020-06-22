@@ -14,9 +14,6 @@ const Users = new UserRepository();
 
 const regexInt = RegExp(/^[1-9]\d*$/)
 
-// Error handling
-const { HttpError } = require('../validations/Errors')
-
 // ROUTES
 // GET ALL ------------------
 const getUsers = () => {

@@ -114,8 +114,6 @@ BEGIN
 END$$
 DELIMITER ;
 
-
-
 /* =========== PRIMARY INSERTS =========== */
 SET NAMES utf8;
 USE auracle;

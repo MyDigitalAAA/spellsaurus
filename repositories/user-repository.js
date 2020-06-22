@@ -13,7 +13,8 @@ const UserValidation = require("../validations/UserValidation")
 v.addSchema(UserValidation, "/UserValidation")
 
 // Validations
-const regexXSS = RegExp(/<[^>]*script/)
+const isXSSAttempt = require('../functions').isXSSAttempt
+const isEmptyObject = require('../functions').isEmptyObject
 
 // Error handling
 const { HttpError } = require('../validations/Errors')
