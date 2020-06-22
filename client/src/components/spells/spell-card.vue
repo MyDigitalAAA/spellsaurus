@@ -93,7 +93,7 @@ export default {
             this.$emit('editSpell', spell)
         },
         deleteSpell(spell) {
-            Spells.deleteSpell(this.spell.id)
+            Spells.deleteOne(this.spell.id)
             .then(() => {
                 this.$emit('deleteSpell', spell)
             })

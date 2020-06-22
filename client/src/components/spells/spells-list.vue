@@ -4,11 +4,35 @@
             <i class="mad">add</i>
             <span>Ajouter un sort</span>
         </button>
-        <div v-masonry transition-duration=".5s" item-selector=".spell-card" class="row spells-list">
-            <spell-card v-masonry-tile class="spell-card" v-for="(spell) in spells" :key="spell.id" v-bind:spell="spell" @editSpell="editSpell" @deleteSpell="deleteSpell"/>
+        <div
+            v-if="computedSpells.length > 0"
+            class="spell-list-wrapper">
+            <div
+                class="row spells-list"
+                v-masonry
+                transition-duration=".5s"
+                item-selector=".spell-card">
+                    <spell-card
+                        class="spell-card"
+                        v-masonry-tile
+                        v-for="(spell) in computedSpells"
+                        :key="spell.id"
+                        :spell="spell"
+                        @editSpell="editSpell"
+                        @deleteSpell="deleteSpell" />
+            </div>
+
+            <edit-spell-card
+                v-if="Object.keys(current_edit_spell).length > 0"
+                :spell="current_edit_spell"
+                @editSpell="editSpell"
+                @updateSpell="updateSpell"/>
+
+            <add-spell-card
+                v-if="adding_spell"
+                @cancelAdd="cancelAdd"
+                @addSpell="addSpell"/>
         </div>
-        <edit-spell-card v-if="Object.keys(current_edit_spell).length > 0" v-bind:spell="current_edit_spell" @editSpell="editSpell" @updateSpell="updateSpell"/>
-        <add-spell-card v-if="adding_spell" @cancelAdd="cancelAdd" @addSpell="addSpell"/>
     </div>
 </template>
 
@@ -21,7 +45,7 @@ import AddSpellCard from "./add-spell-card"
 // API
 import { RepositoryFactory } from "~/api/repositories"
 const Spells = RepositoryFactory.get('spells')
-const Schools = RepositoryFactory.get('schools')
+// const Schools = RepositoryFactory.get('schools')
 
 export default {
     name: 'spellslist',
@@ -31,34 +55,67 @@ export default {
         'add-spell-card': AddSpellCard,
     },
     props: {
-        school_id: String
+        school_id: String,
     },
     data() {
         return {
-            loading: false,
             spells: [],
+            loading: false,
             current_edit_spell: {},
+            currentIndex: 1,
             adding_spell: false,
         }
     },
-    created() {
-        this.computeSpells()
+    computed: {
+        computedSpells() {
+            return this.spells
+        }
+    },
+    beforeMount() {
+        this.spells = this.computedSpells
+        this.getInitialSpells()
+    },
+    mounted() {
+        this.scroll()
     },
     methods: {
-        async fetchSpells() {
-            if (!this.school_id) {
-                const { data } = await Spells.getSpells()
-                return data
-            } else {
-                const { data } = await Schools.getSpellsFromSchool(this.school_id)
-                return data.spells
-            }
+        getInitialSpells() {
+            Spells.getPage(this.currentIndex)
+            .then(v => {
+                this.loading = true
+                let spells = this.computedSpells
+                spells.push(v.data)
+                this.spells = spells[0]
+            })
+            .then(() => {
+                this.currentIndex++
+                this.loading = false
+            })
+            .catch(err => {
+                console.log(err)
+            })
         },
-        async computeSpells() {
-            this.loading = true
-            const displaySpells = await this.fetchSpells()
-            this.loading = false
-            this.spells = displaySpells
+        scroll() {
+            window.onscroll = () => {
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                    Spells.getPage(this.currentIndex)
+                    .then(v => {
+                        this.loading = true
+                        let spells = this.computedSpells
+                        for (let i = 0; i < v.data.length; i++) {
+                            const element = v.data[i];
+                            spells.push(element)
+                        }
+                    })
+                    .then(() => {
+                        this.currentIndex++
+                        this.loading = false
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+                }
+            }
         },
         editSpell(e) {
             this.current_edit_spell = e;

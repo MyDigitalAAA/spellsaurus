@@ -143,7 +143,7 @@ export default {
                 ingredients: ingredientsData,
             }
 
-            Spells.addSpell(data)
+            Spells.addOne(data)
             .then(v => {
                 this.$emit('addSpell', v.data)
                 this.$refs["add_spell_modal"].hide()

@@ -5,19 +5,22 @@ const resource = "/spells"
 
 // CRUD methods for spells
 export default {
-    getSpells() {
+    getAll() {
         return api.get(`${resource}`)
     },
-    getSpell(id) {
+    getPage(page) {
+        return api.get(`${resource}/page/${page}`)
+    },
+    getOne(id) {
         return api.get(`${resource}/${id}`)
     },
-    addSpell(data) {
+    addOne(data) {
         return api.post(`${resource}`, data)
     },
-    updateSpell(id, data) {
+    updateOne(id, data) {
         return api.put(`${resource}/${id}`, data)
     },
-    deleteSpell(id) {
+    deleteOne(id) {
         return api.delete(`${resource}/${id}`)
     }
 }

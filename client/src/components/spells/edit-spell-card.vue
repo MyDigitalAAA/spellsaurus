@@ -182,7 +182,7 @@ export default {
                 ingredients: ingredientsData,
             }
 
-            Spells.updateSpell(this.spell.id, data)
+            Spells.updateOne(this.spell.id, data)
             .then(v => {
                 this.$emit('updateSpell', v.data)
             })
