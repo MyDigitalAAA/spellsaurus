@@ -1,5 +1,34 @@
 <template>
     <div class="spell-list-wrapper">
+        <div class="mb-4">
+            <form>
+                <div class="form-group mb-2">
+                    <input type="text" class="form-control" v-model="search_text" name="search_terms" id="search_terms" placeholder="Rechercher l'arcane">
+                </div>
+                <div class="mb-3">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="search_term" id="search_fields_name" value="search_fields_name">
+                        <label class="form-check-label" for="search_fields_name">Nom</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="search_term" id="search_fields_description" value="search_fields_description" checked>
+                        <label class="form-check-label" for="search_fields_description">Description</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="search_term" id="search_fields_schools" value="search_fields_schools" disabled>
+                        <label class="form-check-label" for="search_fields_schools">École(s)</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="search_term" id="search_fields_ingredients" value="search_fields_ingredients" disabled>
+                        <label class="form-check-label" for="search_fields_ingredients">Ingrédients</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="search_term" id="search_fields_variables" value="search_fields_variables" disabled>
+                        <label class="form-check-label" for="search_fields_variables">Variables</label>
+                    </div>
+                </div>
+            </form>
+        </div>
         <button type="button" class="btn font-display font-weight-bold btn-lg btn-outline-dark btn-block shadow-sm mb-4" @click="showAdd">
             <i class="mad">add</i>
             <span>Ajouter un sort</span>
@@ -64,6 +93,7 @@ export default {
             current_edit_spell: {},
             currentIndex: 1,
             adding_spell: false,
+            search_text: "",
         }
     },
     computed: {
@@ -127,9 +157,10 @@ export default {
             this.adding_spell = false
         },
         addSpell(e) {
-            Spells.getSpell(e.id)
+            Spells.getOne(e.id)
             .then(v => {
-                this.spells.unshift(v.data)
+                let spells = this.computedSpells
+                spells.unshift(v.data)
             })
             .then(() => {
                 this.adding_spell = false
