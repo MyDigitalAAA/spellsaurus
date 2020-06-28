@@ -39,7 +39,7 @@
             <div
                 class="row spells-list"
                 v-masonry
-                transition-duration=".5s"
+                transition-duration="1s"
                 item-selector=".spell-card">
                     <spell-card
                         class="spell-card"
@@ -131,7 +131,7 @@ export default {
         },
         scroll() {
             window.onscroll = () => {
-                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+                if (((window.innerHeight + window.scrollY) - document.body.offsetHeight) >= -1) {
                     Spells.getPage(this.currentIndex)
                     .then(v => {
                         this.loading = true
@@ -160,6 +160,7 @@ export default {
         cancelAdd() {
             this.adding_spell = false
         },
+        // Receives events to update the data
         addSpell(e) {
             Spells.getOne(e.id)
             .then(v => {

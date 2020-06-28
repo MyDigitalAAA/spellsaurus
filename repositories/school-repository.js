@@ -60,7 +60,7 @@ class SchoolRepository {
             })
             .catch(err => {
                 console.log(err)
-                reject(new HttpError(500, "Couldn't get school"))
+                reject(new HttpError(500, "Couldn't get spells from school"))
             })
         })
     }
