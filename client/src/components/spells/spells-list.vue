@@ -62,6 +62,11 @@
                 @cancelAdd="cancelAdd"
                 @addSpell="addSpell"/>
         </div>
+        <div
+            v-else
+            class="loader-wrapper">
+            <loader/>
+        </div>
     </div>
 </template>
 
@@ -74,7 +79,6 @@ import AddSpellCard from "./add-spell-card"
 // API
 import { RepositoryFactory } from "~/api/repositories"
 const Spells = RepositoryFactory.get('spells')
-// const Schools = RepositoryFactory.get('schools')
 
 export default {
     name: 'spellslist',
@@ -184,5 +188,8 @@ export default {
 </script>
 
 <style lang="scss">
-
+.loader-wrapper {
+    margin-top: 3rem;
+    text-align: center;
+}
 </style>

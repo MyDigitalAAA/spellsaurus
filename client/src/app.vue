@@ -1,28 +1,14 @@
 <template>
     <div id="srs">
-
         <header>
-            <navigation/>
+            <navbar/>
         </header>
-        
         <router-view/>
-
     </div>
 </template>
 
 <script>
-
-import navbar from "./components/global/navbar/navbar";
-
 export default {
-  name: 'app',
-  components: {
-    'navigation': navbar
-  }
+  name: 'app'
 }
-
 </script>
-
-<style lang="scss">
-
-</style>
