@@ -8,5 +8,8 @@ export default {
     },
     getOne(id) {
         return api.get(`${resource}/${id}`)
+    },
+    getSpellsFromOne(id) {
+        return api.get(`${resource}/${id}/spells`)
     }
 }

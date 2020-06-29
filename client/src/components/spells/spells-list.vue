@@ -79,6 +79,7 @@ import AddSpellCard from "./add-spell-card"
 // API
 import { RepositoryFactory } from "~/api/repositories"
 const Spells = RepositoryFactory.get('spells')
+const Schools = RepositoryFactory.get('schools')
 
 export default {
     name: 'spellslist',
@@ -107,10 +108,16 @@ export default {
     },
     beforeMount() {
         this.spells = this.computedSpells
-        this.getInitialSpells()
+        if (!this.school_id) {
+            this.getInitialSpells()
+        } else {
+            this.getInitialSchoolSpells()
+        }
     },
     mounted() {
-        this.scroll()
+        if (!this.school_id) {
+            this.scroll()
+        }
     },
     methods: {
         getInitialSpells() {
@@ -119,6 +126,22 @@ export default {
                 this.loading = true
                 let spells = this.computedSpells
                 spells.push(v.data)
+                this.spells = spells[0]
+            })
+            .then(() => {
+                this.currentIndex++
+                this.loading = false
+            })
+            .catch(err => {
+                console.log(err)
+            })
+        },
+        getInitialSchoolSpells() {
+            Schools.getSpellsFromOne(this.school_id)
+            .then(v => {
+                this.loading = true
+                let spells = this.computedSpells
+                spells.push(v.data.spells)
                 this.spells = spells[0]
             })
             .then(() => {
