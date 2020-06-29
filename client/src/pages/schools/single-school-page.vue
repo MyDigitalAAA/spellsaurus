@@ -30,7 +30,7 @@ export default {
     },
     methods: {
         async fetchSchool(id) {
-            const { data } = await Schools.getSchool(id)
+            const { data } = await Schools.getOne(id)
             return data
         },
         async computeSchool() {

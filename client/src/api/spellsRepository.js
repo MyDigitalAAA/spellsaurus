@@ -1,9 +1,7 @@
 import api from './api'
 
-// URL for spells
 const resource = "/spells"
 
-// CRUD methods for spells
 export default {
     getAll() {
         return api.get(`${resource}`)

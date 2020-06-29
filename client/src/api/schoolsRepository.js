@@ -1,17 +1,12 @@
 import api from './api'
 
-// URL for spells
 const resource = "/schools"
 
-// CRUD methods for spells
 export default {
-    getSchools() {
+    getOne() {
         return api.get(`${resource}`)
     },
-    getSchool(id) {
+    getAll(id) {
         return api.get(`${resource}/${id}`)
-    },
-    getSpellsFromSchool(id) {
-        return api.get(`${resource}/${id}/spells`)
     }
 }
