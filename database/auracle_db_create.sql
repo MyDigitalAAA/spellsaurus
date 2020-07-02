@@ -15,8 +15,11 @@ CREATE TABLE IF NOT EXISTS `role` (
 /* USERS */
 CREATE TABLE IF NOT EXISTS `user` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `uuid` VARCHAR(36) NOT NULL,
     `name` VARCHAR(255) NOT NULL DEFAULT "Disciple",
     `mail` VARCHAR(255) NOT NULL,
+    `avatar` VARCHAR(255),
+    `gender` VARCHAR(255),
     `password` VARCHAR(255) NOT NULL,
     `role_id` INT UNSIGNED NOT NULL DEFAULT 1,
     `verified` BOOLEAN DEFAULT false,
@@ -120,14 +123,14 @@ USE auracle;
 
 -- PERMISSIONS
 INSERT INTO `role` (name, description) VALUES
-('Visiteur', "Utilisateur normal, peut consulter les sorts."),
-('Scribe', "Gardiens des écrits, est capable de modifier et d'ajouter des sorts."),
-('Arcanologue', "Maîtres de l'arcane, ils ont le pouvoir et la responsabilité de juger les sortilèges récents et de les supprimer, ou valider."),
-('Augure', "Régents des grimoires, ils ont droit d'accès à l'intégralité des informations connues, et pouvoir absolu sur le savoir arcanique.");
+("Visiteur", "Utilisateur normal, peut consulter les sorts."),
+("Scribe", "Gardiens des écrits, les scribes sont capables de modifier et d'ajouter des sortilèges."),
+("Arcanologue", "Maîtres de l'arcane, ils ont le pouvoir et la responsabilité de juger les sortilèges récents et de les supprimer, ou valider."),
+("Augure", "Régents des grimoires, ils ont droit d'accès à l'intégralité des informations connues, et pouvoir absolu sur le savoir arcanique.");
 
 -- USERS
-INSERT INTO `user` (name, mail, password, role_id) VALUES
-('Izàc Tymos', 'tymos@ambrose.edu', 'root', 4);
+INSERT INTO `user` (uuid, name, mail, password, role_id) VALUES
+("6af978f0-96ed-11e8-bb38-37f5ae311cf6", "Izàc Tymos", "tymos@ambrose.edu", "root", 4);
 
 -- META SCHOOLS
 INSERT INTO `meta_school` (name, description) VALUES

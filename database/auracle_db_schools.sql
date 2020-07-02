@@ -1,3 +1,5 @@
+USE auracle;
+
 /* Insertions de masses */
 DELIMITER $$
 CREATE PROCEDURE insertIntoSchoolRange(IN delimiter_start INT, IN delimiter_end INT, IN id_school INT)
