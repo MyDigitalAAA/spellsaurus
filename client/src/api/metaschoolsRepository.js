@@ -3,10 +3,10 @@ import api from './api'
 const resource = "/meta_schools"
 
 export default {
-    getMetaSchools() {
+    getAll() {
         return api.get(`${resource}`)
     },
-    getMetaSchool(id) {
+    getOne(id) {
         return api.get(`${resource}/${id}`)
     },
 }

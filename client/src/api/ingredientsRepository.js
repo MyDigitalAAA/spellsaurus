@@ -3,10 +3,10 @@ import api from './api'
 const resource = "/ingredients"
 
 export default {
-    getIngredients() {
+    getAll() {
         return api.get(`${resource}`)
     },
-    getIngredient(id) {
+    getOne(id) {
         return api.get(`${resource}/${id}`)
     },
 }

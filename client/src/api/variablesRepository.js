@@ -3,10 +3,10 @@ import api from './api'
 const resource = "/variables"
 
 export default {
-    getVariables() {
+    getAll() {
         return api.get(`${resource}`)
     },
-    getVariable(id) {
+    getOne(id) {
         return api.get(`${resource}/${id}`)
     },
 }
