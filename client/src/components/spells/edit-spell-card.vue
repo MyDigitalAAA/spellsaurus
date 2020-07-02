@@ -132,9 +132,9 @@ export default {
     },
     created() {
         // Gets all relevant info for multiple selects
-        let fetchSchools = Schools.getSchools()
-        let fetchVariables = Variables.getVariables()
-        let fetchIngredients = Ingredients.getIngredients()
+        let fetchSchools = Schools.getAll()
+        let fetchVariables = Variables.getAll()
+        let fetchIngredients = Ingredients.getAll()
 
         Promise.all([fetchSchools, fetchVariables, fetchIngredients])
         .then(v => {
