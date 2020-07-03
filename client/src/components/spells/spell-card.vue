@@ -5,7 +5,7 @@
         <div class="spellcard bg-white p-4 rounded text-dark shadow" style="border-left-width:4px;border-left-style:solid;">
 
             <div :title="spell.name" class="h3 font-display font-weight-bold text-wrap word-break" style="line-height:100%;">
-                <a class="text-decoration-none" href="#">{{spell.name}}</a>
+                <router-link :to="`/sorts/${spell.id}`" class="text-decoration-none">{{spell.name}}</router-link>
             </div>
 
             <div>
@@ -14,7 +14,7 @@
                 <div class="text-muted d-inline-block">
                     <span v-for="(school,index) in spell.schools" :key="index">
                         <span v-if="index!=0">, </span>
-                        <a :href="'/school/'+school.id" class="text-secondary">{{school.name}}</a>
+                        <router-link :to="`ecoles/${school.id}`" class="text-secondary">{{school.name}}</router-link>
                     </span>
                 </div>
             </div>
