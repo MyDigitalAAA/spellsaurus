@@ -33,13 +33,12 @@ class UserRepository {
                 resolve(v.toJSON({ omitPivot: true }))
             })
             .catch(err => {
-                console.log(err)
                 reject(new HttpError(500, "Couldn't get users"))
             })
         })
     }
 
-    getOneFromUUID(uuid) {
+    getOneByUUID(uuid) {
         return new Promise((resolve, reject) => {
             model.forge()
             .where({ 'uuid' : uuid })
@@ -48,8 +47,33 @@ class UserRepository {
                 resolve(v.toJSON({ omitPivot: true }))
             })
             .catch(err => {
-                console.log(err)
                 reject(new HttpError(500, "Couldn't get user"))
+            })
+        })
+    }
+
+    getOneByEmail(mail) {
+        return new Promise((resolve, reject) => {
+            model.forge()
+            .where({ 'mail': mail})
+            .fetch()
+            .then(v => {
+                resolve(v.toJSON({ omitPivot: true }))
+            })
+            .catch(err => {
+                reject(new HttpError(500, "Couldn't get user"))
+            })
+        })
+    }
+
+    checkIfEmailAvailable(mail) {
+        return new Promise((resolve, reject) => {
+            this.getOneByEmail(mail)
+            .then(() => {
+                reject(false)
+            })
+            .catch(() => {
+                resolve(true)
             })
         })
     }
@@ -67,22 +91,32 @@ class UserRepository {
                 let hash = await bcrypt.hash(u.password, 10)
                 let uuid = uuidv4()
 
-                // Needs to account for duplicate emails
-                bookshelf.transaction(t => {
-                    return model.forge({
-                        'uuid': uuid,
-                        'name': u.name,
-                        'mail': u.mail,
-                        'password': hash,
+                this.checkIfEmailAvailable(u.mail)
+                .then(() => {
+                    bookshelf.transaction(t => {
+                        return model.forge({
+                            'uuid': uuid,
+                            'name': u.name,
+                            'mail': u.mail,
+                            'password': hash,
+                        })
+                        .save(null, {
+                            transacting: t
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        })
                     })
-                    .save(null, {
-                        transacting: t
+                    .then(v => {
+                        resolve(this.getOneByUUID(uuid))
                     })
                     .catch(err => {
-                        console.log(err)
+                        throw err
                     })
                 })
-
+                .catch(() => {
+                    reject(new HttpError(403, 'Email is already in use !'))
+                })
             }
         })
     }

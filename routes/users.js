@@ -39,15 +39,15 @@ router.get('/', async (req, res) => {
 
 
 // GET ONE FORM UUID ------------------
-const getUserFromUUID = (uuid) => {
-    return Users.getOneFromUUID(uuid)
+const getUserByUUID = (uuid) => {
+    return Users.getOneByUUID(uuid)
     .catch(err => {
         console.log(err)
         throw err
     })
 }
 router.get('/:uuid/', async (req, res) => {
-    getUserFromUUID(req.params.uuid)
+    getUserByUUID(req.params.uuid)
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
         res.end(JSON.stringify(v))
@@ -67,7 +67,6 @@ router.get('/:uuid/', async (req, res) => {
 const addUser = (u) => {
     return Users.addOne(u)
     .catch(err => {
-        console.log(err)
         throw err
     })
 }

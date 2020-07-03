@@ -128,10 +128,6 @@ INSERT INTO `role` (name, description) VALUES
 ("Arcanologue", "Maîtres de l'arcane, ils ont le pouvoir et la responsabilité de juger les sortilèges récents et de les supprimer, ou valider."),
 ("Augure", "Régents des grimoires, ils ont droit d'accès à l'intégralité des informations connues, et pouvoir absolu sur le savoir arcanique.");
 
--- USERS
-INSERT INTO `user` (uuid, name, mail, password, role_id) VALUES
-("6af978f0-96ed-11e8-bb38-37f5ae311cf6", "Izàc Tymos", "tymos@ambrose.edu", "root", 4);
-
 -- META SCHOOLS
 INSERT INTO `meta_school` (name, description) VALUES
 ('Magies blanches', 'Magies disciplinant les arts de soins et de lumières.'),
