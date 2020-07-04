@@ -63,6 +63,30 @@ router.get('/:uuid/', async (req, res) => {
 })
 
 
+// LOG A USER ------------------
+const logUser = (mail, password) => {
+    return Users.logUser(mail, password)
+    .catch(err => {
+        console.log(err)
+        throw err
+    })
+}
+router.post('/login', async (req, res) => {
+    logUser(req.body.mail, req.body.password)
+    .then(v => {
+        res.setHeader('Content-Type', 'application/json;charset=utf-8')
+        res.end(JSON.stringify(v))
+    })
+    .catch(err => {
+        res.status(err.code).send(JSON.stringify(
+            {
+                "error": err.message,
+                "code": err.code
+            })
+        )
+    })
+})
+
 // CREATE ONE ------------------
 const addUser = (u) => {
     return Users.addOne(u)

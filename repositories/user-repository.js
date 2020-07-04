@@ -52,28 +52,16 @@ class UserRepository {
         })
     }
 
-    getOneByEmail(mail) {
+    getOneByEmail(mail, full) {
         return new Promise((resolve, reject) => {
             model.forge()
-            .where({ 'mail': mail})
+            .where({ 'mail': mail })
             .fetch()
             .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+                resolve(v.toJSON({ omitPivot: true, visibility: !full }))
             })
             .catch(err => {
                 reject(new HttpError(500, "Couldn't get user"))
-            })
-        })
-    }
-
-    checkIfEmailAvailable(mail) {
-        return new Promise((resolve, reject) => {
-            this.getOneByEmail(mail)
-            .then(() => {
-                reject(false)
-            })
-            .catch(() => {
-                resolve(true)
             })
         })
     }
@@ -104,11 +92,21 @@ class UserRepository {
                             transacting: t
                         })
                         .catch(err => {
-                            console.log(err)
+                            throw err
                         })
                     })
-                    .then(v => {
-                        resolve(this.getOneByUUID(uuid))
+                    .then(() => {
+                        return this.getOneByUUID(uuid)
+                    })
+                    .then(newUser => {
+                        resolve({
+                            "message": "Account successfully created !",
+                            "data": {
+                                "uuid": newUser.uuid,
+                                "name": newUser.name,
+                                "mail": newUser.mail,
+                            },
+                        })
                     })
                     .catch(err => {
                         throw err
@@ -118,6 +116,46 @@ class UserRepository {
                     reject(new HttpError(403, 'Email is already in use !'))
                 })
             }
+        })
+    }
+
+    // Log user with an email address and a password
+    logUser(mail, password) {
+        return new Promise((resolve, reject) => {
+            this.getOneByEmail(mail, true)
+            .then(async fetchedUser => {
+                let match = await bcrypt.compare(password, fetchedUser.password)
+                if (match) {
+                    resolve({
+                        "message": "User successfully logged in !",
+                        "logged?": true,
+                        "data": {
+                            "uuid": fetchedUser.uuid
+                        },
+                    })
+                } else {
+                    resolve({
+                        "message": "The email and passwords don't match",
+                        "logged?": false,
+                    })
+                }
+            })
+            .catch(err => {
+                reject(err)
+            })
+        })
+    }
+
+    // Check if one user already has that email
+    checkIfEmailAvailable(mail) {
+        return new Promise((resolve, reject) => {
+            this.getOneByEmail(mail, false)
+            .then(() => {
+                reject(false)
+            })
+            .catch(() => {
+                resolve(true)
+            })
         })
     }
 }
