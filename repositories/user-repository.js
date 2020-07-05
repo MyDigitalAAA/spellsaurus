@@ -17,9 +17,6 @@ v.addSchema(UserValidation, "/UserValidation")
 const isXSSAttempt = require('../functions').isXSSAttempt
 const isEmptyObject = require('../functions').isEmptyObject
 
-// Error handling
-const { HttpError } = require('../validations/Errors')
-
 class UserRepository {
 
     constructor() {
@@ -32,22 +29,28 @@ class UserRepository {
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }))
             })
-            .catch(err => {
-                reject(new HttpError(500, "Couldn't get users"))
+            .catch(() => {
+                reject({
+                    "message": "Database error, couldn't get all users.",
+                    "code": 500
+                })
             })
         })
     }
 
-    getOneByUUID(uuid) {
+    getOneByUUID(uuid, full) {
         return new Promise((resolve, reject) => {
             model.forge()
             .where({ 'uuid' : uuid })
             .fetch()
             .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+                resolve(v.toJSON({ omitPivot: true, visibility: !full }))
             })
             .catch(err => {
-                reject(new HttpError(500, "Couldn't get user"))
+                reject({
+                    "message": "User with this UUID was not found.",
+                    "code": 404
+                })
             })
         })
     }
@@ -60,8 +63,11 @@ class UserRepository {
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true, visibility: !full }))
             })
-            .catch(err => {
-                reject(new HttpError(500, "Couldn't get user"))
+            .catch(() => {
+                reject({
+                    "message": "User with this email was not found.",
+                    "code": 404
+                })
             })
         })
     }
@@ -70,11 +76,20 @@ class UserRepository {
         return new Promise(async (resolve, reject) => {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
             if (isEmptyObject(u)) {
-                reject(new HttpError(403, "Error: User cannot be nothing !"))
+                reject({
+                    "message":  "Request body cannot be empty.",
+                    "code": 403
+                })
             } else if (!v.validate(u, UserValidation).valid) {
-                reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(u, UserValidation).errors))
+                reject({
+                    "message":  "Schema is not valid - " + v.validate(u, UserValidation).errors,
+                    "code": 403
+                })
             } else if (isXSSAttempt(u.name) || isXSSAttempt(u.password) || isXSSAttempt(u.mail)) {
-                reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
+                reject({
+                    "message": "Injection attempt detected, aborting the request.",
+                    "code": 403
+                })
             } else {
                 let hash = await bcrypt.hash(u.password, 10)
                 let uuid = uuidv4()
@@ -96,24 +111,23 @@ class UserRepository {
                         })
                     })
                     .then(() => {
-                        return this.getOneByUUID(uuid)
+                        return this.getOneByUUID(uuid, false)
                     })
                     .then(newUser => {
                         resolve({
                             "message": "Account successfully created !",
-                            "data": {
-                                "uuid": newUser.uuid,
-                                "name": newUser.name,
-                                "mail": newUser.mail,
-                            },
+                            "user": newUser,
                         })
                     })
                     .catch(err => {
-                        throw err
+                        resolve({
+                            "message": "An error has occured while creating your account.",
+                            "code": 500,
+                        })
                     })
                 })
-                .catch(() => {
-                    reject(new HttpError(403, 'Email is already in use !'))
+                .catch(err => {
+                    reject(err)
                 })
             }
         })
@@ -124,19 +138,19 @@ class UserRepository {
         return new Promise((resolve, reject) => {
             this.getOneByEmail(mail, true)
             .then(async fetchedUser => {
+
                 let match = await bcrypt.compare(password, fetchedUser.password)
+                delete fetchedUser.id
+                delete fetchedUser.password
+
                 if (match) {
                     resolve({
                         "message": "User successfully logged in !",
-                        "logged?": true,
-                        "data": {
-                            "uuid": fetchedUser.uuid
-                        },
+                        "user": fetchedUser,
                     })
                 } else {
-                    resolve({
-                        "message": "The email and passwords don't match",
-                        "logged?": false,
+                    reject({
+                        "message": "The email and passwords don't match.",
                     })
                 }
             })
@@ -151,7 +165,10 @@ class UserRepository {
         return new Promise((resolve, reject) => {
             this.getOneByEmail(mail, false)
             .then(() => {
-                reject(false)
+                reject({
+                    "message": "Email is already in use !",
+                    "code": 403
+                })
             })
             .catch(() => {
                 resolve(true)
