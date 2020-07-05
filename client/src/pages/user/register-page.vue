@@ -1,14 +1,14 @@
 <template>
     <div class="container-fluid">
         <section class="fullpage">
-            <div class="title font-display mb-3">Connexion</div>
+            <div class="title font-display mb-3">Inscription</div>
         </section>
     </div>
 </template>
 
 <script>
 export default {
-    name: 'login-page',
+    name: 'register-page',
 }
 </script>
 

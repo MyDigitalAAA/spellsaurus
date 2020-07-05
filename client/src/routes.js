@@ -8,6 +8,7 @@ import Schools from "./pages/schools/schools-page"
 import SchoolSingle from "~/pages/schools/single-school-page"
 
 import Login from "~/pages/user/login-page"
+import Register from "~/pages/user/register-page"
 
 // Routes
 const routes = [
@@ -31,6 +32,9 @@ const routes = [
     },
     {
         path: '/connexion', component: Login,
+    },
+    {
+        path: '/inscription', component: Register,
     },
 ];
 
