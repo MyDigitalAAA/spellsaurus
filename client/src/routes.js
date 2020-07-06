@@ -1,3 +1,6 @@
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+
 // Pages
 import Index from "~/pages/index-page"
 
@@ -9,33 +12,74 @@ import SchoolSingle from "~/pages/schools/single-school-page"
 
 import Login from "~/pages/user/login-page"
 import Register from "~/pages/user/register-page"
+import Profile from "~/pages/user/profile-page"
 
 // Routes
 const routes = [
     {
-        path: "*", redirect: "/",
+        path: "*",
+        redirect: "/",
     },
     {
-        path: '/', component: Index,
+        path: '/',
+        component: Index,
     },
     {
-        path: '/sorts', component: Spells,
+        path: '/connexion',
+        component: Login,
     },
     {
-        path: '/sorts/:id', component: SpellSingle, props: true,
+        path: '/inscription',
+        component: Register,
     },
     {
-        path: '/ecoles', component: Schools,
+        path: '/sorts',
+        component: Spells,
     },
     {
-        path: '/ecoles/:id', component: SchoolSingle, props: true,
+        path: '/sorts/:id',
+        component: SpellSingle,
+        props: true,
     },
     {
-        path: '/connexion', component: Login,
+        path: '/ecoles',
+        component: Schools,
     },
     {
-        path: '/inscription', component: Register,
+        path: '/ecoles/:id',
+        component: SchoolSingle,
+        props: true,
     },
-];
+    {
+        path: '/profil',
+        component: Profile,
+        props: true,
+        meta: {
+            authGuard: true,
+        }
+    },
+]
 
-export default routes;
+const router = new VueRouter({
+    mode: 'history',
+    routes,
+    linkActiveClass: "",
+    linkExactActiveClass: "active",
+})
+
+router.beforeEach((to, from, next) => {
+    if (to.matched.some(record => record.meta.authGuard)) {
+        if (Vue.$cookies.get('loggedUser') == null) {
+            next({
+                path: '/connexion',
+                params: { nextUrl: to.fullPath }
+            })
+        } else {
+            next()
+        }
+    } else {
+        next()
+    }
+})
+
+export default router;

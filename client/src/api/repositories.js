@@ -3,6 +3,7 @@ import schoolsRepository from './schoolsRepository'
 import metaschoolsRepository from './metaschoolsRepository'
 import variablesRepository from './variablesRepository'
 import ingredientsRepository from './ingredientsRepository'
+import usersRepository from './usersRepository'
 
 // List of possible repositories
 const repositories = {
@@ -11,6 +12,7 @@ const repositories = {
     metaschools: metaschoolsRepository,
     variables: variablesRepository,
     ingredients: ingredientsRepository,
+    users: usersRepository,
 }
 
 // Usage : RepositoryFactoryInstance.get('reponame');

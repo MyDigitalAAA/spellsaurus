@@ -11,6 +11,7 @@
                 </li>
             </ul>
             <div class="navbar-nav">
+                <router-link :to="'/profil'" class="nav-link">Profil</router-link>
                 <router-link :to="'/inscription'" class="nav-link">S'inscrire</router-link>
                 <router-link :to="'/connexion'" class="nav-link">Se connecter</router-link>
             </div>

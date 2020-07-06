@@ -8,8 +8,12 @@ Globals.forEach(component => {
     Vue.component(component.name, component)
 });
 
-// Auth
+// Environment
 require('dotenv').config()
+
+// Cookies
+import VueCookies from 'vue-cookies'
+Vue.use(VueCookies)
 
 // Jquery
 import jquery from 'jquery'
@@ -26,7 +30,7 @@ import 'bootstrap/dist/js/bootstrap.js'
 import { BootstrapVue } from 'bootstrap-vue'
 Vue.use(BootstrapVue)
 
-import { VueMasonryPlugin } from 'vue-masonry';
+import { VueMasonryPlugin } from 'vue-masonry'
 Vue.use(VueMasonryPlugin)
 
 import clipboard from 'v-clipboard'
@@ -39,18 +43,12 @@ var filter = function(text, length, clamp){
     node.innerHTML = text;
     var content = node.textContent;
     return content.length > length ? content.slice(0, length) + clamp : content;
-};
-Vue.filter('truncate', filter);
+}
+Vue.filter('truncate', filter)
 
 // Router
-import routes from './routes'
+import router from './routes'
 Vue.use(VueRouter)
-const router = new VueRouter({
-    mode: 'history',
-    routes,
-    linkActiveClass: "",
-    linkExactActiveClass: "active",
-});
 
 // Mount Vue
 const app = new Vue({
