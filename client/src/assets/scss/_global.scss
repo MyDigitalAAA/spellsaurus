@@ -51,6 +51,11 @@ hr {
     border-top-color: rgba($black, .25);
 }
 
+// BOOTSTRAP
+.nav-link {
+    cursor: pointer;
+}
+
 // LAYOUTS
 .fullpage {
     min-height: calc(100vh - 56px);

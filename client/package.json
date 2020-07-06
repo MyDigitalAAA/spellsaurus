@@ -36,7 +36,8 @@
         "v-clipboard": "^2.2.3",
         "vue": "^2.6.11",
         "vue-cookies": "^1.7.0",
-        "vue-masonry": "^0.11.8"
+        "vue-masonry": "^0.11.8",
+        "vuex": "^3.5.1"
     },
     "devDependencies": {
         "@vue/cli-plugin-babel": "~4.2.0",

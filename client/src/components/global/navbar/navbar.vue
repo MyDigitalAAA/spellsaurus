@@ -10,9 +10,9 @@
                     <router-link :to="link.url" class="nav-link">{{ link.text }}</router-link>
                 </li>
             </ul>
-            <div class="navbar-nav" v-if="user">
+            <div class="navbar-nav" v-if="loggedIn">
                 <router-link :to="'/profil'" class="nav-link">Profil</router-link>
-                <router-link :to="'/deconnexion'" class="nav-link">Deconnexion</router-link>
+                <div @click="logoutUser()" class="nav-link">Deconnexion</div>
             </div>
             <div class="navbar-nav" v-else>
                 <router-link :to="'/inscription'" class="nav-link">S'inscrire</router-link>
@@ -27,7 +27,6 @@
         name: 'navbar',
         data() {
             return {
-                user: this.$cookies.get("U_"),
                 links: [
                     {
                         text: 'Sortilèges',
@@ -38,6 +37,20 @@
                         url: '/ecoles',
                     }
                 ]
+            }
+        },
+        computed: {
+            loggedIn() {
+                return this.$store.state.status.loggedIn;
+            }
+        },
+        methods: {
+            logoutUser() {
+                if (this.$cookies.get('U_') != null) {
+                    this.$cookies.remove('U_')
+                    this.$store.commit('logout')
+                    this.$router.push('/')
+                }
             }
         }
     }

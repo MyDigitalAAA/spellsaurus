@@ -52,9 +52,13 @@ export default {
                 "password": this.password
             })
             .then(v => {
-                this.$cookies.set("U_", v.data.user, 60 * 60 * 24 * 30)
+                let user = v.data.user
+                this.$cookies.set("U_", user, 60 * 60 * 24 * 30)
+                this.$store.commit('loginSucceed', user)
+                this.$router.push('/profil')
             })
             .catch(err => {
+                this.$store.commit('loginFailed')
                 console.log(err)
             })
         }
