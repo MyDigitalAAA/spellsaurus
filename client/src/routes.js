@@ -69,10 +69,10 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.authGuard)) {
-        if (Vue.$cookies.get('loggedUser') == null) {
+        if (Vue.$cookies.get('U_') == null) {
             next({
                 path: '/connexion',
-                params: { nextUrl: to.fullPath }
+                params: { nextUrl: to.fullPath },
             })
         } else {
             next()

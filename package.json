@@ -4,7 +4,8 @@
   "description": "API for Auracle database",
   "main": "index.js",
   "scripts": {
-    "test": "start"
+    "api": "node index.js",
+    "client": "cd client && npm run serve"
   },
   "repository": {
     "type": "git",

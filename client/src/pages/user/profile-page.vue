@@ -1,14 +1,17 @@
 <template>
-    <div class="container-fluid">
-        <section class="fullpage">
-            <div class="title font-display mb-3">Profil</div>
-        </section>
+    <div class="container-fluid p-4" id="spell-container">
+        <h1 class="display-3 font-display mb-3">{{ user.name }}</h1>
     </div>
 </template>
 
 <script>
 export default {
     name: 'profile-page',
+    data() {
+        return {
+            user: this.$cookies.get("U_"),
+        }
+    }
 }
 </script>
 

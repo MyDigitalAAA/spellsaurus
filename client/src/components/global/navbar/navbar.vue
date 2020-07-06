@@ -10,10 +10,13 @@
                     <router-link :to="link.url" class="nav-link">{{ link.text }}</router-link>
                 </li>
             </ul>
-            <div class="navbar-nav">
+            <div class="navbar-nav" v-if="user">
                 <router-link :to="'/profil'" class="nav-link">Profil</router-link>
+                <router-link :to="'/deconnexion'" class="nav-link">Deconnexion</router-link>
+            </div>
+            <div class="navbar-nav" v-else>
                 <router-link :to="'/inscription'" class="nav-link">S'inscrire</router-link>
-                <router-link :to="'/connexion'" class="nav-link">Se connecter</router-link>
+                <router-link :to="'/connexion'" class="nav-link">Connexion</router-link>
             </div>
         </div>
     </nav>
@@ -24,6 +27,7 @@
         name: 'navbar',
         data() {
             return {
+                user: this.$cookies.get("U_"),
                 links: [
                     {
                         text: 'Sortilèges',

@@ -52,8 +52,7 @@ export default {
                 "password": this.password
             })
             .then(v => {
-                let user = v.data
-                this.$cookies.set("loggedUser", user, 60 * 60 * 24 * 30)
+                this.$cookies.set("U_", v.data.user, 60 * 60 * 24 * 30)
             })
             .catch(err => {
                 console.log(err)
