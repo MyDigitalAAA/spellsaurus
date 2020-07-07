@@ -150,7 +150,7 @@ class UserRepository {
                     })
                 } else {
                     reject({
-                        "message": "The email and passwords don't match.",
+                        "message": "Les informations de connexion sont erronées.",
                     })
                 }
             })
@@ -166,7 +166,7 @@ class UserRepository {
             this.getOneByEmail(mail, false)
             .then(() => {
                 reject({
-                    "message": "Email is already in use !",
+                    "message": "L'email est déjà utilisé par un autre utilisateur.",
                     "code": 403
                 })
             })

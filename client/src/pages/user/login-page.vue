@@ -1,7 +1,7 @@
 <template>
     <div class="container-fluid">
-        <section class="fullpage">
-            <div>
+        <section class="d-flex justify-content-center align-items-center">
+            <main>
                 <div class="title font-display mb-3">Connexion</div>
                 <form @submit="logUser">
                     <div class="form-group">
@@ -24,9 +24,11 @@
                             class="form-control"
                             autocomplete="current-password">
                     </div>
-                    <button type="submit" class="btn btn-dark">Connexion</button>
+                    <button type="submit" class="btn btn-primary">Connexion</button>
+                    <router-link :to="'/inscription'" class="btn btn-dark">Inscription</router-link>
+                    <small class="form-text text-muted">Vous avez oublié votre mot de passe ? Cliquez-ici pour le changer !</small>
                 </form>
-            </div>
+            </main>
         </section>
     </div>
 </template>
@@ -42,11 +44,16 @@ export default {
         return {
             email: "",
             password: "",
+            submitted: false,
+            errors: {
+                login: ""
+            }
         }
     },
     methods: {
         async logUser(e) {
             e.preventDefault()
+
             Users.login({
                 "mail": this.email,
                 "password": this.password
@@ -57,9 +64,8 @@ export default {
                 this.$store.commit('loginSucceed', user)
                 this.$router.push('/profil')
             })
-            .catch(err => {
+            .catch(() => {
                 this.$store.commit('loginFailed')
-                console.log(err)
             })
         }
     }
@@ -67,9 +73,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.title {
-    font-size: 5rem;
-    font-weight: 700;
+section {
+    min-height: calc(100vh - 56px);
+    main {
+        width: 600px;
+        .title {
+            font-size: 5rem;
+            font-weight: 700;
+            text-align: center;
+        }
+    }
 }
 @media only screen and (max-width: 600px) {
     .title {

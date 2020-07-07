@@ -10,12 +10,11 @@
                     <router-link :to="link.url" class="nav-link">{{ link.text }}</router-link>
                 </li>
             </ul>
-            <div class="navbar-nav" v-if="loggedIn">
+            <div v-if="loggedIn" class="navbar-nav">
                 <router-link :to="'/profil'" class="nav-link">Profil</router-link>
                 <div @click="logoutUser()" class="nav-link">Deconnexion</div>
             </div>
-            <div class="navbar-nav" v-else>
-                <router-link :to="'/inscription'" class="nav-link">S'inscrire</router-link>
+            <div v-else class="navbar-nav">
                 <router-link :to="'/connexion'" class="nav-link">Connexion</router-link>
             </div>
         </div>

@@ -6,7 +6,7 @@ export default {
     login(data) {
         return api.post(`${resource}/login`, data)
     },
-    addOne(data) {
+    register(data) {
         return api.post(`${resource}`, data)
     },
 }

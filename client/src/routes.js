@@ -27,10 +27,16 @@ const routes = [
     {
         path: '/connexion',
         component: Login,
+        meta: {
+            antiAuthGuard: true
+        }
     },
     {
         path: '/inscription',
         component: Register,
+        meta: {
+            antiAuthGuard: true
+        }
     },
     {
         path: '/sorts',
