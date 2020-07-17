@@ -57,7 +57,7 @@
                         <span> = {{variable.description}}</span>
                     </span>
                 </div>
-                <footer class="text-right">
+                <footer v-if="user" class="text-right">
                     <a class="h5 text-secondary mr-1">
                         <i class="mad" @click="editSpell(spell)">edit</i>
                     </a>
@@ -86,7 +86,12 @@ export default {
         }
     },
     created() {
-        this.main_school = this.main_school.toLowerCase();
+        this.main_school = this.main_school.toLowerCase()
+    },
+    computed: {
+        user() {
+            return this.$store.state.user
+        }
     },
     methods: {
         editSpell(spell) {

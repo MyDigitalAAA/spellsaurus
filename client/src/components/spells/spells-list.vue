@@ -1,5 +1,6 @@
 <template>
     <div class="spell-list-wrapper">
+
         <div class="mb-4">
             <form>
                 <div class="form-group mb-2">
@@ -29,10 +30,17 @@
                 </div>
             </form>
         </div>
-        <button type="button" class="btn font-display font-weight-bold btn-lg btn-outline-dark btn-block shadow-sm mb-4" @click="showAdd">
+
+        <button
+            v-if="user"
+            @click="showAdd"
+            type="button"
+            class="btn font-display font-weight-bold btn-lg btn-outline-dark btn-block shadow-sm mb-4">
+
             <i class="mad">add</i>
             <span>Ajouter un sort</span>
         </button>
+
         <div
             v-if="computedSpells.length > 0"
             class="spell-list-wrapper">
@@ -104,6 +112,9 @@ export default {
     computed: {
         computedSpells() {
             return this.spells
+        },
+        user() {
+            return this.$store.state.user
         }
     },
     beforeMount() {

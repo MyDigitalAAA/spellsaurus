@@ -10,8 +10,8 @@
                     <router-link :to="link.url" class="nav-link">{{ link.text }}</router-link>
                 </li>
             </ul>
-            <div v-if="loggedIn" class="navbar-nav">
-                <router-link :to="'/profil'" class="nav-link">Profil</router-link>
+            <div v-if="user" class="navbar-nav">
+                <router-link :to="'/profil'" class="nav-link">{{ user.name }}</router-link>
                 <div @click="logoutUser()" class="nav-link">Deconnexion</div>
             </div>
             <div v-else class="navbar-nav">
@@ -39,8 +39,8 @@
             }
         },
         computed: {
-            loggedIn() {
-                return this.$store.state.status.loggedIn;
+            user() {
+                return this.$store.state.user
             }
         },
         methods: {

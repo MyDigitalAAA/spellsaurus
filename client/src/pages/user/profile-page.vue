@@ -1,17 +1,20 @@
 <template>
     <div class="container-fluid p-4" id="spell-container">
-        <h1 class="display-3 font-display mb-3">{{ user.name }}</h1>
+        <div class="display-3 font-display mb-3">
+            <span class="username">{{ user.name }}</span>
+            <span v-if="user.verified" class="verified"><i class="mad">check_circle</i></span>
+        </div>
     </div>
 </template>
 
 <script>
 export default {
     name: 'profile-page',
-    data() {
-        return {
-            user: this.$cookies.get("U_"),
+    computed: {
+        user() {
+            return this.$store.state.user
         }
-    }
+    },
 }
 </script>
 
