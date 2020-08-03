@@ -45,11 +45,9 @@
         },
         methods: {
             logoutUser() {
-                if (this.$cookies.get('U_') != null) {
-                    this.$cookies.remove('U_')
-                    this.$store.commit('logout')
-                    this.$router.push('/')
-                }
+                this.$cookies.remove('U_')
+                this.$store.commit('logout')
+                this.$router.push('/')
             }
         }
     }

@@ -42,7 +42,7 @@
         </button>
 
         <div
-            v-if="computedSpells.length > 0"
+            v-if="filteredSpells.length > 0"
             class="spell-list-wrapper">
             <div
                 class="row spells-list"
@@ -52,7 +52,7 @@
                     <spell-card
                         class="spell-card"
                         v-masonry-tile
-                        v-for="(spell) in computedSpells"
+                        v-for="(spell) in filteredSpells"
                         :key="spell.id"
                         :spell="spell"
                         @editSpell="editSpell"
@@ -110,7 +110,7 @@ export default {
         }
     },
     computed: {
-        computedSpells() {
+        filteredSpells() {
             return this.spells
         },
         user() {
@@ -118,7 +118,7 @@ export default {
         }
     },
     beforeMount() {
-        this.spells = this.computedSpells
+        this.spells = this.filteredSpells
         if (!this.school_id) {
             this.getInitialSpells()
         } else {
@@ -135,7 +135,7 @@ export default {
             Spells.getPage(this.currentIndex)
             .then(v => {
                 this.loading = true
-                let spells = this.computedSpells
+                let spells = this.filteredSpells
                 spells.push(v.data)
                 this.spells = spells[0]
             })
@@ -151,7 +151,7 @@ export default {
             Schools.getSpellsFromOne(this.school_id)
             .then(v => {
                 this.loading = true
-                let spells = this.computedSpells
+                let spells = this.filteredSpells
                 spells.push(v.data.spells)
                 this.spells = spells[0]
             })
@@ -169,7 +169,7 @@ export default {
                     Spells.getPage(this.currentIndex)
                     .then(v => {
                         this.loading = true
-                        let spells = this.computedSpells
+                        let spells = this.filteredSpells
                         for (let i = 0; i < v.data.length; i++) {
                             const element = v.data[i];
                             spells.push(element)
@@ -198,7 +198,7 @@ export default {
         addSpell(e) {
             Spells.getOne(e.id)
             .then(v => {
-                let spells = this.computedSpells
+                let spells = this.filteredSpells
                 spells.unshift(v.data)
             })
             .then(() => {
