@@ -14,15 +14,15 @@ const Spells = new SpellReposity();
 
 // ROUTES
 // GET ALL PUBLIC ------------------
-const getPublicSpells = () => {
-    return Spells.getAllPublic()
+const getPublicSpells = (name, description, level, charge, cost, ritual) => {
+    return Spells.getAllPublic(name, description, level, charge, cost, ritual)
     .catch(err => {
         console.log(err)
         throw err
     })
 }
-router.get('/', async (req, res) => {
-    getPublicSpells()
+router.get('//:name?/:description?/:level?/:charge?/:cost?/:ritual?/', async (req, res) => {
+    getPublicSpells(req.query.name, req.query.description, req.query.level, req.query.charge, req.query.cost, req.query.ritual)
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
         res.end(JSON.stringify(v))
@@ -38,15 +38,15 @@ router.get('/', async (req, res) => {
 })
 
 // GET ALL ------------------
-const getSpells = () => {
-    return Spells.getAll()
+const getSpells = (name, description, level, charge, cost, ritual) => {
+    return Spells.getAll(name, description, level, charge, cost, ritual)
     .catch(err => {
         console.log(err)
         throw err
     })
 }
-router.get('/private', async (req, res) => {
-    getSpells()
+router.get('/private/:name?/:description?/:level?/:charge?/:cost?/:ritual?/', async (req, res) => {
+    getSpells(req.query.name, req.query.description, req.query.level, req.query.charge, req.query.cost, req.query.ritual)
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
         res.end(JSON.stringify(v))
