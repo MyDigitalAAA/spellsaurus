@@ -1,14 +1,80 @@
 <template>
     <div class="spell-list-wrapper">
-        <button type="button" class="btn font-display font-weight-bold btn-lg btn-outline-dark btn-block shadow-sm mb-4" @click="showAdd">
+
+        <div class="mb-4">
+            <form>
+                <div class="form-group mb-2">
+                    <input type="text" class="form-control" v-model="search_text" name="search_terms" id="search_terms" placeholder="Rechercher l'arcane">
+                </div>
+                <div class="mb-3">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="search_term" id="search_fields_name" value="search_fields_name">
+                        <label class="form-check-label" for="search_fields_name">Nom</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="search_term" id="search_fields_description" value="search_fields_description" checked>
+                        <label class="form-check-label" for="search_fields_description">Description</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="search_term" id="search_fields_schools" value="search_fields_schools" disabled>
+                        <label class="form-check-label" for="search_fields_schools">École(s)</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="search_term" id="search_fields_ingredients" value="search_fields_ingredients" disabled>
+                        <label class="form-check-label" for="search_fields_ingredients">Ingrédients</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="search_term" id="search_fields_variables" value="search_fields_variables" disabled>
+                        <label class="form-check-label" for="search_fields_variables">Variables</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <button
+            v-if="user"
+            @click="showAdd"
+            type="button"
+            class="btn font-display font-weight-bold btn-lg btn-outline-dark btn-block shadow-sm mb-4">
+
             <i class="mad">add</i>
             <span>Ajouter un sort</span>
         </button>
-        <div v-masonry transition-duration=".5s" item-selector=".spell-card" class="row spells-list">
-            <spell-card v-masonry-tile class="spell-card" v-for="(spell) in spells" :key="spell.id" v-bind:spell="spell" @editSpell="editSpell" @deleteSpell="deleteSpell"/>
+
+        <div
+            v-if="filteredSpells.length > 0"
+            class="spell-list-wrapper">
+            <div
+                class="row spells-list"
+                v-masonry
+                transition-duration="1s"
+                item-selector=".spell-card">
+                    <spell-card
+                        class="spell-card"
+                        v-masonry-tile
+                        v-for="(spell) in filteredSpells"
+                        :key="spell.id"
+                        :spell="spell"
+                        @editSpell="editSpell"
+                        @deleteSpell="deleteSpell" />
+            </div>
+
+            <edit-spell-card
+                v-if="Object.keys(current_edit_spell).length > 0"
+                :spell="current_edit_spell"
+                @editSpell="editSpell"
+                @updateSpell="updateSpell"/>
+
+            <add-spell-card
+                v-if="adding_spell"
+                @cancelAdd="cancelAdd"
+                @addSpell="addSpell"/>
         </div>
-        <edit-spell-card v-if="Object.keys(current_edit_spell).length > 0" v-bind:spell="current_edit_spell" @editSpell="editSpell" @updateSpell="updateSpell"/>
-        <add-spell-card v-if="adding_spell" @cancelAdd="cancelAdd" @addSpell="addSpell"/>
+        <div
+            v-else
+            class="loader-wrapper">
+            <loader/>
+        </div>
     </div>
 </template>
 
@@ -31,34 +97,93 @@ export default {
         'add-spell-card': AddSpellCard,
     },
     props: {
-        school_id: String
+        school_id: String,
     },
     data() {
         return {
-            loading: false,
             spells: [],
+            loading: false,
             current_edit_spell: {},
+            currentIndex: 1,
             adding_spell: false,
+            search_text: "",
         }
     },
-    created() {
-        this.computeSpells()
+    computed: {
+        filteredSpells() {
+            return this.spells
+        },
+        user() {
+            return this.$store.state.user
+        }
+    },
+    beforeMount() {
+        this.spells = this.filteredSpells
+        if (!this.school_id) {
+            this.getInitialSpells()
+        } else {
+            this.getInitialSchoolSpells()
+        }
+    },
+    mounted() {
+        if (!this.school_id) {
+            this.scroll()
+        }
     },
     methods: {
-        async fetchSpells() {
-            if (!this.school_id) {
-                const { data } = await Spells.getSpells()
-                return data
-            } else {
-                const { data } = await Schools.getSpellsFromSchool(this.school_id)
-                return data.spells
-            }
+        getInitialSpells() {
+            Spells.getPage(this.currentIndex)
+            .then(v => {
+                this.loading = true
+                let spells = this.filteredSpells
+                spells.push(v.data)
+                this.spells = spells[0]
+            })
+            .then(() => {
+                this.currentIndex++
+                this.loading = false
+            })
+            .catch(err => {
+                console.log(err)
+            })
         },
-        async computeSpells() {
-            this.loading = true
-            const displaySpells = await this.fetchSpells()
-            this.loading = false
-            this.spells = displaySpells
+        getInitialSchoolSpells() {
+            Schools.getSpellsFromOne(this.school_id)
+            .then(v => {
+                this.loading = true
+                let spells = this.filteredSpells
+                spells.push(v.data.spells)
+                this.spells = spells[0]
+            })
+            .then(() => {
+                this.currentIndex++
+                this.loading = false
+            })
+            .catch(err => {
+                console.log(err)
+            })
+        },
+        scroll() {
+            window.onscroll = () => {
+                if (((window.innerHeight + window.scrollY) - document.body.offsetHeight) >= -1) {
+                    Spells.getPage(this.currentIndex)
+                    .then(v => {
+                        this.loading = true
+                        let spells = this.filteredSpells
+                        for (let i = 0; i < v.data.length; i++) {
+                            const element = v.data[i];
+                            spells.push(element)
+                        }
+                    })
+                    .then(() => {
+                        this.currentIndex++
+                        this.loading = false
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+                }
+            }
         },
         editSpell(e) {
             this.current_edit_spell = e;
@@ -69,10 +194,12 @@ export default {
         cancelAdd() {
             this.adding_spell = false
         },
+        // Receives events to update the data
         addSpell(e) {
-            Spells.getSpell(e.id)
+            Spells.getOne(e.id)
             .then(v => {
-                this.spells.unshift(v.data)
+                let spells = this.filteredSpells
+                spells.unshift(v.data)
             })
             .then(() => {
                 this.adding_spell = false
@@ -96,5 +223,8 @@ export default {
 </script>
 
 <style lang="scss">
-
+.loader-wrapper {
+    margin-top: 3rem;
+    text-align: center;
+}
 </style>

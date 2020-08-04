@@ -6,16 +6,11 @@ let router = express.Router()
 
 // Connection
 const connection = require('../database/bookshelf')
-const db = connection.db
+const functions = require('../functions')
 
 // Repository
 const MetaSchoolRepository = require('../repositories/meta-school-repository');
 const MetaSchools = new MetaSchoolRepository();
-
-const regexInt = RegExp(/^[1-9]\d*$/)
-
-// Error handling
-const { HttpError } = require('../validations/Errors')
 
 // ROUTES
 // GET ALL ------------------
@@ -67,25 +62,7 @@ router.get('/:id/', async (req, res) => {
     })
 })
 
-
-// Param validation for ID
-// (check if id is int) (could be refactored)
-router.param('id', (req, res, next, id) => {
-    try {
-        if (regexInt.test(id)) {
-            next()
-        } else {
-            throw new Error;
-        }
-    } catch (err) {
-        err = new HttpError(403, 'Provided ID must be an integer and not zero')
-        res.status(err.code).send(JSON.stringify(
-            {
-                "error": err.message,
-                "code": err.code
-            })
-        )
-    }
-})
+// Param validations
+router.param('id', functions.paramIntCheck)
 
 module.exports = router

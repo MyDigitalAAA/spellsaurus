@@ -1,28 +1,21 @@
 <template>
     <div id="srs">
-
         <header>
-            <navigation/>
+            <navbar/>
         </header>
-        
         <router-view/>
-
     </div>
 </template>
 
 <script>
-
-import navbar from "./components/global/navbar/navbar";
-
 export default {
-  name: 'app',
-  components: {
-    'navigation': navbar
-  }
+  name: 'app'
 }
-
 </script>
 
-<style lang="scss">
-
+<style lang="scss" scoped>
+#srs {
+    min-height: 100vh;
+    background: url('./assets/images/bg1.png') center center fixed repeat;
+}
 </style>

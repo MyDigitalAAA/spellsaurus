@@ -10,7 +10,8 @@ const SchoolValidation = require("../validations/SchoolValidation")
 v.addSchema(SchoolValidation, "/SchoolValidation")
 
 // Validations
-const regexXSS = RegExp(/<[^>]*script/)
+const isXSSAttempt = require('../functions').isXSSAttempt
+const isEmptyObject = require('../functions').isEmptyObject
 
 // Error handling
 const { HttpError } = require('../validations/Errors')
@@ -59,7 +60,7 @@ class SchoolRepository {
             })
             .catch(err => {
                 console.log(err)
-                reject(new HttpError(500, "Couldn't get school"))
+                reject(new HttpError(500, "Couldn't get spells from school"))
             })
         })
     }
@@ -67,11 +68,11 @@ class SchoolRepository {
     addOne(s) {
         return new Promise((resolve, reject) => {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
-            if (this.isEmptyObject(s)) {
+            if (isEmptyObject(s)) {
                 reject(new HttpError(403, "Error: School cannot be nothing !"))
             } else if (!v.validate(s, SchoolValidation).valid) {
                 reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(s, SchoolValidation).errors))
-            } else if (this.isXSSAttempt(s.name) || this.isXSSAttempt(s.description)) {
+            } else if (isXSSAttempt(s.name) || isXSSAttempt(s.description)) {
                 reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
             } else {
                 bookshelf.transaction(t => {
@@ -103,11 +104,11 @@ class SchoolRepository {
     updateOne(id, s) {
         return new Promise((resolve, reject) => {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
-            if (this.isEmptyObject(s)) {
+            if (isEmptyObject(s)) {
                 reject(new HttpError(403, "Error: School cannot be nothing !"))
             } else if (!v.validate(s, SchoolValidation).valid) {
                 reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(s, SchoolValidation).errors))
-            } else if (this.isXSSAttempt(s.name) || this.isXSSAttempt(s.description)) {
+            } else if (isXSSAttempt(s.name) || isXSSAttempt(s.description)) {
                 reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
             } else {
                 model.forge({id: id})
@@ -165,24 +166,6 @@ class SchoolRepository {
                 reject(new HttpError(404, "Couldn't get school"))
             })
         })
-    }
-
-    // Check if object is null
-    isEmptyObject(obj) {
-        if (Object.keys(obj).length === 0 && obj.constructor === Object) {
-            return true
-        } else {
-            return false
-        }
-    }
-
-    // Check if script injection attempt
-    isXSSAttempt(string) {
-        if (regexXSS.test(string)) {
-            return true
-        } else {
-            return false
-        }
     }
 }
 

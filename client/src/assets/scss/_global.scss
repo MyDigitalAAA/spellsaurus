@@ -1,6 +1,5 @@
 // Other global files
 @import '_variables';
-@import '_mixins';
 @import '_fonts';
 
 // RESETS
@@ -13,27 +12,19 @@ html {
     color: $primary--base;
     -ms-text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
-}
-
-html *,
-html *::before,
-html *::after {
-    box-sizing: border-box;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    outline: none;
+    * {
+        margin: 0;
+        padding: 0;
+        outline: none;
+        box-sizing: border-box;
+        &:before, &:after {
+            box-sizing: border-box;
+        }
+    }
 }
 
 @at-root {
     @-ms-viewport { width: device-width; }
-}
-
-a {
-    text-decoration: none;
-    color: inherit;
 }
 
 ul {
@@ -44,10 +35,28 @@ var {
     font-style: normal;
 }
 
-// MISC.
 hr {
     border: none;
     border-top-style: solid;
     border-top-width: 1px;
     border-top-color: rgba($black, .25);
+}
+
+// BOOTSTRAP
+.nav-link {
+    cursor: pointer;
+}
+.btn {
+    margin-right: 5px;
+}
+
+.word-break{ word-wrap: break-word; }
+.cursor-pointer{ cursor: pointer; }
+
+// LAYOUTS
+.fullpage {
+    min-height: calc(100vh - 56px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

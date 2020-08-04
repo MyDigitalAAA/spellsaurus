@@ -103,9 +103,9 @@ export default {
     },
     created() {
         // Gets all relevant info for multiple selects
-        let fetchSchools = Schools.getSchools()
-        let fetchVariables = Variables.getVariables()
-        let fetchIngredients = Ingredients.getIngredients()
+        let fetchSchools = Schools.getAll()
+        let fetchVariables = Variables.getAll()
+        let fetchIngredients = Ingredients.getAll()
 
         Promise.all([fetchSchools, fetchVariables, fetchIngredients])
         .then(v => {
@@ -143,9 +143,7 @@ export default {
                 ingredients: ingredientsData,
             }
 
-            console.log(data)
-
-            Spells.addSpell(data)
+            Spells.addOne(data)
             .then(v => {
                 this.$emit('addSpell', v.data)
                 this.$refs["add_spell_modal"].hide()

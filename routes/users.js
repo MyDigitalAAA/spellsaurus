@@ -12,11 +12,6 @@ const db = connection.db
 const UserRepository = require('../repositories/user-repository');
 const Users = new UserRepository();
 
-const regexInt = RegExp(/^[1-9]\d*$/)
-
-// Error handling
-const { HttpError } = require('../validations/Errors')
-
 // ROUTES
 // GET ALL ------------------
 const getUsers = () => {
@@ -43,16 +38,16 @@ router.get('/', async (req, res) => {
 })
 
 
-// GET ONE ------------------
-const getUser = (id) => {
-    return Users.getOne(id)
+// GET ONE FORM UUID ------------------
+const getUserByUUID = (uuid) => {
+    return Users.getOneByUUID(uuid)
     .catch(err => {
         console.log(err)
         throw err
     })
 }
-router.get('/:id/', async (req, res) => {
-    getUser(req.params.id)
+router.get('/:uuid/', async (req, res) => {
+    getUserByUUID(req.params.uuid)
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
         res.end(JSON.stringify(v))
@@ -68,35 +63,34 @@ router.get('/:id/', async (req, res) => {
 })
 
 
+// LOG A USER ------------------
+const logUser = (mail, password) => {
+    return Users.logUser(mail, password)
+    .catch(err => {
+        console.log(err)
+        throw err
+    })
+}
+router.post('/login', async (req, res) => {
+    logUser(req.body.mail, req.body.password)
+    .then(v => {
+        res.setHeader('Content-Type', 'application/json;charset=utf-8')
+        res.end(JSON.stringify(v))
+    })
+    .catch(err => {
+        res.status(err.code).send(JSON.stringify(
+            {
+                "error": err.message,
+                "code": err.code
+            })
+        )
+    })
+})
+
 // CREATE ONE ------------------
 const addUser = (u) => {
-    return new Promise(async (resolve, reject) => {
-
-        // Checks if body exists and if the model fits, and throws errors if it doesn't
-        if (isEmptyObject(u)) {
-            reject(new HttpError(403, "Error: User cannot be empty !"))
-        } else if (!v.validate(u, User).valid) {
-            reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(u, User).errors))
-        } else if (isXSSAttempt(u.name) || isXSSAttempt(u.mail) || isXSSAttempt(u.password)) {
-            reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
-        } else {
-            let query = `INSERT INTO user (name, mail, password) VALUES (${db.escape(u.name)}, ${db.escape(u.mail)}, ${db.escape(u.password)})`
-
-            db.query(query, async (err, result) => {
-                if (err) {
-                    reject(new HttpError(500, 'Database error'))
-                } else {
-                    console.log(`Inserted "${u.name}" with ID ${result.insertId}, affecting ${result.affectedRows} row(s)`)
-                    const new_user_id = result.insertId
-                    let response = {
-                        "message": `User created successfully !`,
-                        "inserted_id": `${new_user_id}`
-                    }
-                    resolve(response)
-                }
-            })
-        }
-    }).catch(err => {
+    return Users.addOne(u)
+    .catch(err => {
         throw err
     })
 }
@@ -114,79 +108,6 @@ router.post('/', async (req, res) => {
             })
         )
     })
-})
-
-
-// DELETE ONE ------------------
-const deleteUser = (id) => {
-    return new Promise(async (resolve, reject) => {
-
-        // Check if user exists
-        let old_user = await getUser(id)
-        .catch(() => {
-            reject((new HttpError(404, 'No user matching this ID')))
-        })
-
-        console.log(old_user)
-
-        let deleteUserData = () => {
-            return new Promise((resolve, reject) => {
-                let delete_user_query = `DELETE FROM user WHERE id = ${db.escape(id)}`
-                db.query(delete_user_query, async (err, result) => {
-                    if (err) {
-                        console.log(err)
-                        reject(new HttpError(500, 'Spell deletion failed'))
-                    } else {
-                        let response = {
-                            "message": "User delete successully",
-                            "deleted_id": `${id}`
-                        }
-                        resolve(response)
-                    }
-                })
-            })
-        }
-
-        deleteUserData()
-        .then(v => {
-            resolve(v)
-        })
-        .catch(err => {
-            reject(err)
-        })
-    })
-    .catch(err => {
-        throw err
-    })
-}
-router.delete('/:id/', async (req, res) => {
-    deleteUser(req.params.id)
-    .then(v => {
-        res.setHeader('Content-Type', 'application/json;charset=utf-8')
-        res.send(JSON.stringify(v))
-    })
-    .catch(err => {
-        res.status(err.code).send(JSON.stringify(
-            {
-                "error": err.message,
-                "code": err.code
-            })
-        )
-    })
-})
-
-// Param validation for single user
-// (check if id is int) (could be refactored)
-router.param('id', (req, res, next, id) => {
-    try {
-        if (regexInt.test(id)) {
-            next()
-        } else {
-            new Error
-        }
-    } catch (err) {
-        throw new HttpError(403, 'Provided ID must be an integer and not zero')
-    }
 })
 
 module.exports = router

@@ -6,18 +6,37 @@ let router = express.Router()
 
 // Connection
 const connection = require('../database/bookshelf')
-const db = connection.db
+const functions = require('../functions')
 
 // Repository
 const SpellReposity = require('../repositories/spell-repository');
 const Spells = new SpellReposity();
 
-const regexInt = RegExp(/^[1-9]\d*$/)
-
-// Error handling
-const { HttpError } = require('../validations/Errors')
-
 // ROUTES
+// GET ALL PUBLIC ------------------
+const getPublicSpells = () => {
+    return Spells.getAllPublic()
+    .catch(err => {
+        console.log(err)
+        throw err
+    })
+}
+router.get('/', async (req, res) => {
+    getPublicSpells()
+    .then(v => {
+        res.setHeader('Content-Type', 'application/json;charset=utf-8')
+        res.end(JSON.stringify(v))
+    })
+    .catch(err => {
+        res.status(err.code).send(JSON.stringify(
+            {
+                "error": err.message,
+                "code": err.code
+            })
+        )
+    })
+})
+
 // GET ALL ------------------
 const getSpells = () => {
     return Spells.getAll()
@@ -26,7 +45,7 @@ const getSpells = () => {
         throw err
     })
 }
-router.get('/', async (req, res) => {
+router.get('/private', async (req, res) => {
     getSpells()
     .then(v => {
         res.setHeader('Content-Type', 'application/json;charset=utf-8')
@@ -42,6 +61,29 @@ router.get('/', async (req, res) => {
     })
 })
 
+// GET SOME ------------------
+const getSomeSpells = (page) => {
+    return Spells.getPage(page)
+    .catch(err => {
+        console.log(err)
+        throw err
+    })
+}
+router.get('/page/:page', async (req, res) => {
+    getSomeSpells(req.params.page)
+    .then(v => {
+        res.setHeader('Content-Type', 'application/json;charset=utf-8')
+        res.end(JSON.stringify(v))
+    })
+    .catch(err => {
+        res.status(err.code).send(JSON.stringify(
+            {
+                "error": err.message,
+                "code": err.code
+            })
+        )
+    })
+})
 
 // GET ONE ------------------
 const getSpell = (id) => {
@@ -142,25 +184,8 @@ router.delete('/:id/', async (req, res) => {
     })
 })
 
-
-// Param validation for ID
-    // (check if id is int) (could be refactored)
-router.param('id', (req, res, next, id) => {
-    try {
-        if (regexInt.test(id)) {
-            next()
-        } else {
-            throw new Error;
-        }
-    } catch (err) {
-        err = new HttpError(403, 'Provided ID must be an integer and not zero')
-        res.status(err.code).send(JSON.stringify(
-            {
-                "error": err.message,
-                "code": err.code
-            })
-        )
-    }
-})
+// Param validations
+router.param('id', functions.paramIntCheck)
+router.param('page', functions.paramIntCheck)
 
 module.exports = router

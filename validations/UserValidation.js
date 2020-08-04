@@ -5,7 +5,6 @@ const User = {
         "name": { "type": "string" },
         "mail": { "type": "string" },
         "password": { "type": "string" },
-        "banned": { "type": "boolean"},
     },
     "required": ["name", "password", "mail"]
 }

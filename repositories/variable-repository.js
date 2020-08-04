@@ -10,7 +10,8 @@ const VariableValidation = require("../validations/VariableValidation")
 v.addSchema(VariableValidation, "/VariableValidation")
 
 // Validations
-const regexXSS = RegExp(/<[^>]*script/)
+const isXSSAttempt = require('../functions').isXSSAttempt
+const isEmptyObject = require('../functions').isEmptyObject
 
 // Error handling
 const { HttpError } = require('../validations/Errors')
@@ -67,11 +68,11 @@ class VariableRepository {
     addOne(vr) {
         return new Promise((resolve, reject) => {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
-            if (this.isEmptyObject(vr)) {
+            if (isEmptyObject(vr)) {
                 reject(new HttpError(403, "Error: Variable cannot be nothing !"))
             } else if (!v.validate(vr, VariableValidation).valid) {
                 reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(vr, VariableValidation).errors))
-            } else if (this.isXSSAttempt(vr.description)) {
+            } else if (isXSSAttempt(vr.description)) {
                 reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
             } else {
                 bookshelf.transaction(t => {
@@ -101,11 +102,11 @@ class VariableRepository {
     updateOne(id, vr) {
         return new Promise((resolve, reject) => {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
-            if (this.isEmptyObject(vr)) {
+            if (isEmptyObject(vr)) {
                 reject(new HttpError(403, "Error: Variable cannot be nothing !"))
             } else if (!v.validate(vr, VariableValidation).valid) {
                 reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(vr, VariableValidation).errors))
-            } else if (this.isXSSAttempt(vr.description)) {
+            } else if (isXSSAttempt(vr.description)) {
                 reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
             } else {
                 model.forge({id: id})
@@ -161,24 +162,6 @@ class VariableRepository {
                 reject(new HttpError(404, "Couldn't get variable"))
             })
         })
-    }
-
-    // Check if object is null
-    isEmptyObject(obj) {
-        if (Object.keys(obj).length === 0 && obj.constructor === Object) {
-            return true
-        } else {
-            return false
-        }
-    }
-
-    // Check if script injection attempt
-    isXSSAttempt(string) {
-        if (regexXSS.test(string)) {
-            return true
-        } else {
-            return false
-        }
     }
 }
 
