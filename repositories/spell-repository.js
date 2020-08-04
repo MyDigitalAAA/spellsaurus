@@ -21,10 +21,21 @@ class SpellRepository {
     constructor() {
     }
 
-    getAll() {
+    getAll(name, description, level, charge, cost, ritual) {
         return new Promise((resolve, reject) => {
-            model.forge()
-            .fetchAll({ withRelated: ['schools.meta_schools', 'variables', 'ingredients'] })
+
+            let query = model.forge()
+
+            console.log("science")
+
+            if (name) { query.where('name', 'like', `%${name}%`) }
+            if (description) { query.where('description', 'like', `%${description}%`) }
+            if (level) { query.where({ 'level' : level }) }
+            if (charge) { query.where({ 'charge' : charge }) }
+            if (cost) { query.where({ 'cost' : cost }) }
+            if (ritual) { query.where({ 'is_ritual' : ritual }) }
+
+            query.fetchAll({ withRelated: ['schools.meta_schools', 'variables', 'ingredients'] })
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }))
             })
@@ -35,11 +46,20 @@ class SpellRepository {
         })
     }
 
-    getAllPublic() {
+    getAllPublic(name, description, level, charge, cost, ritual) {
         return new Promise((resolve, reject) => {
-            model.forge()
+
+            let query = model.forge()
             .where({ 'public' : 1 })
-            .fetchAll({ withRelated: ['schools.meta_schools', 'variables', 'ingredients'] })
+
+            if (name) { query.where('name', 'like', `%${name}%`) }
+            if (description) { query.where('description', 'like', `%${description}%`) }
+            if (level) { query.where({ 'level' : level }) }
+            if (charge) { query.where({ 'charge' : charge }) }
+            if (cost) { query.where({ 'cost' : cost }) }
+            if (ritual) { query.where({ 'is_ritual' : ritual }) }
+
+            query.fetchAll({ withRelated: ['schools.meta_schools', 'variables', 'ingredients'] })
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }))
             })
