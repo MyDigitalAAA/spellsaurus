@@ -26,8 +26,6 @@ class SpellRepository {
 
             let query = model.forge()
 
-            console.log("science")
-
             if (name) { query.where('name', 'like', `%${name}%`) }
             if (description) { query.where('description', 'like', `%${description}%`) }
             if (level) { query.where({ 'level' : level }) }
