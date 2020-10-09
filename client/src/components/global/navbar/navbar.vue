@@ -34,6 +34,10 @@
                     {
                         text: 'Écoles',
                         url: '/ecoles',
+                    },
+                    {
+                        text: 'Chronologie',
+                        url: '/ages',
                     }
                 ]
             }

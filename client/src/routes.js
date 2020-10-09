@@ -10,6 +10,8 @@ import SpellSingle from "~/pages/spells/single-spell-page"
 import Schools from "./pages/schools/schools-page"
 import SchoolSingle from "~/pages/schools/single-school-page"
 
+import Timeline from "./pages/timelines/timeline-page"
+
 import Login from "~/pages/user/login-page"
 import Register from "~/pages/user/register-page"
 import Profile from "~/pages/user/profile-page"
@@ -55,6 +57,10 @@ const routes = [
         path: '/ecoles/:id',
         component: SchoolSingle,
         props: true,
+    },
+    {
+        path: '/ages',
+        component: Timeline,
     },
     {
         path: '/profil',
