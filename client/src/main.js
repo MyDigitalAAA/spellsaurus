@@ -23,7 +23,10 @@ window.$ = jquery
 window.jquery = jquery
 
 // Styles
+// Fonts
+import './assets/scss/_fonts.scss'
 import './assets/scss/_global.scss'
+
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import 'bootstrap/dist/js/bootstrap.js'
