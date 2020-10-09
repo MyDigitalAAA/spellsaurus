@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-sm fixed-top navbar-dark bg-dark">
         <router-link :to="'/'" class="navbar-brand font-display font-weight-700">Auracle</router-link>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>

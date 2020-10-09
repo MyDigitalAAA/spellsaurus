@@ -15,6 +15,7 @@ export default {
 
 <style lang="scss" scoped>
 #srs {
+    padding-top: 50px;
     min-height: 100vh;
     background: url('./assets/images/bg1.png') center center fixed repeat;
 }
