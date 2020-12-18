@@ -1,8 +1,9 @@
 // Core
 import Vue from 'vue'
-import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import App from './app.vue'
+
+import store from './store'
 
 import Globals from './global-components.js'
 Globals.forEach(component => {
@@ -54,38 +55,6 @@ Vue.filter('truncate', filter)
 // Router
 import router from './routes'
 Vue.use(VueRouter)
-
-// Store
-Vue.use(Vuex)
-let user = Vue.$cookies.get('U_')
-
-const store = new Vuex.Store({
-    state: user ?
-        { status: { loggedIn: true }, user }
-        : { status: { loggedIn: false }, user: null },
-    mutations: {
-        loginSucceed (state, user) {
-            state.status.loggedIn = true
-            state.user = user
-        },
-        loginFail (state) {
-            state.status.loggedIn = false
-            state.user = null
-        },
-        logout(state) {
-            state.status.loggedIn = false;
-            state.user = null;
-        },
-        registerSucceed (state, user) {
-            state.status.loggedIn = true
-            state.user = user
-        },
-        registerFail (state) {
-            state.status.loggedIn = false
-            state.user = null
-        },
-    }
-})
 
 // Mount Vue
 const app = new Vue({

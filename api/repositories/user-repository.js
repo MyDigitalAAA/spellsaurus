@@ -116,7 +116,8 @@ class UserRepository {
                     .then(newUser => {
                         resolve({
                             "message": "Account successfully created !",
-                            "user": newUser,
+                            "code": 201,
+                            "token": newUser.uuid,
                         })
                     })
                     .catch(err => {
@@ -146,11 +147,13 @@ class UserRepository {
                 if (match) {
                     resolve({
                         "message": "User successfully logged in !",
-                        "user": fetchedUser,
+                        "code": 200,
+                        "token": fetchedUser.uuid,
                     })
                 } else {
                     reject({
-                        "message": "Les informations de connexion sont erronées.",
+                        "message": "Authentification attempt failed ; credentials are incorrect.",
+                        "code": 400,
                     })
                 }
             })
@@ -166,7 +169,7 @@ class UserRepository {
             this.getOneByEmail(mail, false)
             .then(() => {
                 reject({
-                    "message": "L'email est déjà utilisé par un autre utilisateur.",
+                    "message": "This email is already linked to an account.",
                     "code": 403
                 })
             })
