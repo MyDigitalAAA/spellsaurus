@@ -61,6 +61,7 @@
         
         <template v-slot:modal-footer="{ close }">
             <button type="button" class="btn btn-danger" data-dismiss="modal" @click="close()">Fermer</button>
+            <!-- <input type="button" class="btn btn-success" value="Enregistrer comme nouveau" @click="cloneSpell()"> -->
             <input type="submit" class="btn btn-primary" value="Enregistrer" form="update-spell">
         </template>
     </b-modal>

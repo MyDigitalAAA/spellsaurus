@@ -1,18 +1,12 @@
 <template>
-  <div class="container-fluid p-4" id="spell-container">
-    <h1 class="display-3 font-display mb-3">Chronologie</h1>
-    <timeline/>
-  </div>
+    <div class="container-fluid p-4" id="spell-container">
+        <h1 class="display-3 font-display mb-3">Chronologie</h1>
+    </div>
 </template>
 
 <script>
-import Timeline from '~/components/timeline/timeline'
-
 export default {
-  name: 'timeline-page',
-  components: {
-    'timeline': Timeline,
-  }
+    name: 'timeline-page',
 }
 </script>
 

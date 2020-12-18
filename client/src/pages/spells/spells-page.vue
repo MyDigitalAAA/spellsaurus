@@ -6,14 +6,14 @@
 </template>
 
 <script>
-import SpellsList from "~/components/spells/spells-list"
+  import SpellsList from "~/components/spells/spells-list"
 
-export default {
-  name: 'spells-page',
-  components: {
-    'spell-list': SpellsList,
+  export default {
+    name: 'spells-page',
+    components: {
+        'spell-list': SpellsList,
+    }
   }
-}
 </script>
 
 <style lang="scss"></style>
