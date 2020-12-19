@@ -117,7 +117,7 @@ class UserRepository {
                         resolve({
                             "message": "Account successfully created !",
                             "code": 201,
-                            "token": newUser.uuid,
+                            "user": newUser,
                         })
                     })
                     .catch(err => {
@@ -148,7 +148,7 @@ class UserRepository {
                     resolve({
                         "message": "User successfully logged in !",
                         "code": 200,
-                        "token": fetchedUser.uuid,
+                        "user": fetchedUser,
                     })
                 } else {
                     reject({

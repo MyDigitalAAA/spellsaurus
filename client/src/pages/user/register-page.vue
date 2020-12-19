@@ -17,7 +17,7 @@
                             placeholder="John Doe"
                             autocomplete="username">
                         <small v-if="!errors.name" class="form-text text-muted">Vous pouvez changer votre pseudo à tout moment.</small>
-                        <small v-if="errors.name" class="text-danger">{{ errors.name }}</small>
+                        <small v-if="errors.name" class="form-text text-danger">{{ errors.name }}</small>
                     </div>
                     <div class="form-group">
                         <label for="email">Addresse mail</label>
@@ -32,7 +32,7 @@
                             placeholder="john.doe@gmail.com"
                             autocomplete="email">
                         <small v-if="!errors.email" class="form-text text-muted">Votre addresse mail nous servira principalement à vous identifier et à retrouver votre compte si vous oubliez vos informations de connexion.</small>
-                        <small v-if="errors.email" class="text-danger">{{ errors.email }}</small>
+                        <small v-if="errors.email" class="form-text text-danger">{{ errors.email }}</small>
                     </div>
                     <div class="form-group">
                         <label for="password">Mot de passe</label>
@@ -58,8 +58,8 @@
                             class="form-control"
                             autocomplete="password-verification">
                         <small v-if="!errors.password && !errors.password_check" class="form-text text-muted">Votre mot de passe doit idéalement contenir des symboles ainsi que des lettres et des chiffres.</small>
-                        <small v-if="errors.password" class="text-danger">{{ errors.password }}</small>
-                        <small v-if="errors.password_check" class="text-danger">{{ errors.password_check }}</small>
+                        <small v-if="errors.password" class="form-text text-danger">{{ errors.password }}</small>
+                        <small v-if="errors.password_check" class="form-text text-danger">{{ errors.password_check }}</small>
                     </div>
                     <button type="submit" class="btn btn-dark">Inscription</button>
                 </form>

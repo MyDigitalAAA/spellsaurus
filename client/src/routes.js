@@ -1,5 +1,6 @@
 import VueRouter from 'vue-router'
-import store from './store'
+
+// import store from './store'
 
 // Pages
 import Index from "~/pages/index-page"
@@ -79,23 +80,23 @@ const router = new VueRouter({
   linkExactActiveClass: "active",
 })
 
-router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.loginFilter)) {
-    if (store.getters.getUserToken) {
-      next({
-        path: '/',
-      });
-    }
-    next();
-  } else if (to.matched.some(record => record.meta.logoutFilter)) {
-    if (!store.getters.getUserToken) {
-      next({
-        path: '/connexion',
-      });
-    }
-    next();
-  }
-  next();
-})
+// router.beforeEach((to, from, next) => {
+//   if (to.matched.some(record => record.meta.loginFilter)) {
+//     if (store.getters.getUserProfile) {
+//       next({
+//         path: '/',
+//       });
+//     }
+//     next();
+//   } else if (to.matched.some(record => record.meta.logoutFilter)) {
+//     if (!store.getters.getUserProfile) {
+//       next({
+//         path: '/connexion',
+//       });
+//     }
+//     next();
+//   }
+//   next();
+// })
 
 export default router;

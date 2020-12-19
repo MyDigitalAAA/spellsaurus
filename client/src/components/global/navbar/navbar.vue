@@ -10,8 +10,8 @@
           <router-link :to="link.url" class="nav-link">{{ link.text }}</router-link>
         </li>
       </ul>
-      <div v-if="user_token" class="navbar-nav">
-        <router-link :to="'/profil'" class="nav-link">{{ user_token }}</router-link>
+      <div v-if="user" class="navbar-nav">
+        <router-link :to="'/profil'" class="nav-link">{{ user.name }}</router-link>
         <div @click="logoutUser()" class="nav-link">Deconnexion</div>
       </div>
       <div v-else class="navbar-nav">
@@ -44,8 +44,8 @@ export default {
     }
   },
   computed: {
-    user_token() {
-      return this.$store.getters.getUserToken
+    user() {
+      return this.$store.getters.getUserProfile
     }
   },
   methods: {

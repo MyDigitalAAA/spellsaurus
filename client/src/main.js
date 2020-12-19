@@ -3,15 +3,15 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './app.vue'
 
+// Environment
+require('dotenv').config()
+
 import store from './store'
 
 import Globals from './global-components.js'
 Globals.forEach(component => {
     Vue.component(component.name, component)
 });
-
-// Environment
-require('dotenv').config()
 
 // Cookies
 import VueCookies from 'vue-cookies'
