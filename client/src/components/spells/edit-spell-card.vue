@@ -13,7 +13,7 @@
         </template>
 
         <template v-slot:default>
-            <form id="update-spell" @submit="updateSpell">
+            <form id="update-spell" ref="update-spell" @submit="updateSpell">
                 <div class="form-group">
                     <label for="spell_name" class="font-weight-bold col-form-label">Nom&nbsp;:</label>
                     <input type="text" class="form-control" name="spell_name" id="spell_name" placeholder="(256 caractères max.)" v-model="spell.name">
@@ -60,7 +60,7 @@
         </template>
         
         <template v-slot:modal-footer="{ close }">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal" @click="close()">Fermer</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal" @click="close()">Fermer</button>
             <input type="submit" class="btn btn-primary" value="Enregistrer" form="update-spell">
         </template>
     </b-modal>
@@ -131,9 +131,9 @@ export default {
     },
     created() {
         // Gets all relevant info for multiple selects
-        let fetchSchools = Schools.getSchools()
-        let fetchVariables = Variables.getVariables()
-        let fetchIngredients = Ingredients.getIngredients()
+        let fetchSchools = Schools.getAll()
+        let fetchVariables = Variables.getAll()
+        let fetchIngredients = Ingredients.getAll()
 
         Promise.all([fetchSchools, fetchVariables, fetchIngredients])
         .then(v => {
@@ -160,6 +160,8 @@ export default {
         }
     },
     methods: {
+        cloneSpell() {
+        },
         updateSpell(e) {
             e.preventDefault()
 
@@ -179,7 +181,7 @@ export default {
                 ingredients: ingredientsData,
             }
 
-            Spells.updateSpell(this.spell.id, data)
+            Spells.updateOne(this.spell.id, data)
             .then(v => {
                 this.$emit('updateSpell', v.data)
             })

@@ -5,7 +5,7 @@
         <div class="spellcard bg-white p-4 rounded text-dark shadow" style="border-left-width:4px;border-left-style:solid;">
 
             <div :title="spell.name" class="h3 font-display font-weight-bold text-wrap word-break" style="line-height:100%;">
-                <a class="text-decoration-none" href="#">{{spell.name}}</a>
+                <router-link :to="`/sorts/${spell.id}`" class="text-decoration-none">{{spell.name}}</router-link>
             </div>
 
             <div>
@@ -14,13 +14,17 @@
                 <div class="text-muted d-inline-block">
                     <span v-for="(school,index) in spell.schools" :key="index">
                         <span v-if="index!=0">, </span>
-                        <a :href="'/school/'+school.id" class="text-secondary">{{school.name}}</a>
+                        <router-link :to="`ecoles/${school.id}`" class="text-secondary">{{school.name}}</router-link>
                     </span>
                 </div>
             </div>
 
             <div v-if="spell.charge!=0" class="small font-weight-bold">
                 <span>Charge {{spell.charge}} tour(s)</span>
+            </div>
+
+            <div v-if="spell.is_ritual" class="small font-weight-bold">
+                <span>Rituel</span>
             </div>
 
             <div v-if="spell.ingredients.length>0" class="small">
@@ -37,8 +41,8 @@
                 v-b-tooltip.click
                 placement="bottom"
                 title="Description copiée !"
-                class="small text-muted font-italic mt-2">
-                <span>{{spell.description}}</span>
+                class="small text-muted mt-2">
+                <span style="white-space: pre-wrap;">{{spell.description}}</span>
             </div>
 
             <div class="mt-2">
@@ -53,7 +57,7 @@
                         <span> = {{variable.description}}</span>
                     </span>
                 </div>
-                <footer class="text-right">
+                <footer v-if="user" class="text-right">
                     <a class="h5 text-secondary mr-1">
                         <i class="mad" @click="editSpell(spell)">edit</i>
                     </a>
@@ -82,14 +86,19 @@ export default {
         }
     },
     created() {
-        this.main_school = this.main_school.toLowerCase();
+        this.main_school = this.main_school.toLowerCase()
+    },
+    computed: {
+        user() {
+            return this.$store.state.user
+        }
     },
     methods: {
         editSpell(spell) {
             this.$emit('editSpell', spell)
         },
         deleteSpell(spell) {
-            Spells.deleteSpell(this.spell.id)
+            Spells.deleteOne(this.spell.id)
             .then(() => {
                 this.$emit('deleteSpell', spell)
             })
@@ -122,6 +131,7 @@ export default {
     @include colorschool(hydromancie,#3f68c7);
     @include colorschool(electromancie,#cd9731);
     @include colorschool(terramancie,#7e5540);
+    @include colorschool(sidéromancie,#58697a);
     @include colorschool(caelomancie,#a8a8a8);
     @include colorschool(légimancie,#5dbabd);
     @include colorschool(illusiomancie,#9f63a1);

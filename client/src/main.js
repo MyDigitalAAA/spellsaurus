@@ -1,59 +1,96 @@
 // Core
 import Vue from 'vue'
+import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import App from './app.vue'
 
-// Auth
+import Globals from './global-components.js'
+Globals.forEach(component => {
+    Vue.component(component.name, component)
+});
+
+// Environment
 require('dotenv').config()
 
-// Router
-import routes from './routes'
-Vue.use(VueRouter)
+// Cookies
+import VueCookies from 'vue-cookies'
+Vue.use(VueCookies)
+Vue.$cookies.config('30d','','')
 
 // Jquery
 import jquery from 'jquery'
 window.$ = jquery
 window.jquery = jquery
 
-// Global styles
+// Styles
+// Fonts
+import './assets/scss/_fonts.scss'
 import './assets/scss/_global.scss'
 
-// Bootstrap
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import 'bootstrap/dist/js/bootstrap.js'
+
+// Plugins
 import { BootstrapVue } from 'bootstrap-vue'
 Vue.use(BootstrapVue)
 
-// Masonry
-import { VueMasonryPlugin } from 'vue-masonry';
+import { VueMasonryPlugin } from 'vue-masonry'
 Vue.use(VueMasonryPlugin)
 
-// Clipboard plugin
 import clipboard from 'v-clipboard'
 Vue.use(clipboard)
 
-Vue.config.productionTip = false
-
+// FUNCTIONS
 var filter = function(text, length, clamp){
     clamp = clamp || '...';
     var node = document.createElement('div');
     node.innerHTML = text;
     var content = node.textContent;
     return content.length > length ? content.slice(0, length) + clamp : content;
-};
-Vue.filter('truncate', filter);
+}
+Vue.filter('truncate', filter)
 
-const router = new VueRouter({
-    mode: 'history',
-    routes,
-    linkActiveClass: "",
-    linkExactActiveClass: "active",
-});
+// Router
+import router from './routes'
+Vue.use(VueRouter)
 
-const app = new Vue({
-    render: h => h(App),
-    router
+// Store
+Vue.use(Vuex)
+let user = Vue.$cookies.get('U_')
+
+const store = new Vuex.Store({
+    state: user ?
+        { status: { loggedIn: true }, user }
+        : { status: { loggedIn: false }, user: null },
+    mutations: {
+        loginSucceed (state, user) {
+            state.status.loggedIn = true
+            state.user = user
+        },
+        loginFail (state) {
+            state.status.loggedIn = false
+            state.user = null
+        },
+        logout(state) {
+            state.status.loggedIn = false;
+            state.user = null;
+        },
+        registerSucceed (state, user) {
+            state.status.loggedIn = true
+            state.user = user
+        },
+        registerFail (state) {
+            state.status.loggedIn = false
+            state.user = null
+        },
+    }
 })
 
+// Mount Vue
+const app = new Vue({
+    render: h => h(App),
+    router,
+    store: store
+})
 app.$mount('#srs')

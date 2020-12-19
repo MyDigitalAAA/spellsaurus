@@ -1,9 +1,9 @@
 <template>
-  <div class="container-fluid p-4" id="spell-container">
-    <h1 class="display-3 font-display mb-3">{{ school.name }}</h1>
-    <p>{{ school.description }}</p>
-    <spell-list :school_id="id"/>
-  </div>
+    <div class="container-fluid p-4" id="spell-container">
+        <h1 class="display-3 font-display mb-3">{{ school.name }}</h1>
+        <p>{{ school.description }}</p>
+        <spell-list :school_id="id"/>
+    </div>
 </template>
 
 <script>
@@ -14,7 +14,7 @@ import { RepositoryFactory } from "~/api/repositories"
 const Schools = RepositoryFactory.get('schools')
 
 export default {
-    name: 'single-school',
+    name: 'single-school-page',
     components: {
         'spell-list': SpellsList,
     },
@@ -30,7 +30,7 @@ export default {
     },
     methods: {
         async fetchSchool(id) {
-            const { data } = await Schools.getSchool(id)
+            const { data } = await Schools.getOne(id)
             return data
         },
         async computeSchool() {

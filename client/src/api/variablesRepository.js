@@ -1,14 +1,12 @@
 import api from './api'
 
-// URL for spells
 const resource = "/variables"
 
-// CRUD methods for spells
 export default {
-    getVariables() {
+    getAll() {
         return api.get(`${resource}`)
     },
-    getVariable(id) {
+    getOne(id) {
         return api.get(`${resource}/${id}`)
     },
 }
