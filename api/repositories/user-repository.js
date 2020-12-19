@@ -166,17 +166,35 @@ class UserRepository {
     // Check if one user already has that email
     checkIfEmailAvailable(mail) {
         return new Promise((resolve, reject) => {
+
+            if (!this.validateEmail(mail)) {
+                reject({
+                    "message": "The request isn't a correctly formed email.",
+                    "code": 400,
+                })
+            }
+
             this.getOneByEmail(mail, false)
             .then(() => {
-                reject({
+                resolve({
                     "message": "This email is already linked to an account.",
-                    "code": 403
+                    "available": false,
+                    "code": 200
                 })
             })
             .catch(() => {
-                resolve(true)
+                resolve({
+                  "message": "This email is available.",
+                  "available": true,
+                  "code": 200
+              })
             })
         })
+    }
+
+    validateEmail(email) {
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
     }
 }
 
