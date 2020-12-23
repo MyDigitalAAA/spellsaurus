@@ -31,7 +31,7 @@ class UserRepository {
             })
             .catch(() => {
                 reject({
-                    "message": "Database error, couldn't get all users.",
+                    "message": "Erreur de base de données, les utilisateurs n'ont pas pu être récupérés.",
                     "code": 500
                 })
             })
@@ -48,7 +48,7 @@ class UserRepository {
             })
             .catch(err => {
                 reject({
-                    "message": "User with this UUID was not found.",
+                    "message": "L'utilisateur avec cet UUID n'a pas été trouvé.",
                     "code": 404
                 })
             })
@@ -65,7 +65,7 @@ class UserRepository {
             })
             .catch(() => {
                 reject({
-                    "message": "User with this email was not found.",
+                    "message": "L'utilisateur avec cet email n'a pas été trouvé.",
                     "code": 404
                 })
             })
@@ -77,17 +77,17 @@ class UserRepository {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
             if (isEmptyObject(u)) {
                 reject({
-                    "message":  "Request body cannot be empty.",
+                    "message":  "Le corps de requête ne peut être vide.",
                     "code": 403
                 })
             } else if (!v.validate(u, UserValidation).valid) {
                 reject({
-                    "message":  "Schema is not valid - " + v.validate(u, UserValidation).errors,
+                    "message":  "Structure de la requête invalide - " + v.validate(u, UserValidation).errors,
                     "code": 403
                 })
             } else if (isXSSAttempt(u.name) || isXSSAttempt(u.password) || isXSSAttempt(u.mail)) {
                 reject({
-                    "message": "Injection attempt detected, aborting the request.",
+                    "message": "Essai d'injection détecté, avortement de la requête.",
                     "code": 403
                 })
             } else {
@@ -115,13 +115,14 @@ class UserRepository {
                     })
                     .then(newUser => {
                         resolve({
-                            "message": "Account successfully created !",
+                            "message": `Compte utilisateur #${newUser.id} créé avec succès.`,
+                            "code": 201,
                             "user": newUser,
                         })
                     })
                     .catch(err => {
                         resolve({
-                            "message": "An error has occured while creating your account.",
+                            "message": "Une erreur s'est produite en créant votre compte. Veuillez réessayer ultérieurement ou contactez l'administrateur.",
                             "code": 500,
                         })
                     })
@@ -145,12 +146,14 @@ class UserRepository {
 
                 if (match) {
                     resolve({
-                        "message": "User successfully logged in !",
+                        "message": `L'utilisateur #${fetchedUser.id} s'est connecté.`,
+                        "code": 200,
                         "user": fetchedUser,
                     })
                 } else {
                     reject({
-                        "message": "Les informations de connexion sont erronées.",
+                        "message": "Les informations de connexions sont erronées.",
+                        "code": 400,
                     })
                 }
             })
@@ -163,17 +166,33 @@ class UserRepository {
     // Check if one user already has that email
     checkIfEmailAvailable(mail) {
         return new Promise((resolve, reject) => {
+
+            if (!this.validateEmail(mail)) {
+                reject({
+                    "message": "La requête n'est pas un email valide.",
+                    "code": 400,
+                })
+            }
+
             this.getOneByEmail(mail, false)
             .then(() => {
                 reject({
-                    "message": "L'email est déjà utilisé par un autre utilisateur.",
-                    "code": 403
+                    "message": "Cet email est déjà lié à un compte.",
+                    "code": 409
                 })
             })
             .catch(() => {
-                resolve(true)
+                resolve({
+                  "message": "Cet email est disponible.",
+                  "code": 200
+              })
             })
         })
+    }
+
+    validateEmail(email) {
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
     }
 }
 

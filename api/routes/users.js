@@ -17,7 +17,6 @@ const Users = new UserRepository();
 const getUsers = () => {
     return Users.getAll()
     .catch(err => {
-        console.log(err)
         throw err
     })
 }
@@ -38,11 +37,10 @@ router.get('/', async (req, res) => {
 })
 
 
-// GET ONE FORM UUID ------------------
+// GET ONE FROM UUID ------------------
 const getUserByUUID = (uuid) => {
     return Users.getOneByUUID(uuid)
     .catch(err => {
-        console.log(err)
         throw err
     })
 }
@@ -63,11 +61,34 @@ router.get('/:uuid/', async (req, res) => {
 })
 
 
+// CHECK IF MAIL IS AVAILABLE ------------------
+const checkIfEmailAvailable = (mail) => {
+  return Users.checkIfEmailAvailable(mail)
+  .catch(err => {
+      throw err
+  })
+}
+router.get('/available/:mail/', async (req, res) => {
+  checkIfEmailAvailable(req.params.mail)
+  .then(v => {
+      res.setHeader('Content-Type', 'application/json;charset=utf-8')
+      res.end(JSON.stringify(v))
+  })
+  .catch(err => {
+      res.status(err.code).send(JSON.stringify(
+          {
+              "error": err.message,
+              "code": err.code
+          })
+      )
+  })
+})
+
+
 // LOG A USER ------------------
 const logUser = (mail, password) => {
     return Users.logUser(mail, password)
     .catch(err => {
-        console.log(err)
         throw err
     })
 }
