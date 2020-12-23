@@ -17,7 +17,6 @@ const Users = new UserRepository();
 const getUsers = () => {
     return Users.getAll()
     .catch(err => {
-        console.log(err)
         throw err
     })
 }
@@ -42,7 +41,6 @@ router.get('/', async (req, res) => {
 const getUserByUUID = (uuid) => {
     return Users.getOneByUUID(uuid)
     .catch(err => {
-        console.log(err)
         throw err
     })
 }
@@ -67,7 +65,6 @@ router.get('/:uuid/', async (req, res) => {
 const checkIfEmailAvailable = (mail) => {
   return Users.checkIfEmailAvailable(mail)
   .catch(err => {
-      console.log(err)
       throw err
   })
 }
@@ -92,7 +89,6 @@ router.get('/available/:mail/', async (req, res) => {
 const logUser = (mail, password) => {
     return Users.logUser(mail, password)
     .catch(err => {
-        console.log(err)
         throw err
     })
 }

@@ -14,22 +14,22 @@
               id="email"
               class="form-control"
               :class="{
-                'is-invalid': errors.mailEmpty || errors.login,
-                'is-valid': submitted && !errors.mailEmpty }"
+                'is-invalid': errors.email || errors.login,
+                'is-valid': submitted && !errors.email }"
               placeholder="john.doe@gmail.com"
               autocomplete="email">
 
             <small
-              v-if="!errors.mailEmpty"
+              v-if="!errors.email"
               class="form-text text-muted"
             >
               Votre addresse mail nous servira principalement à vous identifier et à retrouver votre compte si vous oubliez vos informations de connexion.
             </small>
             <small
-              v-if="errors.mailEmpty"
+              v-if="errors.email"
               class="form-text text-danger"
             >
-              Veuillez renseigner une adresse mail.
+              {{ errors.email }}
             </small>
           </div>
 
@@ -40,21 +40,19 @@
               type="password"
               id="password"
               class="form-control"
-              :class="{
-                'is-invalid': errors.passwordEmpty || errors.login,
-                'is-valid': submitted && !errors.passwordEmpty }"
+              :class="{ 'is-invalid': errors.password || errors.login }"
               autocomplete="current-password">
             <small
-              v-if="!errors.passwordEmpty"
+              v-if="!errors.password"
               class="form-text text-muted"
             >
               Nous vous conseillons d'utiliser un mot de passe unique pour cette application seulement.
             </small>
             <small
-              v-if="errors.passwordEmpty"
+              v-if="errors.password"
               class="form-text text-danger"
             >
-              Veuillez renseigner un mot de passe.
+              {{ errors.password }}
             </small>
           </div>
 
@@ -98,50 +96,55 @@ export default {
         submitted: false,
 
         errors: {
-          mailEmpty: "",
-          passwordEmpty: "",
+          email: "",
+          password: "",
           login: "",
         }
       }
     },
     methods: {
       async logUser(e) {
+        e.preventDefault();
 
+        // Resets old errors if any
+        for (const o in this.errors) {
+          this.errors[o] = ""
+        }
         this.submitted = true;
-
-        this.errors = this.resetErrors();
 
         let userInput = {
           "mail": this.email,
           "password": this.password
         };
 
-        if (this.email && this.password) {
-          this.$store.dispatch('user_login', userInput)
-            .then(() => {
-              this.$router.push('/profil');
-            })
-            .catch(() => {
-              this.errors.login = "Erreur d'authentification. Les identifiants ne correspondent pas."
-            });
-        } else {
-          if (!userInput.mail) {
-            this.errors.mailEmpty = "Veuillez entrer une addresse mail valide."
-          }
-          if (!userInput.password) {
-            this.errors.passwordEmpty = "Veuillez entrer un mot de passe."
+        if (!userInput.mail) {
+          this.errors.email = "Vous devez renseigner une addresse mail."
+        }
+        if (!userInput.password) {
+          this.errors.password = "Vous devez renseigner un mot de passe."
+        }
+
+        // Stops the method if any errors exist
+        for (const o in this.errors) {
+          if (this.errors[o] != "") {
+            this.submitted = false;
           }
         }
 
-        e.preventDefault();
-      },
-      resetErrors() {
-        return {
-          mailEmpty: "",
-          passwordEmpty: "",
-          login: "",
+        if (this.submitted) {
+          this.$store.dispatch('user_login', userInput)
+            .then(() => {
+              this.$router.push('/profil')
+            })
+            .catch(err => {
+              if (err.status === 404) {
+                this.errors.email = err.data.error;
+              } else {
+                this.errors.login = "Une erreur inconnue est survenue, rééssayez plus tard.";
+              }
+            });
         }
-      }
+      },
     }
 }
 </script>

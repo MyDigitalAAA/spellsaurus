@@ -14,6 +14,7 @@ const state = {
 };
 
 const getters = {
+
   getUserProfile: state => {
     if (state.status.logged) {
       return state.status.profile
@@ -28,9 +29,14 @@ const mutations = {
     state.status.profile = user;
     state.status.logged = true;
   },
+
   logoutUser(state) {
     state.status.profile = null;
     state.status.logged = false;
+  },
+
+  registerUser() {
+
   }
 };
 
@@ -44,14 +50,28 @@ const actions = {
         commit('loginUser', user);
         resolve(user);
       })
-      .catch(() => {
-        reject();
+      .catch(err => {
+        reject(err.response);
       });
     })
   },
+
   user_logout ({ commit }) {
     // cookie.remove('user_token');
     commit('logoutUser');
+  },
+
+  user_register ({ commit }, data) {
+    return new Promise((resolve, reject) => {
+      Users.register(data)
+      .then(() => {
+        commit('registerUser');
+        resolve();
+      })
+      .catch(err => {
+        reject(err.response);
+      });
+    })
   }
 };
 
