@@ -9,7 +9,10 @@
 
 <script>
 export default {
-  name: 'app'
+  name: 'app',
+  metaInfo: {
+    title: 'Auracle',
+  }
 }
 </script>
 

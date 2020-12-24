@@ -5,9 +5,14 @@
 </template>
 
 <script>
-    export default {
-        name: 'schools-page'
-    }
+
+export default {
+  name: 'schools-page',
+  metaInfo: {
+    titleTemplate: '%s - Maîtrises'
+  },
+}
+
 </script>
 
 <style>

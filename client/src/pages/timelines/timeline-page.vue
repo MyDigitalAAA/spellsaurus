@@ -6,7 +6,10 @@
 
 <script>
 export default {
-    name: 'timeline-page',
+  name: 'timeline-page',
+  metaInfo: {
+    titleTemplate: '%s - Âges'
+  },
 }
 </script>
 
