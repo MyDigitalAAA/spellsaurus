@@ -16,6 +16,9 @@
 
 export default {
   name: 'profile-page',
+  metaInfo: {
+    titleTemplate: '%s - Profil'
+  },
   data() {
     return {
     }
@@ -36,9 +39,6 @@ export default {
       return new Intl.DateTimeFormat("fr", date_options).format(raw_date);
     }
   },
-  metaInfo: {
-    titleTemplate: '%s - Profil'
-  }
 }
 </script>
 
