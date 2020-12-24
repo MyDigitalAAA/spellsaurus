@@ -35,6 +35,7 @@
         "vue": "^2.6.11",
         "vue-cookies": "^1.7.0",
         "vue-masonry": "^0.11.8",
+        "vue-meta": "^2.4.0",
         "vuex": "^3.5.1"
     },
     "devDependencies": {
