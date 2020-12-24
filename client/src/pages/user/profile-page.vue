@@ -13,6 +13,7 @@
         <i class="mad">check_circle</i>
       </span>
     </h2>
+    <span>Membre depuis le {{ registered_date }}</span>
 
   </div>
 </template>
@@ -28,6 +29,17 @@ export default {
   computed: {
     user() {
       return this.$store.getters.getUserProfile
+    },
+    registered_date() {
+      let raw_date = new Date(this.user.register_date);
+
+      let date_options = {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      };
+
+      return new Intl.DateTimeFormat("fr", date_options).format(raw_date);
     }
   }
 }
