@@ -88,6 +88,9 @@
 
 export default {
     name: 'login-page',
+    metaInfo: {
+      titleTemplate: '%s - Connexion'
+    },
     data() {
       return {
         email: "",

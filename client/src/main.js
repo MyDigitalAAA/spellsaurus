@@ -2,6 +2,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './app.vue'
+import VueMeta from 'vue-meta'
+
+Vue.use(VueMeta, {
+  // optional pluginOptions
+  refreshOnceOnNavigation: true
+})
 
 // Environment
 require('dotenv').config()

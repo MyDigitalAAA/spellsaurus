@@ -118,6 +118,9 @@
 <script>
 export default {
   name: 'register-page',
+  metaInfo: {
+    titleTemplate: '%s - Inscription'
+  },
   data() {
     return {
       name: "",

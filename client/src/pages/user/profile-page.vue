@@ -6,12 +6,6 @@
   >
     <h2 class="display-3 font-display mb-3">
       <span class="username">{{ user.name }}</span>
-      <span
-        v-if="user.verified"
-        class="verified"
-      >
-        <i class="mad">check_circle</i>
-      </span>
     </h2>
     <span>Membre depuis le {{ registered_date }}</span>
 
@@ -41,6 +35,9 @@ export default {
 
       return new Intl.DateTimeFormat("fr", date_options).format(raw_date);
     }
+  },
+  metaInfo: {
+    titleTemplate: '%s - Profil'
   }
 }
 </script>
