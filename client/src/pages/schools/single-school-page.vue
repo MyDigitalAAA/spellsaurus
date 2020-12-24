@@ -7,42 +7,40 @@
 </template>
 
 <script>
-import SpellsList from "~/components/spells/spells-list"
-
 // API
-import { RepositoryFactory } from "~/api/repositories"
-const Schools = RepositoryFactory.get('schools')
+import { RepositoryFactory } from "~/api/repositories";
+const Schools = RepositoryFactory.get('schools');
+
+import SpellsList from "~/components/spells/spells-list";
 
 export default {
   name: 'single-school-page',
-  metaInfo: {
-    titleTemplate: '%s - Maîtrise I'
+  metaInfo() {
+    return {
+      titleTemplate: `%s - ${this.school.name}`,
+    }
   },
   components: {
     'spell-list': SpellsList,
   },
   data() {
     return {
-      loading: false,
+      id: this.$route.params.id,
       school: {},
-      id: this.$route.params.id
+      errors: {
+        loading: "",
+      }
     }
   },
   created() {
-    this.computeSchool();
+    Schools.getOne(this.id)
+      .then(v => {
+        this.school = v.data;
+      })
+      .catch(err => {
+        console.log(err);
+      });
   },
-  methods: {
-    async fetchSchool(id) {
-      const { data } = await Schools.getOne(id);
-      return data;
-    },
-    async computeSchool() {
-      this.loading = true;
-      const displaySchool = await this.fetchSchool(this.id);
-      this.loading = false;
-      this.school = displaySchool;
-    },
-  }
 }
 </script>
 
