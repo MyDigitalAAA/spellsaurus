@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     `mail` VARCHAR(255) NOT NULL,
     `avatar` VARCHAR(255),
     `gender` VARCHAR(255),
+    `register_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `password` VARCHAR(255) NOT NULL,
     `role_id` INT UNSIGNED NOT NULL DEFAULT 1,
     `verified` BOOLEAN DEFAULT false,

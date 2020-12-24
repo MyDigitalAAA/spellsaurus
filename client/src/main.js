@@ -43,14 +43,14 @@ import clipboard from 'v-clipboard'
 Vue.use(clipboard)
 
 // FUNCTIONS
-var filter = function(text, length, clamp){
+var filter = (text, length, clamp) => {
     clamp = clamp || '...';
     var node = document.createElement('div');
     node.innerHTML = text;
     var content = node.textContent;
     return content.length > length ? content.slice(0, length) + clamp : content;
 }
-Vue.filter('truncate', filter)
+Vue.filter('truncate', filter);
 
 // Router
 import router from './routes'
