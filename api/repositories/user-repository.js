@@ -145,11 +145,23 @@ class UserRepository {
                 delete fetchedUser.password
 
                 if (match) {
+                  if (fetchedUser.banned) {
+                    reject({
+                      "message":  `L'utilisateur #${fetchedUser.name} a été banni, la connexion est impossible.`,
+                      "code": 403
+                    })
+                  } else if (!fetchedUser.verified) {
+                    reject({
+                      "message":  `L'utilisateur #${fetchedUser.name} n'as pas été vérifié, le compte doit être activé avant la connexion.`,
+                      "code": 401
+                    })
+                  } else {
                     resolve({
-                        "message": `L'utilisateur #${fetchedUser.id} s'est connecté.`,
+                        "message": `L'utilisateur #${fetchedUser.name} s'est connecté.`,
                         "code": 200,
                         "user": fetchedUser,
                     })
+                  }
                 } else {
                     reject({
                         "message": "Les informations de connexions sont erronées.",
