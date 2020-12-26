@@ -13,9 +13,7 @@
               type="email"
               id="email"
               class="form-control"
-              :class="{
-                'is-invalid': errors.email || errors.login,
-                'is-valid': submitted && !errors.email }"
+              :class="{ 'is-invalid': errors.email || errors.login }"
               placeholder="john.doe@gmail.com"
               autocomplete="email">
 
@@ -145,10 +143,10 @@ export default {
               this.$router.push('/profil')
             })
             .catch(err => {
-              if (err.status === 404) {
+              if (err.status != 500) {
                 this.errors.email = err.data.error;
               } else {
-                this.errors.login = "Une erreur inconnue est survenue, rééssayez plus tard.";
+                this.errors.login = err.data.error;
               }
             });
         }
