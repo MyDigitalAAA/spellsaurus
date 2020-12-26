@@ -11,7 +11,7 @@
               v-model="name"
               :class="{
                 'is-invalid': errors.name,
-                'is-valid': submitted && !errors.name }"
+                'is-valid': !errors.name }"
               type="text"
               id="username"
               class="form-control"
@@ -38,7 +38,7 @@
               v-model="email"
               :class="{
                 'is-invalid': errors.email,
-                'is-valid': submitted && !errors.email }"
+                'is-valid': !errors.email }"
               type="email"
               id="email"
               class="form-control"
@@ -64,7 +64,7 @@
             <input
               :class="{
                 'is-invalid': errors.password,
-                'is-valid': submitted && !errors.password }"
+                'is-valid': !errors.password }"
               v-model="password"
               type="password"
               id="password"
@@ -78,7 +78,7 @@
                 v-model="password_check"
                 :class="{
                     'is-invalid': errors.password_check || errors.password,
-                    'is-valid': submitted && !errors.password_check}"
+                    'is-valid': !errors.password_check}"
                 type="password"
                 id="password_check"
                 class="form-control"
@@ -156,16 +156,16 @@ export default {
       }
 
       // Check if all inputs are valid without sending anything
-      if (!userInput.name) {
+      if (!userInput.user.name) {
         this.errors.name = "Vous devez renseigner un pseudonyme."
       }
-      if (!userInput.mail) {
+      if (!userInput.user.mail) {
         this.errors.email = "Vous devez renseigner une addresse mail."
       }
-      if (!userInput.password) {
+      if (!userInput.user.password) {
         this.errors.password = "Vous devez renseigner un mot de passe."
       }
-      if ((userInput.password.localeCompare(this.password_check)) != 0) {
+      if ((userInput.user.password.localeCompare(this.password_check)) != 0) {
         this.errors.password_check = "Les mots de passe ne correspondent pas."
       }
 
