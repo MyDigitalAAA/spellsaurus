@@ -116,14 +116,18 @@ export default {
         this.submitted = true;
 
         let userInput = {
-          "mail": this.email,
-          "password": this.password
+          "user": {
+            "mail": this.email,
+            "password": this.password,
+          },
+          "remember_me": this.remember_me
         };
 
-        if (!userInput.mail) {
+        // Check is all inputs are set
+        if (!userInput.user.mail) {
           this.errors.email = "Vous devez renseigner une addresse mail."
         }
-        if (!userInput.password) {
+        if (!userInput.user.password) {
           this.errors.password = "Vous devez renseigner un mot de passe."
         }
 
@@ -134,6 +138,7 @@ export default {
           }
         }
 
+        // If no errors are present, submits the form
         if (this.submitted) {
           this.$store.dispatch('user_login', userInput)
             .then(() => {

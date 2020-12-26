@@ -148,23 +148,23 @@ export default {
       this.submitted = true;
 
       let userInput = {
-        "name": this.name,
-        "mail": this.email,
-        "password": this.password
+        "user": {
+          "name": this.name,
+          "mail": this.email,
+          "password": this.password
+        }
       }
 
+      // Check if all inputs are valid without sending anything
       if (!userInput.name) {
         this.errors.name = "Vous devez renseigner un pseudonyme."
       }
-
       if (!userInput.mail) {
         this.errors.email = "Vous devez renseigner une addresse mail."
       }
-
       if (!userInput.password) {
         this.errors.password = "Vous devez renseigner un mot de passe."
       }
-
       if ((userInput.password.localeCompare(this.password_check)) != 0) {
         this.errors.password_check = "Les mots de passe ne correspondent pas."
       }
@@ -176,12 +176,14 @@ export default {
         }
       }
 
+      // If no errors are present, submits the form
       if (this.submitted) {
         this.$store.dispatch('user_register', userInput)
           .then(() => {
             this.$router.push('/');
           })
           .catch(err => {
+            // Sets errors in case something wrong comes back from the API
             if (err.status === 409) {
               this.errors.email = err.data.error;
             } else {
