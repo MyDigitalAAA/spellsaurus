@@ -1,4 +1,4 @@
-// import cookie from 'vue-cookies';
+import cookie from 'vue-cookies';
 
 // API
 import { RepositoryFactory } from "~/api/repositories";
@@ -7,46 +7,49 @@ const Users = RepositoryFactory.get('users');
 export const namespaced = true;
 
 const state = {
-  status: {
-    logged: false,
-    profile: null,
-  }
+  profile: cookie.get('user_profile') || null,
 };
 
 const getters = {
-
   getUserProfile: state => {
-    if (state.status.logged) {
-      return state.status.profile
-    } else {
-      return false
-    }
+    return state.profile
   }
 };
 
 const mutations = {
   loginUser(state, user) {
-    state.status.profile = user;
-    state.status.logged = true;
+    state.profile = user;
   },
 
   logoutUser(state) {
-    state.status.profile = null;
-    state.status.logged = false;
+    state.profile = null;
   },
 
   registerUser() {
-
+    // Will contain the email call eventually
   }
 };
 
 const actions = {
+  /**
+   * @param data
+   * An object containing : 
+   * - user object with mail and password hash properties
+   * - remember_me boolean to check cookie expiration time
+   */
   user_login ({ commit }, data) {
     return new Promise((resolve, reject) => {
-      Users.login(data)
+      Users.login(data.user)
       .then(v => {
         let user = v.data.user;
-        // cookie.set('user_token', user.uuid);
+
+        // Check if the use wishes to be remembered
+        if (data.remember_me) {
+          cookie.set('user_profile', user, 60 * 60 * 24 * 30); // Expires after a month
+        } else {
+          cookie.set('user_profile', user, 0); // Expires after browser session expires
+        }
+        
         commit('loginUser', user);
         resolve(user);
       })
@@ -57,13 +60,18 @@ const actions = {
   },
 
   user_logout ({ commit }) {
-    // cookie.remove('user_token');
+    cookie.remove('user_profile');
     commit('logoutUser');
   },
 
+  /**
+   * @param data
+   * An object containing : 
+   * - user object with string mail, string name, and string password
+   */
   user_register ({ commit }, data) {
     return new Promise((resolve, reject) => {
-      Users.register(data)
+      Users.register(data.user)
       .then(() => {
         commit('registerUser');
         resolve();
@@ -74,11 +82,6 @@ const actions = {
     })
   }
 };
-
-// Check if a cookie with user token exists
-// if (cookie.get('user_token')) {
-//   mutations.loginUser(state, cookie.get('user_token'));
-// }
 
 export default {
   state,
