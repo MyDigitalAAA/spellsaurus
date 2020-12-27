@@ -7,6 +7,9 @@ const model = require('../models/user-model')
 const bcrypt = require('bcrypt')
 const { v4: uuidv4 } = require('uuid')
 
+// Mailing methods
+const mails = require('../smtp/mails')
+
 // Model validation
 const Validator = require('jsonschema').Validator
 const v = new Validator()
@@ -92,7 +95,9 @@ class UserRepository {
                 })
             } else {
                 let hash = await bcrypt.hash(u.password, 10)
+
                 let uuid = uuidv4()
+                let verification_token = uuidv4();
 
                 this.checkIfEmailAvailable(u.mail)
                 .then(() => {
@@ -102,6 +107,7 @@ class UserRepository {
                             'name': u.name,
                             'mail': u.mail,
                             'password': hash,
+                            'verification_token': verification_token,
                         })
                         .save(null, {
                             transacting: t
@@ -114,6 +120,17 @@ class UserRepository {
                         return this.getOneByUUID(uuid, false)
                     })
                     .then(newUser => {
+
+                        // Send a mail to the new user's email with a link to verification url
+                        mails.sendRegistrationMail({
+                            user: {
+                                name: newUser.name,
+                                mail: newUser.mail,
+                                token: verification_token,
+                            }
+                        })
+
+                        // Then resolves the api call
                         resolve({
                             "message": `Compte utilisateur #${newUser.id} créé avec succès.`,
                             "code": 201,
