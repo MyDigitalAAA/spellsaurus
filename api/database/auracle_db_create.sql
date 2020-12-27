@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     `password` VARCHAR(255) NOT NULL,
     `role_id` INT UNSIGNED NOT NULL DEFAULT 1,
     `verified` BOOLEAN DEFAULT false,
+    `verification_token` VARCHAR(255),
     `banned` BOOLEAN DEFAULT false,
     PRIMARY KEY(`id`),
     FOREIGN KEY(`role_id`) REFERENCES role(`id`)
