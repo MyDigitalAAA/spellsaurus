@@ -56,14 +56,6 @@ const sendBanEmail = (date) => {
   return null;
 }
 
-sendRegistrationMail({
-  user: {
-    name: 'Alexis',
-    mail: '35.alexis.pele@gmail.com',
-    token: '1fa98900-485f-11eb-b378-0242ac130002'
-  }
-});
-
 module.exports = {
   sendRegistrationMail,
 }
