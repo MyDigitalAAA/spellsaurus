@@ -151,6 +151,37 @@ class UserRepository {
         })
     }
 
+    verifyUser(token) {
+        return new Promise((resolve, reject) => {
+            model.forge()
+            .where({ 'verification_token' : token })
+            .fetch()
+            .then(v => {
+                bookshelf.transaction(t => {
+                    return v.save({
+                        'verification_token': null,
+                        'verified': 1,
+                    }, {
+                        method: 'update',
+                        transacting: t
+                    })
+                })
+                .then(v => {
+                  resolve({
+                      "message": "Insérez ici une future redirection vers le client.",
+                      "code": 202,
+                  })
+                })
+            })
+            .catch(() => {
+                reject({
+                    "message": "Le lien de vérification ne semble pas correct.",
+                    "code": 404
+                })
+            })
+        });
+    }
+
     // Log user with an email address and a password
     logUser(mail, password) {
         return new Promise((resolve, reject) => {
@@ -162,23 +193,23 @@ class UserRepository {
                 delete fetchedUser.password
 
                 if (match) {
-                  if (fetchedUser.banned) {
-                    reject({
-                      "message":  `L'utilisateur #${fetchedUser.name} a été banni, la connexion est impossible.`,
-                      "code": 403
-                    })
-                  } else if (!fetchedUser.verified) {
-                    reject({
-                      "message":  `L'utilisateur #${fetchedUser.name} n'as pas été vérifié, le compte doit être activé avant la connexion.`,
-                      "code": 401
-                    })
-                  } else {
-                    resolve({
-                        "message": `L'utilisateur #${fetchedUser.name} s'est connecté.`,
-                        "code": 200,
-                        "user": fetchedUser,
-                    })
-                  }
+                    if (fetchedUser.banned) {
+                        reject({
+                            "message":  `L'utilisateur #${fetchedUser.name} a été banni, la connexion est impossible.`,
+                            "code": 403
+                        })
+                    } else if (!fetchedUser.verified) {
+                        reject({
+                            "message":  `L'utilisateur #${fetchedUser.name} n'as pas été vérifié, le compte doit être activé avant la connexion.`,
+                            "code": 401
+                        })
+                    } else {
+                        resolve({
+                            "message": `L'utilisateur #${fetchedUser.name} s'est connecté.`,
+                            "code": 200,
+                            "user": fetchedUser,
+                        })
+                    }
                 } else {
                     reject({
                         "message": "Les informations de connexions sont erronées.",
