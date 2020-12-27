@@ -85,29 +85,6 @@ router.get('/available/:mail/', async (req, res) => {
 })
 
 
-// LOG A USER ------------------
-const logUser = (mail, password) => {
-    return Users.logUser(mail, password)
-    .catch(err => {
-        throw err
-    })
-}
-router.post('/login', async (req, res) => {
-    logUser(req.body.mail, req.body.password)
-    .then(v => {
-        res.setHeader('Content-Type', 'application/json;charset=utf-8')
-        res.end(JSON.stringify(v))
-    })
-    .catch(err => {
-        res.status(err.code).send(JSON.stringify(
-            {
-                "error": err.message,
-                "code": err.code
-            })
-        )
-    })
-})
-
 // CREATE ONE ------------------
 const addUser = (u) => {
     return Users.addOne(u)
@@ -129,6 +106,53 @@ router.post('/', async (req, res) => {
             })
         )
     })
+})
+
+
+// VERIFY A USER
+const verifyUser = (token) => {
+    return Users.verifyUser(token)
+    .catch(err => {
+      throw err;
+    })
+}
+router.get('/verification/:token', async (req, res) => {
+    verifyUser(req.params.token)
+    .then(v => {
+        res.setHeader('Content-Type', 'application/json;charset=utf-8')
+        res.send(JSON.stringify(v))
+    })
+    .catch(err => {
+        res.status(err.code).send(JSON.stringify(
+            {
+                "error": err.message,
+                "code": err.code
+            })
+        )
+    })
+});
+
+// LOG A USER ------------------
+const logUser = (mail, password) => {
+  return Users.logUser(mail, password)
+  .catch(err => {
+      throw err
+  })
+}
+router.post('/login', async (req, res) => {
+  logUser(req.body.mail, req.body.password)
+  .then(v => {
+      res.setHeader('Content-Type', 'application/json;charset=utf-8')
+      res.end(JSON.stringify(v))
+  })
+  .catch(err => {
+      res.status(err.code).send(JSON.stringify(
+          {
+              "error": err.message,
+              "code": err.code
+          })
+      )
+  })
 })
 
 module.exports = router

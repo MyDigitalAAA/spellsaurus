@@ -33,13 +33,13 @@ app.use(helmet());
 // Server
 app.listen(port, () => console.log(`App listening on port ${port}`));
 
-// Auth guard
+// TEMP Auth guard
 const authguard = (req, res, next) => {
-    if (req.headers.auracle_key !== process.env.API_KEY_PUBLIC) {
-        return res.status(401).send('The API key is either missing or incorrect.');
-    } else {
+    // if (req.headers.auracle_key !== process.env.API_KEY_PUBLIC) {
+    //     return res.status(401).send('The API key is either missing or incorrect.');
+    // } else {
         next();
-    }
+    // }
 }
 
 // Routing

@@ -11,7 +11,7 @@
               v-model="name"
               :class="{
                 'is-invalid': errors.name,
-                'is-valid': !errors.name }"
+                'is-valid': submitted && !errors.name }"
               type="text"
               id="username"
               class="form-control"
@@ -38,7 +38,7 @@
               v-model="email"
               :class="{
                 'is-invalid': errors.email,
-                'is-valid': !errors.email }"
+                'is-valid': submitted && !errors.email }"
               type="email"
               id="email"
               class="form-control"
@@ -64,7 +64,7 @@
             <input
               :class="{
                 'is-invalid': errors.password,
-                'is-valid': !errors.password }"
+                'is-valid': submitted && !errors.password }"
               v-model="password"
               type="password"
               id="password"
@@ -78,7 +78,7 @@
                 v-model="password_check"
                 :class="{
                     'is-invalid': errors.password_check || errors.password,
-                    'is-valid': !errors.password_check}"
+                    'is-valid': submitted && !errors.password_check}"
                 type="password"
                 id="password_check"
                 class="form-control"
