@@ -13,9 +13,6 @@ v.addSchema(SpellValidation, "/SpellValidation")
 const isXSSAttempt = require('../functions').isXSSAttempt
 const isEmptyObject = require('../functions').isEmptyObject
 
-// Error handling
-const { HttpError } = require('../validations/Errors')
-
 class SpellRepository {
 
     constructor() {
@@ -24,7 +21,7 @@ class SpellRepository {
     getAll(name, description, level, charge, cost, ritual) {
         return new Promise((resolve, reject) => {
 
-            let query = model.forge()
+            let query = new model();
 
             if (name) { query.where('name', 'like', `%${name}%`) }
             if (description) { query.where('description', 'like', `%${description}%`) }
@@ -38,8 +35,11 @@ class SpellRepository {
                 resolve(v.toJSON({ omitPivot: true }))
             })
             .catch(err => {
-                console.log(err)
-                reject(new HttpError(500, "Couldn't get spells"))
+                console.log(err);
+                reject({
+                    "message": "Il n'existe aucun sortilège disponible.",
+                    "code": 404,
+                });
             })
         })
     }
@@ -47,8 +47,7 @@ class SpellRepository {
     getAllPublic(name, description, level, charge, cost, ritual) {
         return new Promise((resolve, reject) => {
 
-            let query = model.forge()
-            .where({ 'public' : 1 })
+            let query = new model().where({ 'public' : 1 })
 
             if (name) { query.where('name', 'like', `%${name}%`) }
             if (description) { query.where('description', 'like', `%${description}%`) }
@@ -59,18 +58,21 @@ class SpellRepository {
 
             query.fetchAll({ withRelated: ['schools.meta_schools', 'variables', 'ingredients'] })
             .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+                resolve(v.toJSON({ omitPivot: true }));
             })
             .catch(err => {
-                console.log(err)
-                reject(new HttpError(500, "Couldn't get public spells"))
+                console.log(err);
+                reject({
+                    "message": "Il n'existe aucun sortilège disponible.",
+                    "code": 404,
+                });
             })
         })
     }
 
     getPage(page) {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .where({ 'public' : 1 })
             .fetchPage({
                 pageSize: 20,
@@ -81,23 +83,29 @@ class SpellRepository {
                 resolve(v.toJSON({ omitPivot: true }))
             })
             .catch(err => {
-                console.log(err)
-                reject(new HttpError(500, "Couldn't get public spells"))
+              console.log(err);
+              reject({
+                  "message": "La page de sortilèges n'a pas pu être chargée",
+                  "code": 404,
+              });
             })
         })
     }
 
     getOne(id) {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .where({ 'id' : id })
             .fetch({ withRelated: ['schools.meta_schools', 'variables', 'ingredients']})
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }))
             })
             .catch(err => {
-                console.log(err)
-                reject(new HttpError(500, "Couldn't get spell"))
+                console.log(err);
+                reject({
+                    "message": "Le sortilège en question n'a pas été trouvé.",
+                    "code": 404,
+                });
             })
         })
     }
@@ -106,14 +114,23 @@ class SpellRepository {
         return new Promise((resolve, reject) => {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
             if (isEmptyObject(s)) {
-                reject(new HttpError(403, "Error: Spell cannot be nothing !"))
+                reject({
+                    "message": "Le corps de la requête ne peut pas être vide.",
+                    "code": 403,
+                });
             } else if (!v.validate(s, SpellValidation).valid) {
-                reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(s, SpellValidation).errors))
+                reject({
+                  "message": `Le modèle de sortilège n'est pas respecté : ${v.validate(s, SpellValidation).errors}`,
+                  "code": 403,
+                });
             } else if (isXSSAttempt(s.name) || isXSSAttempt(s.description) || isXSSAttempt(s.cost)) {
-                reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
+                reject({
+                    "message": "Tentative d'injection XSS détectée, requête refusée.",
+                    "code": 403,
+                });
             } else {
                 bookshelf.transaction(t => {
-                    return model.forge({
+                    return new model({
                         'name': s.name,
                         'description': s.description,
                         'level': s.level,
@@ -145,7 +162,11 @@ class SpellRepository {
                         });
                     })
                     .catch(err => {
-                        throw err
+                        console.log(err);
+                        reject({
+                            "message": "Un attributs du sortilège a provoqué une erreur d'insertion.",
+                            "code": 500,
+                        });
                     })
                 })
                 .then(v => {
@@ -155,8 +176,11 @@ class SpellRepository {
                     resolve(this.getOne(v.id))
                 })
                 .catch(err => {
-                    console.log(err)
-                    reject(new HttpError(500, "Insert Spell error"))
+                    console.log(err);
+                    reject({
+                        "message": "Le sortilège n'a pas pu être ajouté.",
+                        "code": 500,
+                    });
                 })
             }
         })
@@ -166,13 +190,22 @@ class SpellRepository {
         return new Promise((resolve, reject) => {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
             if (isEmptyObject(s)) {
-                reject(new HttpError(403, "Error: Spell cannot be nothing !"))
+                reject({
+                    "message": "Le corps de la requête ne peut pas être vide.",
+                    "code": 403,
+                });
             } else if (!v.validate(s, SpellValidation).valid) {
-                reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(s, SpellValidation).errors))
+                reject({
+                    "message": `Le modèle de sortilège n'est pas respecté : ${v.validate(s, SpellValidation).errors}`,
+                    "code": 403,
+                });
             } else if (isXSSAttempt(s.name) || isXSSAttempt(s.description) || isXSSAttempt(s.cost)) {
-                reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
+                reject({
+                    "message": "Tentative d'injection XSS détectée, requête refusée.",
+                    "code": 403,
+                });
             } else {
-                model.forge({id: id})
+                new model({id: id})
                 .fetch({require: true, withRelated: ['schools.meta_schools', 'variables', 'ingredients']})
                 .then(v => {
                     bookshelf.transaction(t => {
@@ -193,14 +226,12 @@ class SpellRepository {
                                 let schools = spell.related('school');
                                 return spell.schools().detach(schools, { transacting: t});
                             }
-                            return
                         })
                         .tap(spell => {
                             if (s.variables) {
                                 let variables = spell.related('variable');
                                 return spell.variables().detach(variables, { transacting: t});
                             }
-                            return
                         })
                         .tap(spell => {
                             if (s.ingredients) {
@@ -230,24 +261,33 @@ class SpellRepository {
                             });
                         })
                         .catch(err => {
-                            console.log(err)
-                            throw err
+                            console.log(err);
+                            reject({
+                                "message": "Un attributs du sortilège a provoqué une erreur d'insertion.",
+                                "code": 500,
+                            })
                         })
                     })
                     .then(v => {
-                        return v.load(['schools.meta_schools', 'variables', 'ingredients'])
+                        return v.load(['schools.meta_schools', 'variables', 'ingredients']);
                     })
                     .then(v => {
-                        resolve(this.getOne(v.id))
+                        resolve(this.getOne(v.id));
                     })
                     .catch(err => {
-                        console.log(err)
-                        reject(new HttpError(500, "Update Spell error"))
+                        console.log(err);
+                        reject({
+                            "message": "Une erreur de chargement est survenue.",
+                            "code": 500,
+                        });
                     })
                 })
                 .catch(err => {
-                    console.log(err)
-                    reject(new HttpError(404, "Couldn't get spell"))
+                    console.log(err);
+                    reject({
+                        "message": "Le sortilège en question n'a pas été trouvé.",
+                        "code": 404,
+                    });
                 })
             }          
         })
@@ -255,23 +295,27 @@ class SpellRepository {
 
     deleteOne(id) {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .where({ 'id' : id })
             .fetch({require: true, withRelated: ['schools.meta_schools', 'variables', 'ingredients']})
             .then(v => {
-                v.schools().detach()
-                v.variables().detach()
-                v.ingredients().detach()
-                v.destroy()
+                v.schools().detach();
+                v.variables().detach();
+                v.ingredients().detach();
+                v.destroy();
             })
             .then(() => {
                 resolve({
-                    'message': 'Spell with ID ' + id + ' successfully deleted !'
-                })
+                    "message": `Le sortilège #${id} a été supprimé avec succès.`,
+                    "code": 200,
+                });
             })
             .catch(err => {
-                console.log(err)
-                reject(new HttpError(404, "Couldn't get spell"))
+                console.log(err);
+                reject({
+                    "message": "Le sortilège en question n'a pas été trouvé.",
+                    "code": 404,
+                });
             })
         })
     }

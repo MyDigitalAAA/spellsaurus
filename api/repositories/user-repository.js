@@ -27,50 +27,50 @@ class UserRepository {
 
     getAll() {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .fetchAll()
             .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+                resolve(v.toJSON({ omitPivot: true }));
             })
             .catch(() => {
                 reject({
                     "message": "Erreur de base de données, les utilisateurs n'ont pas pu être récupérés.",
-                    "code": 500
-                })
+                    "code": 500,
+                });
             })
         })
     }
 
     getOneByUUID(uuid, full) {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .where({ 'uuid' : uuid })
             .fetch()
             .then(v => {
-                resolve(v.toJSON({ omitPivot: true, visibility: !full }))
+                resolve(v.toJSON({ omitPivot: true, visibility: !full }));
             })
-            .catch(err => {
+            .catch(() => {
                 reject({
                     "message": "L'utilisateur avec cet UUID n'a pas été trouvé.",
-                    "code": 404
-                })
+                    "code": 404,
+                });
             })
         })
     }
 
     getOneByEmail(mail, full) {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .where({ 'mail': mail })
             .fetch()
             .then(v => {
-                resolve(v.toJSON({ omitPivot: true, visibility: !full }))
+                resolve(v.toJSON({ omitPivot: true, visibility: !full }));
             })
             .catch(() => {
                 reject({
                     "message": "L'utilisateur avec cet email n'a pas été trouvé.",
-                    "code": 404
-                })
+                    "code": 404,
+                });
             })
         })
     }
@@ -81,17 +81,17 @@ class UserRepository {
             if (isEmptyObject(u)) {
                 reject({
                     "message":  "Le corps de requête ne peut être vide.",
-                    "code": 403
+                    "code": 403,
                 })
             } else if (!v.validate(u, UserValidation).valid) {
                 reject({
                     "message":  "Structure de la requête invalide - " + v.validate(u, UserValidation).errors,
-                    "code": 403
+                    "code": 403,
                 })
             } else if (isXSSAttempt(u.name) || isXSSAttempt(u.password) || isXSSAttempt(u.mail)) {
                 reject({
                     "message": "Essai d'injection détecté, avortement de la requête.",
-                    "code": 403
+                    "code": 403,
                 })
             } else {
                 let hash = await bcrypt.hash(u.password, 10)
@@ -102,7 +102,7 @@ class UserRepository {
                 this.checkIfEmailAvailable(u.mail)
                 .then(() => {
                     bookshelf.transaction(t => {
-                        return model.forge({
+                        return new model({
                             'uuid': uuid,
                             'name': u.name,
                             'mail': u.mail,
@@ -113,7 +113,11 @@ class UserRepository {
                             transacting: t
                         })
                         .catch(err => {
-                            throw err
+                            console.log(err);
+                            reject({
+                                "message": "Un attributs de l'utilisateur a provoqué une erreur d'insertion.",
+                                "code": 500,
+                            });
                         })
                     })
                     .then(() => {
@@ -153,7 +157,7 @@ class UserRepository {
 
     verifyUser(token) {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .where({ 'verification_token' : token })
             .fetch()
             .then(v => {
@@ -176,7 +180,7 @@ class UserRepository {
             .catch(() => {
                 reject({
                     "message": "Le lien de vérification ne semble pas correct.",
-                    "code": 404
+                    "code": 404,
                 })
             })
         });
@@ -196,12 +200,12 @@ class UserRepository {
                     if (fetchedUser.banned) {
                         reject({
                             "message":  `L'utilisateur #${fetchedUser.name} a été banni, la connexion est impossible.`,
-                            "code": 403
+                            "code": 403,
                         })
                     } else if (!fetchedUser.verified) {
                         reject({
                             "message":  `L'utilisateur #${fetchedUser.name} n'as pas été vérifié, le compte doit être activé avant la connexion.`,
-                            "code": 401
+                            "code": 401,
                         })
                     } else {
                         resolve({
@@ -238,13 +242,13 @@ class UserRepository {
             .then(() => {
                 reject({
                     "message": "Cet email est déjà lié à un compte.",
-                    "code": 409
+                    "code": 409,
                 })
             })
             .catch(() => {
                 resolve({
                   "message": "Cet email est disponible.",
-                  "code": 200
+                  "code": 200,
               })
             })
         })

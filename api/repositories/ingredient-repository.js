@@ -13,9 +13,6 @@ v.addSchema(IngredientValidation, "/IngredientValidation")
 const isXSSAttempt = require('../functions').isXSSAttempt
 const isEmptyObject = require('../functions').isEmptyObject
 
-// Error handling
-const { HttpError } = require('../validations/Errors')
-
 class IngredientRepository {
 
     constructor() {
@@ -23,22 +20,25 @@ class IngredientRepository {
 
     getAll() {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .fetchAll({ withRelated: ['spells'] })
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }))
             })
             .catch(err => {
                 console.log(err)
-                reject(new HttpError(500, "Couldn't get ingredients"))
-            })
+                reject({
+                    "message": "Il n'existe aucun ingrédient disponible.",
+                    "code": 404,
+                });
+           })
         })
     }
 
     
     getOne(id) {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .where({ 'id' : id })
             .fetch({ withRelated: ['spells']})
             .then(v => {
@@ -46,14 +46,17 @@ class IngredientRepository {
             })
             .catch(err => {
                 console.log(err)
-                reject(new HttpError(500, "Couldn't get ingredient"))
+                reject({
+                  "message": "L'ingrédient en question n'a pas pu être trouvé.",
+                  "code": 404,
+              });
             })
         })
     }
 
     getSpellsFromOne(id) {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .where({ 'id' : id })
             .fetch({ withRelated: ['spells', 'spells.schools', 'spells.variables', 'spells.ingredients', 'spells.schools.meta_schools']})
             .then(v => {
@@ -61,7 +64,10 @@ class IngredientRepository {
             })
             .catch(err => {
                 console.log(err)
-                reject(new HttpError(500, "Couldn't get ingredient"))
+                reject({
+                    "message": "Les sortilèges liés à cet ingrédient n'ont pas pu être récupérés.",
+                    "code": 404,
+                });
             })
         })
     }
@@ -70,14 +76,23 @@ class IngredientRepository {
         return new Promise((resolve, reject) => {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
             if (isEmptyObject(igr)) {
-                reject(new HttpError(403, "Error: Ingredient cannot be nothing !"))
+                reject({
+                    "message": "Le corps de la requête ne peut pas être vide.",
+                    "code": 403,
+                });
             } else if (!v.validate(igr, IngredientValidation).valid) {
-                reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(igr, IngredientValidation).errors))
+                reject({
+                    "message": `Le modèle d'ingrédient n'est pas respecté : ${v.validate(s, IngredientValidation).errors}`,
+                    "code": 403,
+                });
             } else if (isXSSAttempt(igr.description)) {
-                reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
+                reject({
+                    "message": "Tentative d'injection XSS détectée, requête refusée.",
+                    "code": 403,
+                });
             } else {
                 bookshelf.transaction(t => {
-                    return model.forge({
+                    return new model({
                         'name': igr.name,
                         'description': igr.description,
                     }).save(null, {
@@ -95,7 +110,10 @@ class IngredientRepository {
                 })
                 .catch(err => {
                     console.log(err)
-                    reject(new HttpError(500, "Insert Ingredient error"))
+                    reject({
+                        "message": "Une erreur d'insertion s'est produite.",
+                        "code": 500,
+                    });
                 })
             }
         })
@@ -105,13 +123,22 @@ class IngredientRepository {
         return new Promise((resolve, reject) => {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
             if (isEmptyObject(igr)) {
-                reject(new HttpError(403, "Error: Ingredient cannot be nothing !"))
+                reject({
+                    "message": "Le corps de la requête ne peut pas être vide.",
+                    "code": 403,
+                });
             } else if (!v.validate(igr, IngredientValidation).valid) {
-                reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(igr, IngredientValidation).errors))
+                reject({
+                    "message": `Le modèle d'ingrédient n'est pas respecté : ${v.validate(s, IngredientValidation).errors}`,
+                    "code": 403,
+                });
             } else if (isXSSAttempt(igr.description)) {
-                reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
+                reject({
+                    "message": "Tentative d'injection XSS détectée, requête refusée.",
+                    "code": 403,
+                });
             } else {
-                model.forge({id: id})
+                new model({id: id})
                 .fetch({require: true, withRelated: ['spells']})
                 .then(v => {
                     bookshelf.transaction(t => {
@@ -135,12 +162,18 @@ class IngredientRepository {
                     })
                     .catch(err => {
                         console.log(err)
-                        reject(new HttpError(500, "Update Ingredient error"))
+                        reject({
+                            "message": "Une erreur d'insertion s'est produite.",
+                            "code": 500,
+                        });
                     })
                 })
                 .catch(err => {
                     console.log(err)
-                    reject(new HttpError(404, "Couldn't get ingredient"))
+                    reject({
+                        "message": "L'ingrédient en question n'a pas été trouvé.",
+                        "code": 404,
+                    });
                 })
             }
         })
@@ -148,7 +181,7 @@ class IngredientRepository {
 
     deleteOne(id) {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .where({ 'id' : id })
             .fetch({require: true, withRelated: ['spells']})
             .then(v => {
@@ -162,7 +195,10 @@ class IngredientRepository {
             })
             .catch(err => {
                 console.log(err)
-                reject(new HttpError(404, "Couldn't get ingredient"))
+                reject({
+                    "message": "L'ingrédient en question n'a pas été trouvé.",
+                    "code": 404,
+                });
             })
         })
     }
