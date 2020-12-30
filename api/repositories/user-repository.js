@@ -28,11 +28,12 @@ class UserRepository {
     getAll() {
         return new Promise((resolve, reject) => {
             new model()
-            .fetchAll()
+            .fetchAll({ withRelated: [ 'role' ] })
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }));
             })
-            .catch(() => {
+            .catch(err => {
+                console.log(err)
                 reject({
                     "message": "Erreur de base de données, les utilisateurs n'ont pas pu être récupérés.",
                     "code": 500,
@@ -45,7 +46,7 @@ class UserRepository {
         return new Promise((resolve, reject) => {
             new model()
             .where({ 'uuid' : uuid })
-            .fetch()
+            .fetch({ withRelated: [ 'role' ] })
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true, visibility: !full }));
             })
