@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `spell` (
     `description` VARCHAR(1000) NOT NULL DEFAULT "Description du sort",
     `level` INT UNSIGNED DEFAULT 0,
     `charge` INT UNSIGNED DEFAULT 0,
-    `cost` VARCHAR(255) DEFAULT "0",
+    `cost` VARCHAR(255) DEFAULT 0,
     `is_ritual` BOOLEAN DEFAULT false,
     `published` BOOLEAN DEFAULT true,
     `public` BOOLEAN DEFAULT true,
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `variable` (
 
 /* ==== ASSOCIATION TABLES ==== */
 
-/* SPELLS' SCHOOLS */
+/* SPELLS` SCHOOLS */
 /* One spell can have multiple (up to 3) schools */
 CREATE TABLE IF NOT EXISTS `spell_school` (
     `spell_id` INT UNSIGNED NOT NULL,
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `spell_school` (
     FOREIGN KEY(`school_id`) REFERENCES school(`id`)
 );
 
-/* SPELLS' VARIABLES */
+/* SPELLS` VARIABLES */
 /* One spell can have multiple (up to 2) variables of cost */
 CREATE TABLE IF NOT EXISTS `spell_variable` (
     `spell_id` INT UNSIGNED NOT NULL,
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `spell_variable` (
     FOREIGN KEY(`variable_id`) REFERENCES variable(`id`)
 );
 
-/* SPELLS' VARIABLES */
+/* SPELLS` VARIABLES */
 /* One spell can have multiple ingredients */
 CREATE TABLE IF NOT EXISTS `spell_ingredient` (
     `spell_id` INT UNSIGNED NOT NULL,
@@ -111,11 +111,11 @@ CREATE TABLE IF NOT EXISTS `spell_ingredient` (
     FOREIGN KEY(`ingredient_id`) REFERENCES ingredient(`id`)
 );
 
-/* Ajout d'une nouvelle ligne avant l'insert de description */
+/* Ajout d`une nouvelle ligne avant l`insert de description */
 DELIMITER $$
 CREATE TRIGGER `multiLine` BEFORE INSERT ON `spell` FOR EACH ROW
 BEGIN
-    SET NEW.description = replace(NEW.description, '<l>', '\n');
+    SET NEW.description = replace(NEW.description, "<l>", "\n");
 END$$
 DELIMITER ;
 
@@ -130,49 +130,84 @@ INSERT INTO `role` (name, description) VALUES
 ("Arcanologue", "Maîtres de l'arcane, ils ont le pouvoir et la responsabilité de juger les sortilèges récents et de les supprimer, ou valider."),
 ("Augure", "Régents des grimoires, ils ont droit d'accès à l'intégralité des informations connues, et pouvoir absolu sur le savoir arcanique.");
 
+-- USERS
+INSERT INTO `user` (uuid, name, mail, avatar, gender, register_date, password, role_id, verified, banned) VALUES
+("08e5d2cf-3f0b-454f-b03f-504350d6be85", "Izàc", "tymos@ambrose.edu", null, null, "2020-12-27 17:47:02", "$2b$10$8KWGfRmdQ/ya32fROZNrWugXIEOciDaZwLz.3.GzQa5xrJaGF9RP2", 4, 1, 0);
+
 -- META SCHOOLS
 INSERT INTO `meta_school` (name, description) VALUES
-('Magies blanches', 'Magies disciplinant les arts de soins et de lumières.'),
-('Magies noires', 'Magies disciplinant l\'art de la mort et des secrets.'),
-('Magies élémentaires', 'Magies disciplinant les éléments basiques tels que l\'eau, la foudre et le feu, pour n\'en citer que les plus populaires.'),
-('Magies spirituelles', 'Magies disciplinant l\'esprit, tant pour le défendre que l\'attaquer.'),
-('Magies spatio-temporelles', 'Magies régissant le temps et l\'espace.'),
-('Magies affiliées', 'Magies rattachées à une forme d\'énergie magique particulière.'),
-('Magies autres', 'Magies trop spécifiques et ne rentrant dans aucune autre grande école.');
+("Magies blanches", "Magies disciplinant les arts de soins et de lumières."),
+("Magies noires", "Magies disciplinant l'art de la mort et des secrets."),
+("Magies élémentaires", "Magies disciplinant les éléments basiques tels que l'eau, la foudre et le feu, pour n'en citer que les plus populaires."),
+("Magies spirituelles", "Magies disciplinant l'esprit, tant pour le défendre que l'attaquer."),
+("Magies spatio-temporelles", "Magies régissant le temps et l'espace."),
+("Magies affiliées", "Magies rattachées à une forme d'énergie magique particulière."),
+("Magies autres", "Magies trop spécifiques et ne rentrant dans aucune autre grande école.");
 
--- SCHOOLS
-INSERT INTO `school` (name, description, meta_school_id) VALUES
-('Lumomancie', 'Discipline arcanique de la lumière.', 1),
-('Vitamancie', 'Discipline arcanique de la guérison et de l\'énergie vitale.', 1),
-('Obstrumancie', 'Discipline arcanique de la protection et des sceaux.', 1),
-('Tenebromancie', 'Discipline arcanique de la lumière.', 2),
-('Necromancie', 'Discipline arcanique de la mort.', 2),
-('Morbomancie', 'Discipline arcanique des maladies et malédictions.', 2),
-('Pyromancie', 'Discipline arcanique du feu.', 3),
-('Hydromancie', 'Discipline arcanique de l\'eau.', 3),
-('Electromancie', 'Discipline arcanique de la foudre.', 3),
-('Terramancie', 'Discipline arcanique de la terre.', 3),
-('Sidéromancie', 'Discipline arcanique des métaux rares et précieux.', 3),
-('Caelomancie', 'Discipline arcanique de l\'air.', 3),
-('Légimancie', 'Discipline arcanique de la lecture et du contrôle spirituel.', 4),
-('Illusiomancie', 'Discipline arcanique des illusions.', 4),
-('Cruciomancie', 'Discipline arcanique de la destruction spirituelle.', 4),
-('Chronomancie', 'Discipline arcanique du temps.', 5),
-('Spatiomancie', 'Discipline arcanique de l\'espace.', 5),
-('Kénomancie', 'Discipline arcanique du néant.', 6),
-('Lutomancie', 'Discipline arcanique des abysses.', 6),
-('Échomancie', 'Discipline arcanique de la résolution animique.', 6),
-('Protomancie', 'Discipline arcanique de la magie pure.', 7),
-('Rebumancie', 'Discipline arcanique de la lumière.', 7),
-('Vocamancie', 'Discipline arcanique de la lumière.', 7),
-('Somamancie', 'Discipline arcanique de la maîtrise corporelle.', 7),
-('Antimancie', 'Discipline arcanique de l\'annulation arcanique.', 7);
+-- CSV FILES
+LOAD DATA INFILE 'C:/temp/auracle_data/spell.csv'
+  INTO TABLE `spell` 
+  FIELDS TERMINATED BY ',' 
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n'
+  IGNORE 1 ROWS;
 
--- INGREDIENTS
-INSERT INTO `ingredient` (name, description) VALUES
-('Volonté', 'La force de volonté du lanceur, concentrée sur un objectif'),
-('Geste', 'Un geste précis facilitant la canalisation magique');
+LOAD DATA INFILE 'C:/temp/auracle_data/school.csv'
+  INTO TABLE `school` 
+  FIELDS TERMINATED BY ',' 
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n'
+  IGNORE 1 ROWS;
 
--- VARIABLES
-INSERT INTO `variable` (description) VALUES
-('Nombre de personnes soignées');
+LOAD DATA INFILE 'C:/temp/auracle_data/ingredient.csv'
+  INTO TABLE `ingredient` 
+  FIELDS TERMINATED BY ',' 
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n'
+  IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'C:/temp/auracle_data/variable.csv'
+  INTO TABLE `variable` 
+  FIELDS TERMINATED BY ',' 
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n'
+  IGNORE 1 ROWS;
+
+/* Insertions de masses */
+DELIMITER $$
+CREATE PROCEDURE insertIntoSchoolRange(IN delimiter_start INT, IN delimiter_end INT, IN id_school INT)
+BEGIN
+    SET @i = delimiter_start;
+    WHILE @i <= delimiter_end DO
+        INSERT INTO spell_school (spell_id, school_id) VALUES (@i, id_school);
+        SET @i = @i + 1;
+    END WHILE;
+END$$
+DELIMITER ;
+
+CALL insertIntoSchoolRange(1, 33, 1);
+CALL insertIntoSchoolRange(34, 67, 2);
+CALL insertIntoSchoolRange(68, 90, 3);
+CALL insertIntoSchoolRange(91, 119, 4);
+CALL insertIntoSchoolRange(120, 135, 5);
+CALL insertIntoSchoolRange(136, 139, 6);
+CALL insertIntoSchoolRange(140, 165, 7);
+CALL insertIntoSchoolRange(166, 195, 8);
+CALL insertIntoSchoolRange(196, 222, 9);
+CALL insertIntoSchoolRange(223, 247, 10);
+CALL insertIntoSchoolRange(248, 252, 11);
+CALL insertIntoSchoolRange(253, 274, 12);
+CALL insertIntoSchoolRange(275, 292, 13);
+CALL insertIntoSchoolRange(293, 312, 14);
+CALL insertIntoSchoolRange(313, 323, 15);
+CALL insertIntoSchoolRange(324, 343, 16);
+CALL insertIntoSchoolRange(344, 364, 17);
+CALL insertIntoSchoolRange(365, 366, 18);
+CALL insertIntoSchoolRange(367, 383, 19);
+CALL insertIntoSchoolRange(384, 385, 20);
+CALL insertIntoSchoolRange(386, 403, 21);
+CALL insertIntoSchoolRange(404, 435, 22);
+CALL insertIntoSchoolRange(436, 438, 23);
+CALL insertIntoSchoolRange(439, 443, 24);
+CALL insertIntoSchoolRange(444, 455, 25);
+CALL insertIntoSchoolRange(456, 462, 26);

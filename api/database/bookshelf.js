@@ -1,6 +1,5 @@
 // MODULES
-const fs = require('fs')
-const mysql = require('mysql')
+const fs = require('fs');
 
 // Setting up the database connection
 const knex = require('knex')({
@@ -9,10 +8,10 @@ const knex = require('knex')({
       host     : process.env.DB_HOST,
       user     : process.env.DB_USER,
       password : process.env.DB_PASSWORD,
-      database : "auracle",
+      database : process.env.DB_DATABASE,
       charset  : "utf8"
     },
-})
-const bookshelf = require('bookshelf')(knex)
+});
+const bookshelf = require('bookshelf')(knex);
 
-module.exports = { bookshelf }
+module.exports = { bookshelf };
