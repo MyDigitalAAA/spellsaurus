@@ -22,3 +22,7 @@ yarn-error.log*
 
 # creds
 .env
+
+# db files
+*.csv
+*.ods

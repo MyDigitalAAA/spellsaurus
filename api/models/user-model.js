@@ -1,9 +1,14 @@
 'use strict'
-const bookshelf = require('../database/bookshelf').bookshelf
+const bookshelf = require('../database/bookshelf').bookshelf;
+
+require('./role-model');
 
 let User = bookshelf.Model.extend({
     tableName: 'user',
-    hidden: ['id', 'password']
+    hidden: [ 'password' ],
+    role() {
+        return this.belongsTo( 'Role' );
+    },
 })
 
 module.exports = bookshelf.model('User', User)
