@@ -63,7 +63,7 @@ class UserRepository {
         return new Promise((resolve, reject) => {
             new model()
             .where({ 'mail': mail })
-            .fetch()
+            .fetch({ withRelated: [ 'role' ] })
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true, visibility: !full }));
             })
@@ -72,7 +72,24 @@ class UserRepository {
                     "message": "L'utilisateur avec cet email n'a pas été trouvé.",
                     "code": 404,
                 });
+            });
+        })
+    }
+
+    getSpellsFromOne(uuid) {
+        return new Promise((resolve, reject) => {
+            new model()
+            .where({ 'uuid': uuid })
+            .fetch({ withRelated: [ 'role', 'spells.schools.meta_schools', 'spells.variables', 'spells.ingredients' ] })
+            .then(v => {
+                resolve(v.toJSON({ omitPivot: true }));
             })
+            .catch(() => {
+                reject({
+                    "message": "Les sorts liés à cet utilisateur n'ont pas été trouvés.",
+                    "code": 404,
+                });
+            });
         })
     }
 
