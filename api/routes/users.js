@@ -60,6 +60,29 @@ router.get('/:uuid/', async (req, res) => {
     })
 })
 
+// GET SPELLS FROM ONE ------------------
+const getSpellsFromUser = (uuid) => {
+  return Users.getSpellsFromOne(uuid)
+  .catch(err => {
+      throw err
+  })
+}
+router.get('/:uuid/spells', async (req, res) => {
+  getSpellsFromUser(req.params.uuid)
+  .then(v => {
+      res.setHeader('Content-Type', 'application/json;charset=utf-8')
+      res.end(JSON.stringify(v))
+  })
+  .catch(err => {
+      res.status(err.code).send(JSON.stringify(
+          {
+              "error": err.message,
+              "code": err.code
+          })
+      )
+  })
+})
+
 
 // CHECK IF MAIL IS AVAILABLE ------------------
 const checkIfEmailAvailable = (mail) => {

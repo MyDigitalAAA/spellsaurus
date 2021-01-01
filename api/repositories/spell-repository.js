@@ -30,7 +30,7 @@ class SpellRepository {
             if (cost) { query.where({ 'cost' : cost }) }
             if (ritual) { query.where({ 'is_ritual' : ritual }) }
 
-            query.fetchAll({ withRelated: ['schools.meta_schools', 'variables', 'ingredients'] })
+            query.fetchAll({ withRelated: [ 'schools.meta_schools', 'variables', 'ingredients', 'author' ] })
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }))
             })
@@ -56,7 +56,7 @@ class SpellRepository {
             if (cost) { query.where({ 'cost' : cost }) }
             if (ritual) { query.where({ 'is_ritual' : ritual }) }
 
-            query.fetchAll({ withRelated: ['schools.meta_schools', 'variables', 'ingredients'] })
+            query.fetchAll({ withRelated: [ 'schools.meta_schools', 'variables', 'ingredients', 'author' ] })
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }));
             })
@@ -77,7 +77,7 @@ class SpellRepository {
             .fetchPage({
                 pageSize: 20,
                 page: page,
-                withRelated: ['schools.meta_schools', 'variables', 'ingredients'],
+                withRelated: [ 'schools.meta_schools', 'variables', 'ingredients', 'author' ],
             })
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }))
@@ -96,7 +96,7 @@ class SpellRepository {
         return new Promise((resolve, reject) => {
             new model()
             .where({ 'id' : id })
-            .fetch({ withRelated: ['schools.meta_schools', 'variables', 'ingredients']})
+            .fetch({ withRelated: [ 'schools.meta_schools', 'variables', 'ingredients', 'author' ]})
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }))
             })
@@ -170,7 +170,7 @@ class SpellRepository {
                     })
                 })
                 .then(v => {
-                    return v.load(['schools.meta_schools', 'variables', 'ingredients'])
+                    return v.load([ 'schools.meta_schools', 'variables', 'ingredients', 'author' ])
                 })
                 .then(v => {
                     resolve(this.getOne(v.id))
@@ -206,7 +206,7 @@ class SpellRepository {
                 });
             } else {
                 new model({id: id})
-                .fetch({require: true, withRelated: ['schools.meta_schools', 'variables', 'ingredients']})
+                .fetch({require: true, withRelated: [ 'schools.meta_schools', 'variables', 'ingredients', 'author' ]})
                 .then(v => {
                     bookshelf.transaction(t => {
                         return v.save({
@@ -269,7 +269,7 @@ class SpellRepository {
                         })
                     })
                     .then(v => {
-                        return v.load(['schools.meta_schools', 'variables', 'ingredients']);
+                        return v.load([ 'schools.meta_schools', 'variables', 'ingredients', 'author' ]);
                     })
                     .then(v => {
                         resolve(this.getOne(v.id));
@@ -297,7 +297,7 @@ class SpellRepository {
         return new Promise((resolve, reject) => {
             new model()
             .where({ 'id' : id })
-            .fetch({require: true, withRelated: ['schools.meta_schools', 'variables', 'ingredients']})
+            .fetch({require: true, withRelated: [ 'schools.meta_schools', 'variables', 'ingredients', 'author' ]})
             .then(v => {
                 v.schools().detach();
                 v.variables().detach();
