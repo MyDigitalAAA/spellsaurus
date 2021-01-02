@@ -4,7 +4,7 @@ USE auracle;
 
 /* =========== PRIMARY TABLES =========== */
 
-/* PERMISSIONS */
+-- ROLES
 CREATE TABLE IF NOT EXISTS `role` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
@@ -12,7 +12,14 @@ CREATE TABLE IF NOT EXISTS `role` (
     PRIMARY KEY(`id`)
 );
 
-/* USERS */
+-- PERMISSIONS
+CREATE TABLE IF NOT EXISTS `permission` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `slug` VARCHAR(255) NOT NULL,
+    PRIMARY KEY(`id`)
+);
+
+-- USERS
 CREATE TABLE IF NOT EXISTS `user` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `uuid` VARCHAR(36) NOT NULL,
@@ -30,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     FOREIGN KEY(`role_id`) REFERENCES role(`id`)
 );
 
-/* SPELLS */
+-- SPELLS
 CREATE TABLE IF NOT EXISTS `spell` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL DEFAULT "Nom du sort",
@@ -46,7 +53,7 @@ CREATE TABLE IF NOT EXISTS `spell` (
     FOREIGN KEY(`author_id`) REFERENCES user(`id`)
 );
 
-/* META SCHOOLS */
+-- META SCHOOLS
 CREATE TABLE IF NOT EXISTS `meta_school` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL DEFAULT "Nom de l'école mère",
@@ -54,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `meta_school` (
     PRIMARY KEY (`id`)
 );
 
-/* SCHOOLS */
+-- SCHOOLS
 CREATE TABLE IF NOT EXISTS `school` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL DEFAULT "Nom de l'école",
@@ -64,7 +71,7 @@ CREATE TABLE IF NOT EXISTS `school` (
     FOREIGN KEY(`meta_school_id`) REFERENCES meta_school(`id`)
 );
 
-/* COMMON INGREDIENTS */
+-- COMMON INGREDIENTS
 CREATE TABLE IF NOT EXISTS `ingredient` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL DEFAULT "Langue de salamandre",
@@ -72,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `ingredient` (
     PRIMARY KEY (`id`)
 );
 
-/* COMMON VARIABLES */
+-- COMMON VARIABLES
 CREATE TABLE IF NOT EXISTS `variable` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `description` VARCHAR(255) NOT NULL DEFAULT "Nombre de créatures affectées",
@@ -81,8 +88,8 @@ CREATE TABLE IF NOT EXISTS `variable` (
 
 /* ==== ASSOCIATION TABLES ==== */
 
-/* SPELLS` SCHOOLS */
-/* One spell can have multiple (up to 3) schools */
+-- SPELLS' SCHOOLS
+-- One spell can have multiple (up to 3) schools
 CREATE TABLE IF NOT EXISTS `spell_school` (
     `spell_id` INT UNSIGNED NOT NULL,
     `school_id` INT UNSIGNED NOT NULL,
@@ -91,8 +98,8 @@ CREATE TABLE IF NOT EXISTS `spell_school` (
     FOREIGN KEY(`school_id`) REFERENCES school(`id`)
 );
 
-/* SPELLS` VARIABLES */
-/* One spell can have multiple (up to 2) variables of cost */
+-- SPELLS' VARIABLES
+-- One spell can have multiple (up to 2) variables of cost
 CREATE TABLE IF NOT EXISTS `spell_variable` (
     `spell_id` INT UNSIGNED NOT NULL,
     `variable_id` INT UNSIGNED NOT NULL,
@@ -101,8 +108,8 @@ CREATE TABLE IF NOT EXISTS `spell_variable` (
     FOREIGN KEY(`variable_id`) REFERENCES variable(`id`)
 );
 
-/* SPELLS` VARIABLES */
-/* One spell can have multiple ingredients */
+-- SPELLS' VARIABLES
+-- One spell can have multiple ingredients
 CREATE TABLE IF NOT EXISTS `spell_ingredient` (
     `spell_id` INT UNSIGNED NOT NULL,
     `ingredient_id` INT UNSIGNED NOT NULL,
@@ -111,7 +118,17 @@ CREATE TABLE IF NOT EXISTS `spell_ingredient` (
     FOREIGN KEY(`ingredient_id`) REFERENCES ingredient(`id`)
 );
 
-/* Ajout d`une nouvelle ligne avant l`insert de description */
+-- ROLES' PERMISSIONS
+-- One role can have any number of permissions, or none at all
+CREATE TABLE IF NOT EXISTS `role_permission` (
+    `role_id` INT UNSIGNED NOT NULL,
+    `permission_id` INT UNSIGNED NOT NULL,
+    PRIMARY KEY (`role_id`, `permission_id`),
+    FOREIGN KEY(`role_id`) REFERENCES role(`id`),
+    FOREIGN KEY(`permission_id`) REFERENCES permission(`id`)
+);
+
+-- Ajout d`une nouvelle ligne avant l`insert de description
 DELIMITER $$
 CREATE TRIGGER `multiLine` BEFORE INSERT ON `spell` FOR EACH ROW
 BEGIN
@@ -123,12 +140,33 @@ DELIMITER ;
 SET NAMES utf8;
 USE auracle;
 
--- PERMISSIONS
+-- ROLES
 INSERT INTO `role` (name, description) VALUES
 ("Visiteur", "Utilisateur normal, peut consulter les sorts."),
-("Scribe", "Gardiens des écrits, les scribes sont capables de modifier et d'ajouter des sortilèges."),
+("Scribe", "Gardiens des écrits, les scribes sont capables de soumettre des sortilèges."),
 ("Arcanologue", "Maîtres de l'arcane, ils ont le pouvoir et la responsabilité de juger les sortilèges récents et de les supprimer, ou valider."),
 ("Augure", "Régents des grimoires, ils ont droit d'accès à l'intégralité des informations connues, et pouvoir absolu sur le savoir arcanique.");
+
+-- PERMISSIONS
+INSERT INTO `permission` (slug) VALUES
+("SUBMIT_SPELLS"),
+("APPROVE_SPELLS"),
+("MODIFY_SPELLS"),
+("DELETE_SPELLS"),
+("WARN_USERS"),
+("BAN_USERS");
+
+INSERT INTO `role_permission` (role_id, permission_id) VALUES
+(2, 1),
+(3, 1),
+(3, 2),
+(3, 3),
+(4, 1),
+(4, 2),
+(4, 3),
+(4, 4),
+(4, 5),
+(4, 6);
 
 -- USERS
 INSERT INTO `user` (uuid, name, mail, avatar, gender, register_date, password, role_id, verified, banned) VALUES
@@ -173,7 +211,7 @@ LOAD DATA INFILE 'C:/temp/auracle_data/variable.csv'
   LINES TERMINATED BY '\n'
   IGNORE 1 ROWS;
 
-/* Insertions de masses */
+-- Insertions de masses
 DELIMITER $$
 CREATE PROCEDURE insertIntoSchoolRange(IN delimiter_start INT, IN delimiter_end INT, IN id_school INT)
 BEGIN
