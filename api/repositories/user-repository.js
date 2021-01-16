@@ -133,7 +133,7 @@ class UserRepository {
                         .catch(err => {
                             console.log(err);
                             reject({
-                                "message": "Un attributs de l'utilisateur a provoqué une erreur d'insertion.",
+                                "message": "Un attribut de l'utilisateur a provoqué une erreur d'insertion.",
                                 "code": 500,
                             });
                         })
