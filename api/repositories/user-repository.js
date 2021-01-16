@@ -28,7 +28,7 @@ class UserRepository {
     getAll() {
         return new Promise((resolve, reject) => {
             new model()
-            .fetchAll({ withRelated: [ 'role' ] })
+            .fetchAll({ withRelated: [ 'role.permissions' ] })
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }));
             })
@@ -46,7 +46,7 @@ class UserRepository {
         return new Promise((resolve, reject) => {
             new model()
             .where({ 'uuid' : uuid })
-            .fetch({ withRelated: [ 'role' ] })
+            .fetch({ withRelated: [ 'role.permissions' ] })
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true, visibility: !full }));
             })
