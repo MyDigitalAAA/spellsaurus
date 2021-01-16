@@ -8,7 +8,7 @@
 
 <script>
 // API
-import { RepositoryFactory } from "~/api/repositories";
+import { RepositoryFactory } from "@/api/repositories";
 const Schools = RepositoryFactory.get('schools');
 
 import SpellsList from "~/components/spells/spells-list";

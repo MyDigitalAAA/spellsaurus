@@ -42,11 +42,11 @@
                 placement="bottom"
                 title="Description copiée !"
                 class="small text-muted mt-2">
-                <span style="white-space: pre-wrap;">{{spell.description}}</span>
+                <span class="prewrap">{{spell.description}}</span>
             </div>
 
             <div class="mt-2">
-                <div class="font-weight-bold d-inline-block"><span>Coût </span>{{spell.cost}}</div>
+                <div class="font-weight-bold d-inline-block"><span>Coût : </span>{{spell.cost}}</div>
                 <div v-if="spell.variables.length>0" class="small d-inline-block">, où&nbsp;:</div>
                 <div class=small>
                     <span v-for="(variable,index) in spell.variables" :key="index">
@@ -72,7 +72,7 @@
 
 <script>
 // API
-import { RepositoryFactory } from "~/api/repositories"
+import { RepositoryFactory } from "@/api/repositories"
 const Spells = RepositoryFactory.get('spells')
 
 export default {

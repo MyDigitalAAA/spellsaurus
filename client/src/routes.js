@@ -3,19 +3,19 @@ import VueRouter from 'vue-router'
 import store from './store'
 
 // Pages
-import Index from "~/pages/index-page"
+import Index from "@/pages/index-page"
 
-  import Spells from "~/pages/spells/spells-page"
-  import SpellSingle from "~/pages/spells/single-spell-page"
+  import Spells from "@/pages/spells/spells-page"
+  import SpellSingle from "@/pages/spells/single-spell-page"
 
   import Schools from "./pages/schools/schools-page"
-  import SchoolSingle from "~/pages/schools/single-school-page"
+  import SchoolSingle from "@/pages/schools/single-school-page"
 
   import Timeline from "./pages/timelines/timeline-page"
   
-  import Profile from "~/pages/user/profile-page"
-  import Login from "~/pages/user/login-page"
-  import Register from "~/pages/user/register-page"
+  import Profile from "@/pages/user/profile-page"
+  import Login from "@/pages/user/login-page"
+  import Register from "@/pages/user/register-page"
 
 // Routes
 const routes = [

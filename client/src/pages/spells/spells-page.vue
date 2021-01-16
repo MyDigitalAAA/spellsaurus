@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import SpellsList from "~/components/spells/spells-list"
+import SpellsList from "@/components/spells/spells-list.vue";
 
 export default {
   name: 'spells-page',

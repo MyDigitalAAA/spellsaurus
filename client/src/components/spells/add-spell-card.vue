@@ -73,7 +73,7 @@
 
 <script>
 // API
-import { RepositoryFactory } from "~/api/repositories"
+import { RepositoryFactory } from "@/api/repositories"
 
 const Spells = RepositoryFactory.get('spells')
 const Schools = RepositoryFactory.get('schools')
