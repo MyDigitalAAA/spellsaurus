@@ -54,6 +54,11 @@ hr {
     font-weight: $heavy;
 }
 
+// UTILITIES
+.prewrap {
+  white-space: pre-wrap;
+}
+
 // LAYOUTS
 .fullpage {
     min-height: calc(100vh - 56px);
