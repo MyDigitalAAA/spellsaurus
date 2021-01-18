@@ -8,12 +8,9 @@ const morgan = require('morgan');
 const cors = require('cors'); // module to format the json response
 const dotenv = require('dotenv').config();
 
-// Creates instances of database connections
-const connection = require('./database/bookshelf');
-const db = connection.db;
-
 // CONSTANTS
 const port = 2814;
+const base_url = 'http://localhost:2814/api';
 
 // Import routes
 const routes = require('./routes');
@@ -33,19 +30,13 @@ app.use(helmet());
 // Server
 app.listen(port, () => console.log(`App listening on port ${port}`));
 
-// TEMP Auth guard
-const authguard = (req, res, next) => {
-    // if (req.headers.auracle_key !== process.env.API_KEY_PUBLIC) {
-    //     return res.status(401).send('The API key is either missing or incorrect.');
-    // } else {
-        next();
-    // }
-}
+// Entry route
+app.use('/api/v1/', routes.auth );
 
 // Routing
-app.use('/api/spells', authguard, routes.spells);
-app.use('/api/schools', authguard, routes.schools);
-app.use('/api/meta_schools', authguard, routes.meta_schools);
-app.use('/api/variables', authguard, routes.variables);
-app.use('/api/ingredients', authguard, routes.ingredients);
-app.use('/api/users', authguard, routes.users);
+app.use('/api/v1/spells', routes.spells);
+app.use('/api/v1/schools', routes.schools);
+app.use('/api/v1/meta_schools', routes.meta_schools);
+app.use('/api/v1/variables', routes.variables);
+app.use('/api/v1/ingredients', routes.ingredients);
+app.use('/api/v1/users', routes.users);
