@@ -6,7 +6,7 @@ require('./spell-model');
 
 let User = bookshelf.Model.extend({
     tableName: 'user',
-    hidden: [ 'password' ],
+    hidden: [ 'password', 'role_id' ],
     role() {
         return this.belongsTo( 'Role' );
     },
@@ -15,4 +15,4 @@ let User = bookshelf.Model.extend({
     }
 })
 
-module.exports = bookshelf.model('User', User)
+module.exports = bookshelf.model( 'User', User )

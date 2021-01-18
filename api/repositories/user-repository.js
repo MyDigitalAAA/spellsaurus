@@ -1,30 +1,37 @@
 'use strict'
 // Bookshelf
-const bookshelf = require('../database/bookshelf').bookshelf
-const model = require('../models/user-model')
+const bookshelf = require('../database/bookshelf').bookshelf;
+const model = require('../models/user-model');
+const token_model = require('../models/api-token-model');
 
 // Hashing and passwords
-const bcrypt = require('bcrypt')
-const { v4: uuidv4 } = require('uuid')
+const bcrypt = require('bcrypt');
+const { v4: uuidv4 } = require('uuid');
 
 // Mailing methods
-const mails = require('../smtp/mails')
+const mails = require('../smtp/mails');
 
 // Model validation
-const Validator = require('jsonschema').Validator
-const v = new Validator()
-const UserValidation = require("../validations/UserValidation")
-v.addSchema(UserValidation, "/UserValidation")
+const Validator = require('jsonschema').Validator;
+const v = new Validator();
+const UserValidation = require("../validations/UserValidation");
+v.addSchema(UserValidation, "/UserValidation");
 
 // Validations
-const isXSSAttempt = require('../functions').isXSSAttempt
-const isEmptyObject = require('../functions').isEmptyObject
+const isXSSAttempt = require('../functions').isXSSAttempt;
+const isEmptyObject = require('../functions').isEmptyObject;
 
 class UserRepository {
 
     constructor() {
     }
 
+    /**
+     * Fetches all users in the dabatase.
+     * 
+     * @returns { Promise }
+     *    Fulfilled data: Array of user objects.
+     */
     getAll() {
         return new Promise((resolve, reject) => {
             new model()
@@ -42,8 +49,26 @@ class UserRepository {
         })
     }
 
+    /**
+     * Fetches a user object associated with the uuid.
+     * 
+     * @param { string } uuid
+     * @param { boolean } full
+     *    Whether the password should also be fetched. (should never be true unless you want to log the user)
+     * 
+     * @returns { Promise }
+     *    Fulfilled data: Queried user object. 
+     */
     getOneByUUID(uuid, full) {
         return new Promise((resolve, reject) => {
+
+            if (!(uuid)) {
+                reject({
+                    "message": "La requête doit renseigner un uuid.",
+                    "code": 400,
+                })
+            }
+
             new model()
             .where({ 'uuid' : uuid })
             .fetch({ withRelated: [ 'role.permissions' ] })
@@ -59,8 +84,26 @@ class UserRepository {
         })
     }
 
+    /**
+     * Fetches a user object associated with the mail address.
+     * 
+     * @param { string } mail
+     * @param { boolean } full
+     *    Whether the password should also be fetched. (should never be true unless you want to log the user)
+     * 
+     * @returns { Promise }
+     *    Fulfilled data: Queried user object. 
+     */
     getOneByEmail(mail, full) {
         return new Promise((resolve, reject) => {
+
+            if (!(mail)) {
+                reject({
+                    "message": "La requête doit renseigner un email.",
+                    "code": 400,
+                })
+            }
+
             new model()
             .where({ 'mail': mail })
             .fetch({ withRelated: [ 'role' ] })
@@ -76,8 +119,23 @@ class UserRepository {
         })
     }
 
+    /**
+     * Fetches all spells linked to a user's uuid
+     * 
+     * @param { string } uuid
+     * 
+     * @returns 
+     */
     getSpellsFromOne(uuid) {
         return new Promise((resolve, reject) => {
+
+            if (!(uuid)) {
+                reject({
+                    "message": "La requête doit renseigner un uuid.",
+                    "code": 400,
+                })
+            }
+
             new model()
             .where({ 'uuid': uuid })
             .fetch({ withRelated: [ 'role', 'spells.schools.meta_schools', 'spells.variables', 'spells.ingredients' ] })
@@ -93,6 +151,15 @@ class UserRepository {
         })
     }
 
+    /**
+     * Registers a user based on the model at ./models/user-model.js.
+     * 
+     * @param { object} u
+     *    User object
+     * 
+     * @returns { Promise }
+     *    Fulfilled data: Queried user object.
+     */
     addOne(u) {
         return new Promise(async (resolve, reject) => {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
@@ -112,9 +179,9 @@ class UserRepository {
                     "code": 403,
                 })
             } else {
-                let hash = await bcrypt.hash(u.password, 10)
+                let hash = await bcrypt.hash(u.password, 10);
 
-                let uuid = uuidv4()
+                let uuid = uuidv4();
                 let verification_token = uuidv4();
 
                 this.checkIfEmailAvailable(u.mail)
@@ -150,16 +217,17 @@ class UserRepository {
                                 mail: newUser.mail,
                                 token: verification_token,
                             }
-                        })
+                        });
 
                         // Then resolves the api call
                         resolve({
                             "message": `Compte utilisateur #${newUser.id} créé avec succès.`,
                             "code": 201,
                             "user": newUser,
-                        })
+                        });
                     })
                     .catch(err => {
+                        console.log(err);
                         resolve({
                             "message": "Une erreur s'est produite en créant votre compte. Veuillez réessayer ultérieurement ou contactez l'administrateur.",
                             "code": 500,
@@ -173,6 +241,14 @@ class UserRepository {
         })
     }
 
+    /**
+     * Verifies an account based on a private UUID token
+     * 
+     * @param { string } token
+     *    A UUID v4 identification token provided at registration and on special demands
+     * 
+     * @returns Redirects to login page
+     */
     verifyUser(token) {
         return new Promise((resolve, reject) => {
             new model()
@@ -188,7 +264,7 @@ class UserRepository {
                         transacting: t
                     })
                 })
-                .then(v => {
+                .then(() => {
                   resolve({
                       "message": "Insérez ici une future redirection vers le client.",
                       "code": 202,
@@ -204,52 +280,143 @@ class UserRepository {
         });
     }
 
-    // Log user with an email address and a password
+    /**
+     * Logs a user by comparing the dual mail/password inputs
+     * 
+     * @param { string } mail
+     * @param { string } password
+     * 
+     * @return { Promise }
+     *    Fulfilled data: Queried user object.
+     */
     logUser(mail, password) {
         return new Promise((resolve, reject) => {
             this.getOneByEmail(mail, true)
             .then(async fetchedUser => {
 
-                let match = await bcrypt.compare(password, fetchedUser.password)
-                delete fetchedUser.id
-                delete fetchedUser.password
+                let match = await bcrypt.compare(password, fetchedUser.password);
 
+                // Makes sure no hash gets out
+                delete fetchedUser.password;
+
+                // If you found a user...
                 if (match) {
+                    // If they're banned...
                     if (fetchedUser.banned) {
                         reject({
                             "message":  `L'utilisateur #${fetchedUser.name} a été banni, la connexion est impossible.`,
                             "code": 403,
-                        })
+                        });
+                    // If they're not verified...
                     } else if (!fetchedUser.verified) {
                         reject({
                             "message":  `L'utilisateur #${fetchedUser.name} n'as pas été vérifié, le compte doit être activé avant la connexion.`,
                             "code": 401,
-                        })
+                        });
                     } else {
                         resolve({
                             "message": `L'utilisateur #${fetchedUser.name} s'est connecté.`,
                             "code": 200,
                             "user": fetchedUser,
-                        })
+                        });
                     }
                 } else {
                     reject({
                         "message": "Les informations de connexions sont erronées.",
                         "code": 400,
-                    })
+                    });
                 }
             })
             .catch(err => {
-                reject(err)
+                reject(err);
             })
         })
     }
 
-    // Check if one user already has that email
+    /**
+     * Generate a token for the user to use the API
+     * Requires mail and password for verifying the user
+     * 
+     * @param { string } mail
+     * @param { string } password
+     * 
+     * @returns { Promise }
+     *    Fulfilled data: A unique UUID token string.
+     */
+    genAPIToken(mail, password) {
+        return new Promise((resolve, reject) => {
+            this.logUser(mail, password)
+            .then(v => {
+                let user = v.user;
+                let new_token = uuidv4();
+
+                bookshelf.transaction(t => {
+                    return new token_model({
+                        'value': new_token,
+                        'user_uuid': user.uuid,
+                    })
+                    .save(null, {
+                        transacting: t
+                    })
+                    .catch(err => {
+                        // If the account already has an API key linked...
+                        if (err.errno == 1062) {
+                            this.fetchAPIKey(user.uuid)
+                            .then(old_api_key => {
+                                reject({
+                                    "message": "Votre compte a déjà généré une clé d'API.",
+                                    "code": 409,
+                                    "API_key": old_api_key.value,
+                                });
+                            });
+
+                        // Default errors
+                        } else {
+                            throw err
+                        }
+                    });
+                })
+                .then(api_key => {
+                    resolve({
+                        "message": "La clé d'API a été généré.",
+                        "code": 201,
+                        "API_key": api_key,
+                    })
+                })
+                .catch(err => {
+                    console.log(err);
+                    reject({
+                      "message": "La génération de jeton d'API n'a pas pu être conclue.",
+                      "code": 500,
+                    });
+                })
+            })
+            .catch(err => {
+                reject(err);
+            })
+        })
+    }
+
+    /**
+     * Check if the email that was input is available for account creation.
+     * 
+     * @param {string} mail
+     * 
+     * @returns { Promise }
+     *    Fulfilled: HTTP 200 if email is available.
+     *    Rejected: HTTP 400-409 if email is already used.
+     */
     checkIfEmailAvailable(mail) {
         return new Promise((resolve, reject) => {
 
-            if (!this.validateEmail(mail)) {
+            if (!(mail)) {
+                reject({
+                    "message": "La requête doit renseigner un email.",
+                    "code": 400,
+                })
+            }
+
+            if (!this.validateMail(mail)) {
                 reject({
                     "message": "La requête n'est pas un email valide.",
                     "code": 400,
@@ -272,9 +439,38 @@ class UserRepository {
         })
     }
 
-    validateEmail(email) {
-        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(String(email).toLowerCase());
+    /**
+     * Fetches the associated api_token from a user uuid.
+     * 
+     * @param { string } uuid
+     * 
+     * @returns { Promise }
+     *    Fulfilled data: Queried API token object
+     */
+    fetchAPIKey(uuid) {
+        return new Promise((resolve, reject) => {
+            new token_model()
+            .where({ 'user_uuid': uuid })
+            .fetch()
+            .then(v => {
+                resolve(v.toJSON({ omitPivot: true }));
+            })
+            .catch(err => {
+                console.log(err);
+            })
+        })
+    }
+
+    /**
+     * Whether a mail is correctly formed and ripe for receiving, ie: xxx@yyy.zzz.
+     * 
+     * @param { string } mail
+     * 
+     * @returns { boolean }
+     */
+    validateMail(mail) {
+        const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return regex.test(String(mail).toLowerCase());
     }
 }
 
