@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `permission` (
 -- USERS
 CREATE TABLE IF NOT EXISTS `user` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `uuid` VARCHAR(36) NOT NULL,
+    `uuid` VARCHAR(36) NOT NULL UNIQUE,
     `name` VARCHAR(255) NOT NULL DEFAULT "Disciple",
     `mail` VARCHAR(255) NOT NULL,
     `avatar` VARCHAR(255),
@@ -35,6 +35,15 @@ CREATE TABLE IF NOT EXISTS `user` (
     `banned` BOOLEAN DEFAULT false,
     PRIMARY KEY(`id`),
     FOREIGN KEY(`role_id`) REFERENCES role(`id`)
+);
+
+-- API_TOKENS
+CREATE TABLE IF NOT EXISTS `api_token` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `value` VARCHAR(255) NOT NULL,
+    `user_uuid` VARCHAR(36) NOT NULL UNIQUE,
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`user_uuid`) REFERENCES user(`uuid`)
 );
 
 -- SPELLS
