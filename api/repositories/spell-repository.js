@@ -31,8 +31,8 @@ class SpellRepository {
             if (ritual) { query.where({ 'is_ritual' : ritual }) }
 
             query.fetchAll({ withRelated: [ 'schools.meta_schools', 'variables', 'ingredients', 'author' ] })
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+            .then(fetchedSpells => {
+                resolve(fetchedSpells.toJSON({ omitPivot: true }))
             })
             .catch(err => {
                 console.log(err);
@@ -57,8 +57,8 @@ class SpellRepository {
             if (ritual) { query.where({ 'is_ritual' : ritual }) }
 
             query.fetchAll({ withRelated: [ 'schools.meta_schools', 'variables', 'ingredients', 'author' ] })
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }));
+            .then(fetchedSpells => {
+                resolve(fetchedSpells.toJSON({ omitPivot: true }));
             })
             .catch(err => {
                 console.log(err);
@@ -79,8 +79,8 @@ class SpellRepository {
                 page: page,
                 withRelated: [ 'schools.meta_schools', 'variables', 'ingredients', 'author' ],
             })
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+            .then(fetchedSpellPage => {
+                resolve(fetchedSpellPage.toJSON({ omitPivot: true }))
             })
             .catch(err => {
               console.log(err);
@@ -97,8 +97,8 @@ class SpellRepository {
             new model()
             .where({ 'id' : id })
             .fetch({ withRelated: [ 'schools.meta_schools', 'variables', 'ingredients', 'author' ]})
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+            .then(fetchedSpell => {
+                resolve(fetchedSpell.toJSON({ omitPivot: true }))
             })
             .catch(err => {
                 console.log(err);
@@ -169,11 +169,11 @@ class SpellRepository {
                         });
                     })
                 })
-                .then(v => {
-                    return v.load([ 'schools.meta_schools', 'variables', 'ingredients', 'author' ])
+                .then(newSpellRaw => {
+                    return newSpellRaw.load([ 'schools.meta_schools', 'variables', 'ingredients', 'author' ])
                 })
-                .then(v => {
-                    resolve(this.getOne(v.id))
+                .then(newSpell => {
+                    resolve(this.getOne(newSpell.id))
                 })
                 .catch(err => {
                     console.log(err);
@@ -205,11 +205,11 @@ class SpellRepository {
                     "code": 403,
                 });
             } else {
-                new model({id: id})
+                new model({ id: id })
                 .fetch({require: true, withRelated: [ 'schools.meta_schools', 'variables', 'ingredients', 'author' ]})
-                .then(v => {
+                .then(oldSpell => {
                     bookshelf.transaction(t => {
-                        return v.save({
+                        return oldSpell.save({
                             'name': s.name,
                             'description': s.description,
                             'level': s.level,
@@ -221,40 +221,40 @@ class SpellRepository {
                             transacting: t
                         })
                         // Detaches AND attaches pivot tables, dw about it
-                        .tap(spell => {
+                        .tap(newSpell => {
                             if (s.schools) {
-                                let schools = spell.related('school');
-                                return spell.schools().detach(schools, { transacting: t});
+                                let schools = newSpell.related('school');
+                                return newSpell.schools().detach(schools, { transacting: t});
                             }
                         })
-                        .tap(spell => {
+                        .tap(newSpell => {
                             if (s.variables) {
-                                let variables = spell.related('variable');
-                                return spell.variables().detach(variables, { transacting: t});
+                                let variables = newSpell.related('variable');
+                                return newSpell.variables().detach(variables, { transacting: t});
                             }
                         })
-                        .tap(spell => {
+                        .tap(newSpell => {
                             if (s.ingredients) {
-                                let ingredients = spell.related('ingredient');
-                                return spell.ingredients().detach(ingredients, { transacting: t});
+                                let ingredients = newSpell.related('ingredient');
+                                return newSpell.ingredients().detach(ingredients, { transacting: t});
                             }
                         })
-                        .tap(spell => {
-                            return spell
+                        .tap(newSpell => {
+                            return newSpell
                             .schools()
                             .attach(s.schools, {
                                 transacting: t
                             });
                         })
-                        .tap(spell => {
-                            return spell
+                        .tap(newSpell => {
+                            return newSpell
                             .variables()
                             .attach(s.variables, {
                                 transacting: t
                             });
                         })
-                        .tap(spell => {
-                            return spell
+                        .tap(newSpell => {
+                            return newSpell
                             .ingredients()
                             .attach(s.ingredients, {
                                 transacting: t
@@ -268,11 +268,11 @@ class SpellRepository {
                             })
                         })
                     })
-                    .then(v => {
-                        return v.load([ 'schools.meta_schools', 'variables', 'ingredients', 'author' ]);
+                    .then(newSpellRaw => {
+                        return newSpellRaw.load([ 'schools.meta_schools', 'variables', 'ingredients', 'author' ]);
                     })
-                    .then(v => {
-                        resolve(this.getOne(v.id));
+                    .then(newSpell => {
+                        resolve(this.getOne(newSpell.id));
                     })
                     .catch(err => {
                         console.log(err);
