@@ -58,7 +58,7 @@ var filter = (text, length, clamp) => {
 Vue.filter('truncate', filter);
 
 // Router
-import router from './routes'
+import router from './router'
 Vue.use(VueRouter)
 
 // Mount Vue
