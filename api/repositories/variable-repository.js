@@ -22,8 +22,8 @@ class VariableRepository {
         return new Promise((resolve, reject) => {
             new model()
             .fetchAll({ withRelated: ['spells'] })
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+            .then(fetchedUsers => {
+                resolve(fetchedUsers.toJSON({ omitPivot: true }))
             })
             .catch(err => {
                 console.log(err)
@@ -41,8 +41,8 @@ class VariableRepository {
             new model()
             .where({ 'id' : id })
             .fetch({ withRelated: ['spells']})
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+            .then(fetchedUser => {
+                resolve(fetchedUser.toJSON({ omitPivot: true }))
             })
             .catch(err => {
                 console.log(err)
@@ -59,8 +59,8 @@ class VariableRepository {
             new model()
             .where({ 'id' : id })
             .fetch({ withRelated: ['spells', 'spells.schools', 'spells.variables', 'spells.ingredients', 'spells.schools.meta_schools']})
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+            .then(fetchedSpells => {
+                resolve(fetchedSpells.toJSON({ omitPivot: true }))
             })
             .catch(err => {
                 console.log(err)
@@ -101,11 +101,11 @@ class VariableRepository {
                         throw err
                     })
                 })
-                .then(v => {
-                    return v.load(['spells'])
+                .then(newVariableRaw => {
+                    return newVariableRaw.load(['spells'])
                 })
-                .then(v => {
-                    resolve(this.getOne(v.id))
+                .then(newVariable => {
+                    resolve(this.getOne(newVariable.id))
                 })
                 .catch(err => {
                     console.log(err)
@@ -139,9 +139,9 @@ class VariableRepository {
             } else {
                 new model({id: id})
                 .fetch({require: true, withRelated: ['spells']})
-                .then(v => {
+                .then(oldVariable => {
                     bookshelf.transaction(t => {
-                        return v.save({
+                        return oldVariable.save({
                             'description': vr.description,
                         }, {
                             method: 'update',
@@ -152,11 +152,11 @@ class VariableRepository {
                             throw err
                         })
                     })
-                    .then(v => {
-                        return v.load(['spells'])
+                    .then(newVariableRaw => {
+                        return newVariableRaw.load(['spells'])
                     })
-                    .then(v => {
-                        resolve(this.getOne(v.id))
+                    .then(newVariable => {
+                        resolve(this.getOne(newVariable.id))
                     })
                     .catch(err => {
                         console.log(err)
@@ -182,9 +182,9 @@ class VariableRepository {
             new model()
             .where({ 'id' : id })
             .fetch({require: true, withRelated: ['spells']})
-            .then(v => {
-                v.spells().detach()
-                v.destroy()
+            .then(oldVariable => {
+                oldVariable.spells().detach()
+                oldVariable.destroy()
             })
             .then(() => {
                 resolve({

@@ -29,8 +29,8 @@ class UserRepository {
         return new Promise((resolve, reject) => {
             new model()
             .fetchAll({ withRelated: [ 'role.permissions' ] })
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }));
+            .then(fetchedUsers => {
+                resolve(fetchedUsers.toJSON({ omitPivot: true }));
             })
             .catch(err => {
                 console.log(err)
@@ -47,8 +47,8 @@ class UserRepository {
             new model()
             .where({ 'uuid' : uuid })
             .fetch({ withRelated: [ 'role.permissions' ] })
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true, visibility: !full }));
+            .then(fetchedUser => {
+                resolve(fetchedUser.toJSON({ omitPivot: true, visibility: !full }));
             })
             .catch(() => {
                 reject({
@@ -64,8 +64,8 @@ class UserRepository {
             new model()
             .where({ 'mail': mail })
             .fetch({ withRelated: [ 'role' ] })
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true, visibility: !full }));
+            .then(fetchedUser => {
+                resolve(fetchedUser.toJSON({ omitPivot: true, visibility: !full }));
             })
             .catch(() => {
                 reject({
@@ -81,8 +81,8 @@ class UserRepository {
             new model()
             .where({ 'uuid': uuid })
             .fetch({ withRelated: [ 'role', 'spells.schools.meta_schools', 'spells.variables', 'spells.ingredients' ] })
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }));
+            .then(fetchedSpells => {
+                resolve(fetchedSpells.toJSON({ omitPivot: true }));
             })
             .catch(() => {
                 reject({
@@ -159,8 +159,8 @@ class UserRepository {
                             "user": newUser,
                         })
                     })
-                    .catch(err => {
-                        resolve({
+                    .catch(() => {
+                        reject({
                             "message": "Une erreur s'est produite en créant votre compte. Veuillez réessayer ultérieurement ou contactez l'administrateur.",
                             "code": 500,
                         })
@@ -178,9 +178,9 @@ class UserRepository {
             new model()
             .where({ 'verification_token' : token })
             .fetch()
-            .then(v => {
+            .then(unverifiedUser => {
                 bookshelf.transaction(t => {
-                    return v.save({
+                    return unverifiedUser.save({
                         'verification_token': null,
                         'verified': 1,
                     }, {
@@ -188,7 +188,7 @@ class UserRepository {
                         transacting: t
                     })
                 })
-                .then(v => {
+                .then(() => {
                   resolve({
                       "message": "Insérez ici une future redirection vers le client.",
                       "code": 202,

@@ -22,8 +22,8 @@ class SchoolRepository {
         return new Promise((resolve, reject) => {
             new model()
             .fetchAll({ withRelated: ['meta_schools'] })
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+            .then(fetchedSchools => {
+                resolve(fetchedSchools.toJSON({ omitPivot: true }))
             })
             .catch(err => {
                 console.log(err);
@@ -40,8 +40,8 @@ class SchoolRepository {
             new model()
             .where({ 'id' : id })
             .fetch({ withRelated: ['meta_schools']})
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+            .then(fetchedSchool => {
+                resolve(fetchedSchool.toJSON({ omitPivot: true }))
             })
             .catch(err => {
                 console.log(err);
@@ -58,8 +58,8 @@ class SchoolRepository {
             new model()
             .where({ 'id' : id })
             .fetch({ withRelated: ['spells', 'spells.schools', 'spells.variables', 'spells.ingredients', 'spells.schools.meta_schools']})
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+            .then(fetchedSpells => {
+                resolve(fetchedSpells.toJSON({ omitPivot: true }))
             })
             .catch(err => {
                 console.log(err);
@@ -102,11 +102,11 @@ class SchoolRepository {
                         throw err
                     })
                 })
-                .then(v => {
-                    return v.load(['meta_schools']);
+                .then(newSchoolRaw => {
+                    return newSchoolRaw.load(['meta_schools']);
                 })
-                .then(v => {
-                    resolve(this.getOne(v.id));
+                .then(newSchool => {
+                    resolve(this.getOne(newSchool.id));
                 })
                 .catch(err => {
                     console.log(err)
@@ -140,9 +140,9 @@ class SchoolRepository {
             } else {
                 new model({id: id})
                 .fetch({require: true, withRelated: ['meta_schools']})
-                .then(v => {
+                .then(oldSchool => {
                     bookshelf.transaction(t => {
-                        return v.save({
+                        return oldSchool.save({
                             'name': s.name,
                             'description': s.description,
                             'meta_school_id': s.meta_school_id
@@ -155,11 +155,11 @@ class SchoolRepository {
                             throw err
                         })
                     })
-                    .then(v => {
-                        return v.load(['meta_schools'])
+                    .then(newSchoolRaw => {
+                        return newSchoolRaw.load(['meta_schools'])
                     })
-                    .then(v => {
-                        resolve(this.getOne(v.id))
+                    .then(newSchool => {
+                        resolve(this.getOne(newSchool.id))
                     })
                     .catch(err => {
                         console.log(err)
@@ -185,9 +185,9 @@ class SchoolRepository {
             new model()
             .where({ 'id' : id })
             .fetch({require: true, withRelated: ['spells', 'meta_schools']})
-            .then(v => {
-                v.spells().detach()
-                v.destroy()
+            .then(oldSchool => {
+                oldSchool.spells().detach()
+                oldSchool.destroy()
             })
             .then(() => {
                 resolve({

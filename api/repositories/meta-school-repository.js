@@ -21,8 +21,8 @@ class MetaSchoolRepository {
         return new Promise((resolve, reject) => {
             new model()
             .fetchAll({ withRelated: ['schools'] })
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+            .then(fetchedMetaSchools => {
+                resolve(fetchedMetaSchools.toJSON({ omitPivot: true }))
             })
             .catch(err => {
                 console.log(err)
@@ -39,8 +39,8 @@ class MetaSchoolRepository {
             new model()
             .where({ 'id' : id })
             .fetch({ withRelated: ['schools']})
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+            .then(fetchedMetaSchool => {
+                resolve(fetchedMetaSchool.toJSON({ omitPivot: true }))
             })
             .catch(err => {
                 console.log(err)

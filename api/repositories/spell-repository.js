@@ -298,11 +298,11 @@ class SpellRepository {
             new model()
             .where({ 'id' : id })
             .fetch({require: true, withRelated: [ 'schools.meta_schools', 'variables', 'ingredients', 'author' ]})
-            .then(v => {
-                v.schools().detach();
-                v.variables().detach();
-                v.ingredients().detach();
-                v.destroy();
+            .then(oldSpell => {
+                oldSpell.schools().detach();
+                oldSpell.variables().detach();
+                oldSpell.ingredients().detach();
+                oldSpell.destroy();
             })
             .then(() => {
                 resolve({

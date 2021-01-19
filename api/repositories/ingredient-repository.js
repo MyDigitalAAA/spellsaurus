@@ -22,8 +22,8 @@ class IngredientRepository {
         return new Promise((resolve, reject) => {
             new model()
             .fetchAll({ withRelated: ['spells'] })
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+            .then(fetchedIngredients => {
+                resolve(fetchedIngredients.toJSON({ omitPivot: true }))
             })
             .catch(err => {
                 console.log(err)
@@ -41,8 +41,8 @@ class IngredientRepository {
             new model()
             .where({ 'id' : id })
             .fetch({ withRelated: ['spells']})
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+            .then(fetchedIngredient => {
+                resolve(fetchedIngredient.toJSON({ omitPivot: true }))
             })
             .catch(err => {
                 console.log(err)
@@ -59,8 +59,8 @@ class IngredientRepository {
             new model()
             .where({ 'id' : id })
             .fetch({ withRelated: ['spells', 'spells.schools', 'spells.variables', 'spells.ingredients', 'spells.schools.meta_schools']})
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
+            .then(fetchedSpells => {
+                resolve(fetchedSpells.toJSON({ omitPivot: true }))
             })
             .catch(err => {
                 console.log(err)
@@ -102,11 +102,11 @@ class IngredientRepository {
                         throw err
                     })
                 })
-                .then(v => {
-                    return v.load(['spells'])
+                .then(newIngredientRaw => {
+                    return newIngredientRaw.load(['spells'])
                 })
-                .then(v => {
-                    resolve(this.getOne(v.id))
+                .then(newIngredient => {
+                    resolve(this.getOne(newIngredient.id))
                 })
                 .catch(err => {
                     console.log(err)
@@ -140,9 +140,9 @@ class IngredientRepository {
             } else {
                 new model({id: id})
                 .fetch({require: true, withRelated: ['spells']})
-                .then(v => {
+                .then(oldIngredient => {
                     bookshelf.transaction(t => {
-                        return v.save({
+                        return oldIngredient.save({
                             'name': igr.name,
                             'description': igr.description,
                         }, {
@@ -154,11 +154,11 @@ class IngredientRepository {
                             throw err
                         })
                     })
-                    .then(v => {
-                        return v.load(['spells'])
+                    .then(newIngredientRaw => {
+                        return newIngredientRaw.load(['spells'])
                     })
-                    .then(v => {
-                        resolve(this.getOne(v.id))
+                    .then(newIngredient => {
+                        resolve(this.getOne(newIngredient.id))
                     })
                     .catch(err => {
                         console.log(err)
@@ -184,9 +184,9 @@ class IngredientRepository {
             new model()
             .where({ 'id' : id })
             .fetch({require: true, withRelated: ['spells']})
-            .then(v => {
-                v.spells().detach()
-                v.destroy()
+            .then(oldIngredient => {
+                oldIngredient.spells().detach()
+                oldIngredient.destroy()
             })
             .then(() => {
                 resolve({
