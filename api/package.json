@@ -4,8 +4,7 @@
   "description": "API for Auracle database",
   "main": "index.js",
   "scripts": {
-    "api": "node index.js",
-    "client": "cd client && npm run serve"
+    "run": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -28,17 +27,19 @@
   },
   "homepage": "https://github.com/AlexisNP/spellsaurus#readme",
   "dependencies": {
-    "bcrypt": "^4.0.1",
+    "bcrypt": "^5.0.0",
     "bookshelf": "^1.1.1",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "handlebars": "^4.7.6",
     "helmet": "^3.22.0",
     "jsonschema": "^1.2.6",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.21.1",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
+    "nodemailer": "^6.4.17",
     "uuid": "^8.2.0"
   }
 }

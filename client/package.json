@@ -25,7 +25,8 @@
         "serve": "vue-cli-service serve"
     },
     "dependencies": {
-        "axios": "^0.19.2",
+        "@babel/compat-data": "^7.12.7",
+        "axios": "^0.21.1",
         "bootstrap": "^4.5.0",
         "bootstrap-vue": "^2.15.0",
         "core-js": "^3.6.4",
@@ -35,6 +36,7 @@
         "vue": "^2.6.11",
         "vue-cookies": "^1.7.0",
         "vue-masonry": "^0.11.8",
+        "vue-meta": "^2.4.0",
         "vuex": "^3.5.1"
     },
     "devDependencies": {

@@ -42,11 +42,11 @@
                 placement="bottom"
                 title="Description copiée !"
                 class="small text-muted mt-2">
-                <span style="white-space: pre-wrap;">{{spell.description}}</span>
+                <span class="prewrap">{{spell.description}}</span>
             </div>
 
             <div class="mt-2">
-                <div class="font-weight-bold d-inline-block"><span>Coût </span>{{spell.cost}}</div>
+                <div class="font-weight-bold d-inline-block"><span>Coût : </span>{{spell.cost}}</div>
                 <div v-if="spell.variables.length>0" class="small d-inline-block">, où&nbsp;:</div>
                 <div class=small>
                     <span v-for="(variable,index) in spell.variables" :key="index">
@@ -72,79 +72,81 @@
 
 <script>
 // API
-import { RepositoryFactory } from "~/api/repositories"
+import { RepositoryFactory } from "@/api/repositories"
 const Spells = RepositoryFactory.get('spells')
 
 export default {
-    name: 'spell-card',
-    props: {
-        spell: Object,
+  name: 'spell-card',
+  props: {
+    spell: Object,
+  },
+  data() {
+    return {
+      main_school: this.spell.schools[0].name,
+    }
+  },
+  created() {
+    this.main_school = this.main_school.toLowerCase()
+  },
+  computed: {
+    user() {
+      return this.$store.getters.getUserProfile
+    }
+  },
+  methods: {
+    editSpell(spell) {
+      this.$emit('editSpell', spell)
     },
-    data() {
-        return {
-            main_school: this.spell.schools[0].name,
-        }
-    },
-    created() {
-        this.main_school = this.main_school.toLowerCase()
-    },
-    computed: {
-        user() {
-            return this.$store.state.user
-        }
-    },
-    methods: {
-        editSpell(spell) {
-            this.$emit('editSpell', spell)
-        },
-        deleteSpell(spell) {
-            Spells.deleteOne(this.spell.id)
-            .then(() => {
-                this.$emit('deleteSpell', spell)
-            })
-        }
-    },
+    deleteSpell(spell) {
+      Spells.deleteOne(this.spell.id)
+      .then(() => {
+          this.$emit('deleteSpell', spell)
+      })
+    }
+  },
 }
 
 </script>
 
 <style lang="scss" scoped>
-  .spell-card {
-    footer {
-      a {
-        cursor: pointer;
-      }
+
+.spell-card {
+  footer {
+    a {
+      cursor: pointer;
     }
-    @mixin colorschool($sname,$scolor) {
-      &.#{$sname} {
-        .spellcard { border-left-color: $scolor; }
-        .h3>a { color: $scolor; }
-      }
-    }
-    @include colorschool(lumomancie,#babaa4);
-    @include colorschool(vitamancie,#57ab6e);
-    @include colorschool(obstrumancie,#bd4a66);
-    @include colorschool(tenebromancie,#404842);
-    @include colorschool(necromancie,#5d4777);
-    @include colorschool(morbomancie,#d8733d);
-    @include colorschool(pyromancie,#b6362a);
-    @include colorschool(hydromancie,#3f68c7);
-    @include colorschool(electromancie,#cd9731);
-    @include colorschool(terramancie,#7e5540);
-    @include colorschool(sidéromancie,#58697a);
-    @include colorschool(caelomancie,#a8a8a8);
-    @include colorschool(légimancie,#5dbabd);
-    @include colorschool(illusiomancie,#9f63a1);
-    @include colorschool(cruciomancie,#252451);
-    @include colorschool(chronomancie,#79896a);
-    @include colorschool(spatiomancie,#2d4776);
-    @include colorschool(kénomancie,#101010);
-    @include colorschool(lutomancie,#4e2827);
-    @include colorschool(échomancie,#6d9fd1);
-    @include colorschool(protomancie,#4f5751);
-    @include colorschool(rebumancie,#8e7245);
-    @include colorschool(vocamancie,#247864);
-    @include colorschool(somamancie,#976c67);
-    @include colorschool(antimancie,#ad95c1);
   }
+  @mixin colorschool($sname,$scolor) {
+    &.#{$sname} {
+      .spellcard { border-left-color: $scolor; }
+      .h3>a { color: $scolor; }
+    }
+  }
+  @include colorschool(lumomancie,#babaa4);
+  @include colorschool(vitamancie,#57ab6e);
+  @include colorschool(obstrumancie,#bd4a66);
+  @include colorschool(tenebromancie,#404842);
+  @include colorschool(necromancie,#5d4777);
+  @include colorschool(morbomancie,#d8733d);
+  @include colorschool(pyromancie,#b6362a);
+  @include colorschool(hydromancie,#3f68c7);
+  @include colorschool(electromancie,#cd9731);
+  @include colorschool(terramancie,#7e5540);
+  @include colorschool(sidéromancie,#58697a);
+  @include colorschool(caelomancie,#a8a8a8);
+  @include colorschool(légimancie,#5dbabd);
+  @include colorschool(illusiomancie,#9f63a1);
+  @include colorschool(cruciomancie,#252451);
+  @include colorschool(chronomancie,#79896a);
+  @include colorschool(spatiomancie,#2d4776);
+  @include colorschool(kénomancie,#101010);
+  @include colorschool(lutomancie,#4e2827);
+  @include colorschool(échomancie,#6d9fd1);
+  @include colorschool(protomancie,#4f5751);
+  @include colorschool(rebumancie,#8e7245);
+  @include colorschool(vocamancie,#247864);
+  @include colorschool(somamancie,#976c67);
+  @include colorschool(antimancie,#ad95c1);
+}
+
 </style>

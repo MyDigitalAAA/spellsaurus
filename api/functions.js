@@ -1,6 +1,3 @@
-// Error handling
-const { HttpError } = require('./validations/Errors')
-
 const regexInt = RegExp(/^[1-9]\d*$/)
 const regexXSS = RegExp(/<[^>]*script/)
 
@@ -13,32 +10,22 @@ const paramIntCheck = (req, res, next, input) => {
             throw new Error
         }
     } catch (err) {
-        err = new HttpError(403, 'Provided ID must be an integer and not zero')
-        res.status(err.code).send(JSON.stringify(
-            {
-                "error": err.message,
-                "code": err.code
-            })
+        res.status(err.code).send(JSON.stringify({
+              "message": "Le paramètre doit être un entier non-nul.",
+              "code": 403,
+          })
         )
     }
 }
 
 // Check if script injection attempt
 const isXSSAttempt = (string) => {
-    if (regexXSS.test(string)) {
-        return true
-    } else {
-        return false
-    }
+    return regexXSS.test(string);
 }
 
 // Check if object is null
 const isEmptyObject = (obj) => {
-    if (Object.keys(obj).length === 0 && obj.constructor === Object) {
-        return true
-    } else {
-        return false
-    }
+    return (Object.keys(obj).length === 0 && obj.constructor === Object);
 }
 
 module.exports = {

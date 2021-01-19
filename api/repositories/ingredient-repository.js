@@ -1,43 +1,44 @@
 'use strict'
 // Bookshelf
 const bookshelf = require('../database/bookshelf').bookshelf
-const model = require('../models/variable-model')
+const model = require('../models/ingredient-model')
 
 // Model validation
 const Validator = require('jsonschema').Validator
 const v = new Validator()
-const VariableValidation = require("../validations/VariableValidation")
-v.addSchema(VariableValidation, "/VariableValidation")
+const IngredientValidation = require("../validations/IngredientValidation")
+v.addSchema(IngredientValidation, "/IngredientValidation")
 
 // Validations
 const isXSSAttempt = require('../functions').isXSSAttempt
 const isEmptyObject = require('../functions').isEmptyObject
 
-// Error handling
-const { HttpError } = require('../validations/Errors')
-class VariableRepository {
+class IngredientRepository {
 
     constructor() {
     }
-    
+
     getAll() {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .fetchAll({ withRelated: ['spells'] })
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }))
             })
             .catch(err => {
                 console.log(err)
-                reject(new HttpError(500, "Couldn't get variables"))
-            })
+                reject({
+                    "message": "Il n'existe aucun ingrédient disponible.",
+                    "code": 404,
+                });
+           })
         })
     }
 
     
     getOne(id) {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .where({ 'id' : id })
             .fetch({ withRelated: ['spells']})
             .then(v => {
@@ -45,14 +46,17 @@ class VariableRepository {
             })
             .catch(err => {
                 console.log(err)
-                reject(new HttpError(500, "Couldn't get variable"))
+                reject({
+                  "message": "L'ingrédient en question n'a pas pu être trouvé.",
+                  "code": 404,
+              });
             })
         })
     }
 
     getSpellsFromOne(id) {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .where({ 'id' : id })
             .fetch({ withRelated: ['spells', 'spells.schools', 'spells.variables', 'spells.ingredients', 'spells.schools.meta_schools']})
             .then(v => {
@@ -60,24 +64,37 @@ class VariableRepository {
             })
             .catch(err => {
                 console.log(err)
-                reject(new HttpError(500, "Couldn't get variable"))
+                reject({
+                    "message": "Les sortilèges liés à cet ingrédient n'ont pas pu être récupérés.",
+                    "code": 404,
+                });
             })
         })
     }
 
-    addOne(vr) {
+    addOne(igr) {
         return new Promise((resolve, reject) => {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
-            if (isEmptyObject(vr)) {
-                reject(new HttpError(403, "Error: Variable cannot be nothing !"))
-            } else if (!v.validate(vr, VariableValidation).valid) {
-                reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(vr, VariableValidation).errors))
-            } else if (isXSSAttempt(vr.description)) {
-                reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
+            if (isEmptyObject(igr)) {
+                reject({
+                    "message": "Le corps de la requête ne peut pas être vide.",
+                    "code": 403,
+                });
+            } else if (!v.validate(igr, IngredientValidation).valid) {
+                reject({
+                    "message": `Le modèle d'ingrédient n'est pas respecté : ${v.validate(s, IngredientValidation).errors}`,
+                    "code": 403,
+                });
+            } else if (isXSSAttempt(igr.description)) {
+                reject({
+                    "message": "Tentative d'injection XSS détectée, requête refusée.",
+                    "code": 403,
+                });
             } else {
                 bookshelf.transaction(t => {
-                    return model.forge({
-                        'description': vr.description,
+                    return new model({
+                        'name': igr.name,
+                        'description': igr.description,
                     }).save(null, {
                         transacting: t
                     })
@@ -93,28 +110,41 @@ class VariableRepository {
                 })
                 .catch(err => {
                     console.log(err)
-                    reject(new HttpError(500, "Insert Variable error"))
+                    reject({
+                        "message": "Une erreur d'insertion s'est produite.",
+                        "code": 500,
+                    });
                 })
             }
         })
     }
 
-    updateOne(id, vr) {
+    updateOne(id, igr) {
         return new Promise((resolve, reject) => {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
-            if (isEmptyObject(vr)) {
-                reject(new HttpError(403, "Error: Variable cannot be nothing !"))
-            } else if (!v.validate(vr, VariableValidation).valid) {
-                reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(vr, VariableValidation).errors))
-            } else if (isXSSAttempt(vr.description)) {
-                reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
+            if (isEmptyObject(igr)) {
+                reject({
+                    "message": "Le corps de la requête ne peut pas être vide.",
+                    "code": 403,
+                });
+            } else if (!v.validate(igr, IngredientValidation).valid) {
+                reject({
+                    "message": `Le modèle d'ingrédient n'est pas respecté : ${v.validate(s, IngredientValidation).errors}`,
+                    "code": 403,
+                });
+            } else if (isXSSAttempt(igr.description)) {
+                reject({
+                    "message": "Tentative d'injection XSS détectée, requête refusée.",
+                    "code": 403,
+                });
             } else {
-                model.forge({id: id})
+                new model({id: id})
                 .fetch({require: true, withRelated: ['spells']})
                 .then(v => {
                     bookshelf.transaction(t => {
                         return v.save({
-                            'description': vr.description,
+                            'name': igr.name,
+                            'description': igr.description,
                         }, {
                             method: 'update',
                             transacting: t
@@ -132,12 +162,18 @@ class VariableRepository {
                     })
                     .catch(err => {
                         console.log(err)
-                        reject(new HttpError(500, "Update Variable error"))
+                        reject({
+                            "message": "Une erreur d'insertion s'est produite.",
+                            "code": 500,
+                        });
                     })
                 })
                 .catch(err => {
                     console.log(err)
-                    reject(new HttpError(404, "Couldn't get variable"))
+                    reject({
+                        "message": "L'ingrédient en question n'a pas été trouvé.",
+                        "code": 404,
+                    });
                 })
             }
         })
@@ -145,7 +181,7 @@ class VariableRepository {
 
     deleteOne(id) {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .where({ 'id' : id })
             .fetch({require: true, withRelated: ['spells']})
             .then(v => {
@@ -154,15 +190,18 @@ class VariableRepository {
             })
             .then(() => {
                 resolve({
-                    'message': 'Variable with ID ' + id + ' successfully deleted !'
+                    'message': 'Ingredient with ID ' + id + ' successfully deleted !'
                 })
             })
             .catch(err => {
                 console.log(err)
-                reject(new HttpError(404, "Couldn't get variable"))
+                reject({
+                    "message": "L'ingrédient en question n'a pas été trouvé.",
+                    "code": 404,
+                });
             })
         })
     }
 }
 
-module.exports = VariableRepository
+module.exports = IngredientRepository

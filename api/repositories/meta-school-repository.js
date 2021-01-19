@@ -12,9 +12,6 @@ v.addSchema(MetaSchoolValidation, "/MetaSchoolValidation")
 // Validations
 const regexXSS = RegExp(/<[^>]*script/)
 
-// Error handling
-const { HttpError } = require('../validations/Errors')
-
 class MetaSchoolRepository {
 
     constructor() {
@@ -22,21 +19,24 @@ class MetaSchoolRepository {
 
     getAll() {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .fetchAll({ withRelated: ['schools'] })
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }))
             })
             .catch(err => {
                 console.log(err)
-                reject(new HttpError(500, "Couldn't get meta schools"))
+                reject({
+                    "message": "Il n'existe aucune grande école disponible.",
+                    "code": 404,
+                });
             })
         })
     }
 
     getOne(id) {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .where({ 'id' : id })
             .fetch({ withRelated: ['schools']})
             .then(v => {
@@ -44,7 +44,10 @@ class MetaSchoolRepository {
             })
             .catch(err => {
                 console.log(err)
-                reject(new HttpError(500, "Couldn't get meta school"))
+                reject({
+                    "message": "La grande école en question n'a pas pu être trouvée.",
+                    "code": 404,
+                });
             })
         })
     }

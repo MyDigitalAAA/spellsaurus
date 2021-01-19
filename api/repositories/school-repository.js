@@ -13,9 +13,6 @@ v.addSchema(SchoolValidation, "/SchoolValidation")
 const isXSSAttempt = require('../functions').isXSSAttempt
 const isEmptyObject = require('../functions').isEmptyObject
 
-// Error handling
-const { HttpError } = require('../validations/Errors')
-
 class SchoolRepository {
 
     constructor() {
@@ -23,44 +20,53 @@ class SchoolRepository {
 
     getAll() {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .fetchAll({ withRelated: ['meta_schools'] })
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }))
             })
             .catch(err => {
-                console.log(err)
-                reject(new HttpError(500, "Couldn't get schools"))
+                console.log(err);
+                reject({
+                    "message": "Il n'existe aucune école disponible.",
+                    "code": 404,
+                });
             })
         })
     }
 
     getOne(id) {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .where({ 'id' : id })
             .fetch({ withRelated: ['meta_schools']})
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }))
             })
             .catch(err => {
-                console.log(err)
-                reject(new HttpError(500, "Couldn't get school"))
+                console.log(err);
+                reject({
+                    "message": "L'école en question n'a pas pu être trouvée.",
+                    "code": 404,
+                });
             })
         })
     }
 
     getSpellsFromOne(id) {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .where({ 'id' : id })
             .fetch({ withRelated: ['spells', 'spells.schools', 'spells.variables', 'spells.ingredients', 'spells.schools.meta_schools']})
             .then(v => {
                 resolve(v.toJSON({ omitPivot: true }))
             })
             .catch(err => {
-                console.log(err)
-                reject(new HttpError(500, "Couldn't get spells from school"))
+                console.log(err);
+                reject({
+                    "message": "Les sortilèges de cette école n'ont pas pu être récupérés.",
+                    "code": 404,
+                });
             })
         })
     }
@@ -69,14 +75,23 @@ class SchoolRepository {
         return new Promise((resolve, reject) => {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
             if (isEmptyObject(s)) {
-                reject(new HttpError(403, "Error: School cannot be nothing !"))
+                reject({
+                    "message": "Le corps de la requête ne peut pas être vide.",
+                    "code": 403,
+                });
             } else if (!v.validate(s, SchoolValidation).valid) {
-                reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(s, SchoolValidation).errors))
+                reject({
+                    "message": `Le modèle d'école n'est pas respecté : ${v.validate(s, SchoolValidation).errors}`,
+                    "code": 403,
+                });
             } else if (isXSSAttempt(s.name) || isXSSAttempt(s.description)) {
-                reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
+                reject({
+                    "message": "Tentative d'injection XSS détectée, requête refusée.",
+                    "code": 403,
+                });
             } else {
                 bookshelf.transaction(t => {
-                    return model.forge({
+                    return new model({
                         'name': s.name,
                         'description': s.description,
                         'meta_school_id': s.meta_school_id,
@@ -88,14 +103,17 @@ class SchoolRepository {
                     })
                 })
                 .then(v => {
-                    return v.load(['meta_schools'])
+                    return v.load(['meta_schools']);
                 })
                 .then(v => {
-                    resolve(this.getOne(v.id))
+                    resolve(this.getOne(v.id));
                 })
                 .catch(err => {
                     console.log(err)
-                    reject(new HttpError(500, "Insert School error"))
+                    reject({
+                        "message": "Une erreur d'insertion s'est produite.",
+                        "code": 500,
+                    })
                 })
             }
         })
@@ -105,13 +123,22 @@ class SchoolRepository {
         return new Promise((resolve, reject) => {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
             if (isEmptyObject(s)) {
-                reject(new HttpError(403, "Error: School cannot be nothing !"))
+                reject({
+                    "message": "Le corps de la requête ne peut pas être vide.",
+                    "code": 403,
+                });
             } else if (!v.validate(s, SchoolValidation).valid) {
-                reject(new HttpError(403, "Error: Schema is not valid - " + v.validate(s, SchoolValidation).errors))
+                reject({
+                    "message": `Le modèle d'école n'est pas respecté : ${v.validate(s, SchoolValidation).errors}`,
+                    "code": 403,
+                });
             } else if (isXSSAttempt(s.name) || isXSSAttempt(s.description)) {
-                reject(new HttpError(403, 'Injection attempt detected, aborting the request.'))
+                reject({
+                    "message": "Tentative d'injection XSS détectée, requête refusée.",
+                    "code": 403,
+                });
             } else {
-                model.forge({id: id})
+                new model({id: id})
                 .fetch({require: true, withRelated: ['meta_schools']})
                 .then(v => {
                     bookshelf.transaction(t => {
@@ -136,12 +163,18 @@ class SchoolRepository {
                     })
                     .catch(err => {
                         console.log(err)
-                        reject(new HttpError(500, "Update School error"))
+                        reject({
+                            "message": "Une erreur d'insertion s'est produite.",
+                            "code": 500,
+                        })
                     })
                 })
                 .catch(err => {
-                    console.log(err)
-                    reject(new HttpError(404, "Couldn't get school"))
+                    console.log(err);
+                    reject({
+                        "message": "L'école en question n'a pas été trouvée.",
+                        "code": 404,
+                    });
                 })
             }
         })
@@ -149,7 +182,7 @@ class SchoolRepository {
 
     deleteOne(id) {
         return new Promise((resolve, reject) => {
-            model.forge()
+            new model()
             .where({ 'id' : id })
             .fetch({require: true, withRelated: ['spells', 'meta_schools']})
             .then(v => {
@@ -162,8 +195,11 @@ class SchoolRepository {
                 })
             })
             .catch(err => {
-                console.log(err)
-                reject(new HttpError(404, "Couldn't get school"))
+                console.log(err);
+                reject({
+                    "message": "L'école en question n'a pas été trouvée.",
+                    "code": 404,
+                });
             })
         })
     }

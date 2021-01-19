@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Template Email Auracle Inscription</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@700;800;900&display=swap');
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --black: 52, 58, 64;
+        --white: #FFF;
+        --primary: 89, 158, 244;
+      }
+
+      body {
+        color: rgb(var(--black));
+        font-family: 'Lato', sans-serif;
+        max-width: 100%;
+      }
+
+      .display {
+        font-family: 'Playfair Display', serif;
+      }
+
+      h1 {
+        font-size: 32px;
+      }
+
+      p:not(:last-child) {
+        margin-bottom: 15px;
+      }
+
+      .italics {
+        font-style: italic;
+      }
+
+      .wrapper {
+        position: relative;
+        padding: 10vh 5vw;
+        background: url('https://i.imgur.com/IxEKKEY.png') center center fixed repeat;
+      }
+      .wrapper:before {
+        display: block;
+        content: '';
+        position: absolute;
+        top: 0;
+        height: 120px;
+        left: 0;
+        right: 0;
+        background-color: rgb(var(--primary));
+        z-index: 0;
+      }
+
+      .container {
+        position: relative;
+        background-color: var(--white);
+        z-index: 5;
+      }
+
+      header, footer {
+        text-align: center;
+        color: var(--white);
+        background-color: rgb(var(--black));
+      }
+
+      header {
+        padding: 15px;
+      }
+
+      main {
+        padding: 30px;
+      }
+    </style>
+  </head>
+<body>
+  <div class="wrapper">
+    <div class="container">
+      <header>
+        <h1 class="display">Bienvenue sur Auracle, {{ user.name }}!</h1>
+      </header>
+      <main>
+        <p>Votre compte Auracle a bien été enregistré et est rattaché à cette adresse mail.</p>
+        <p>Cependant, afin de garantir la sécurité de vos données, votre compte doit être vérifié avant votre première connexion. Vous pouvez <a href="http://localhost:2814/api/users/verification/{{ user.token }}">suivre ce lien afin de confirmer votre inscription.</a></p>
+        <p>Si vous rencontrez des problèmes, n'hésitez pas à envoyer un mail à <a href="mailto:support@auracle.io">support@auracle.io</a></p>
+        <p><strong>Merci de votre soutien !</strong></p>
+        <p class="italics">Bien sincèrement, Izàc Tymos.</p>
+      </main>
+      <footer>
+        <div class="icon">
+        </div>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>
