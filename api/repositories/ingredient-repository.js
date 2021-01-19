@@ -127,9 +127,9 @@ class IngredientRepository {
                     "message": "Le corps de la requête ne peut pas être vide.",
                     "code": 403,
                 });
-            } else if (!valid.validate(igr, IngredientValidation).valid) {
+            } else if (!validator.validate(igr, IngredientValidation).valid) {
                 reject({
-                    "message": `Le modèle d'ingrédient n'est pas respecté : ${valid.validate(s, IngredientValidation).errors}`,
+                    "message": `Le modèle d'ingrédient n'est pas respecté : ${validator.validate(s, IngredientValidation).errors}`,
                     "code": 403,
                 });
             } else if (isXSSAttempt(igr.description)) {
