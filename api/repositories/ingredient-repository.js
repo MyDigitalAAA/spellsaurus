@@ -5,9 +5,9 @@ const model = require('../models/ingredient-model')
 
 // Model validation
 const Validator = require('jsonschema').Validator
-const v = new Validator()
+const validator = new Validator()
 const IngredientValidation = require("../validations/IngredientValidation")
-v.addSchema(IngredientValidation, "/IngredientValidation")
+validator.addSchema(IngredientValidation, "/IngredientValidation")
 
 // Validations
 const isXSSAttempt = require('../functions').isXSSAttempt
@@ -80,9 +80,9 @@ class IngredientRepository {
                     "message": "Le corps de la requête ne peut pas être vide.",
                     "code": 403,
                 });
-            } else if (!v.validate(igr, IngredientValidation).valid) {
+            } else if (!validator.validate(igr, IngredientValidation).valid) {
                 reject({
-                    "message": `Le modèle d'ingrédient n'est pas respecté : ${v.validate(s, IngredientValidation).errors}`,
+                    "message": `Le modèle d'ingrédient n'est pas respecté : ${validator.validate(s, IngredientValidation).errors}`,
                     "code": 403,
                 });
             } else if (isXSSAttempt(igr.description)) {
@@ -127,9 +127,9 @@ class IngredientRepository {
                     "message": "Le corps de la requête ne peut pas être vide.",
                     "code": 403,
                 });
-            } else if (!v.validate(igr, IngredientValidation).valid) {
+            } else if (!valid.validate(igr, IngredientValidation).valid) {
                 reject({
-                    "message": `Le modèle d'ingrédient n'est pas respecté : ${v.validate(s, IngredientValidation).errors}`,
+                    "message": `Le modèle d'ingrédient n'est pas respecté : ${valid.validate(s, IngredientValidation).errors}`,
                     "code": 403,
                 });
             } else if (isXSSAttempt(igr.description)) {

@@ -12,9 +12,9 @@ const mails = require('../smtp/mails')
 
 // Model validation
 const Validator = require('jsonschema').Validator
-const v = new Validator()
+const validator = new Validator()
 const UserValidation = require("../validations/UserValidation")
-v.addSchema(UserValidation, "/UserValidation")
+validator.addSchema(UserValidation, "/UserValidation")
 
 // Validations
 const isXSSAttempt = require('../functions').isXSSAttempt
@@ -101,9 +101,9 @@ class UserRepository {
                     "message":  "Le corps de requête ne peut être vide.",
                     "code": 403,
                 })
-            } else if (!v.validate(u, UserValidation).valid) {
+            } else if (!validator.validate(u, UserValidation).valid) {
                 reject({
-                    "message":  "Structure de la requête invalide - " + v.validate(u, UserValidation).errors,
+                    "message":  "Structure de la requête invalide - " + validator.validate(u, UserValidation).errors,
                     "code": 403,
                 })
             } else if (isXSSAttempt(u.name) || isXSSAttempt(u.password) || isXSSAttempt(u.mail)) {

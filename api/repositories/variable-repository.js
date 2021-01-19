@@ -5,9 +5,9 @@ const model = require('../models/variable-model')
 
 // Model validation
 const Validator = require('jsonschema').Validator
-const v = new Validator()
+const validator = new Validator()
 const VariableValidation = require("../validations/VariableValidation")
-v.addSchema(VariableValidation, "/VariableValidation")
+validator.addSchema(VariableValidation, "/VariableValidation")
 
 // Validations
 const isXSSAttempt = require('../functions').isXSSAttempt
@@ -80,9 +80,9 @@ class VariableRepository {
                     "message": "Le corps de la requête ne peut pas être vide.",
                     "code": 403,
                 });
-            } else if (!v.validate(vr, VariableValidation).valid) {
+            } else if (!validator.validate(vr, VariableValidation).valid) {
                 reject({
-                    "message": `Le modèle de variable n'est pas respecté : ${v.validate(s, VariableValidation).errors}`,
+                    "message": `Le modèle de variable n'est pas respecté : ${validator.validate(s, VariableValidation).errors}`,
                     "code": 403,
                 });
             } else if (isXSSAttempt(vr.description)) {
@@ -126,9 +126,9 @@ class VariableRepository {
                     "message": "Le corps de la requête ne peut pas être vide.",
                     "code": 403,
                 });
-            } else if (!v.validate(vr, VariableValidation).valid) {
+            } else if (!validator.validate(vr, VariableValidation).valid) {
                 reject({
-                    "message": `Le modèle de variable n'est pas respecté : ${v.validate(s, VariableValidation).errors}`,
+                    "message": `Le modèle de variable n'est pas respecté : ${validator.validate(s, VariableValidation).errors}`,
                     "code": 403,
                 });
             } else if (isXSSAttempt(vr.description)) {

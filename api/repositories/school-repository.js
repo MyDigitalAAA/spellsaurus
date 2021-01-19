@@ -5,9 +5,9 @@ const model = require('../models/school-model')
 
 // Model validation
 const Validator = require('jsonschema').Validator
-const v = new Validator()
+const validator = new Validator()
 const SchoolValidation = require("../validations/SchoolValidation")
-v.addSchema(SchoolValidation, "/SchoolValidation")
+validator.addSchema(SchoolValidation, "/SchoolValidation")
 
 // Validations
 const isXSSAttempt = require('../functions').isXSSAttempt
@@ -79,9 +79,9 @@ class SchoolRepository {
                     "message": "Le corps de la requête ne peut pas être vide.",
                     "code": 403,
                 });
-            } else if (!v.validate(s, SchoolValidation).valid) {
+            } else if (!validator.validate(s, SchoolValidation).valid) {
                 reject({
-                    "message": `Le modèle d'école n'est pas respecté : ${v.validate(s, SchoolValidation).errors}`,
+                    "message": `Le modèle d'école n'est pas respecté : ${validator.validate(s, SchoolValidation).errors}`,
                     "code": 403,
                 });
             } else if (isXSSAttempt(s.name) || isXSSAttempt(s.description)) {
@@ -127,9 +127,9 @@ class SchoolRepository {
                     "message": "Le corps de la requête ne peut pas être vide.",
                     "code": 403,
                 });
-            } else if (!v.validate(s, SchoolValidation).valid) {
+            } else if (!validator.validate(s, SchoolValidation).valid) {
                 reject({
-                    "message": `Le modèle d'école n'est pas respecté : ${v.validate(s, SchoolValidation).errors}`,
+                    "message": `Le modèle d'école n'est pas respecté : ${validator.validate(s, SchoolValidation).errors}`,
                     "code": 403,
                 });
             } else if (isXSSAttempt(s.name) || isXSSAttempt(s.description)) {

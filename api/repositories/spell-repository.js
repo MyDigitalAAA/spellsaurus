@@ -5,9 +5,9 @@ const model = require('../models/spell-model')
 
 // Model validation
 const Validator = require('jsonschema').Validator
-const v = new Validator()
+const validator = new Validator()
 const SpellValidation = require("../validations/SpellValidation")
-v.addSchema(SpellValidation, "/SpellValidation")
+validator.addSchema(SpellValidation, "/SpellValidation")
 
 // Validations
 const isXSSAttempt = require('../functions').isXSSAttempt
@@ -118,9 +118,9 @@ class SpellRepository {
                     "message": "Le corps de la requête ne peut pas être vide.",
                     "code": 403,
                 });
-            } else if (!v.validate(s, SpellValidation).valid) {
+            } else if (!validator.validate(s, SpellValidation).valid) {
                 reject({
-                  "message": `Le modèle de sortilège n'est pas respecté : ${v.validate(s, SpellValidation).errors}`,
+                  "message": `Le modèle de sortilège n'est pas respecté : ${validator.validate(s, SpellValidation).errors}`,
                   "code": 403,
                 });
             } else if (isXSSAttempt(s.name) || isXSSAttempt(s.description) || isXSSAttempt(s.cost)) {
@@ -194,9 +194,9 @@ class SpellRepository {
                     "message": "Le corps de la requête ne peut pas être vide.",
                     "code": 403,
                 });
-            } else if (!v.validate(s, SpellValidation).valid) {
+            } else if (!validator.validate(s, SpellValidation).valid) {
                 reject({
-                    "message": `Le modèle de sortilège n'est pas respecté : ${v.validate(s, SpellValidation).errors}`,
+                    "message": `Le modèle de sortilège n'est pas respecté : ${validator.validate(s, SpellValidation).errors}`,
                     "code": 403,
                 });
             } else if (isXSSAttempt(s.name) || isXSSAttempt(s.description) || isXSSAttempt(s.cost)) {
