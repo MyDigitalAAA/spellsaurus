@@ -182,35 +182,6 @@ INSERT INTO `meta_school` (name, description) VALUES
 ("Magies affiliées", "Magies rattachées à une forme d'énergie magique particulière."),
 ("Magies autres", "Magies trop spécifiques et ne rentrant dans aucune autre grande école.");
 
--- CSV FILES
-LOAD DATA INFILE 'C:/temp/auracle_data/spell.csv'
-  INTO TABLE `spell` 
-  FIELDS TERMINATED BY ',' 
-  ENCLOSED BY '"'
-  LINES TERMINATED BY '\n'
-  IGNORE 1 ROWS;
-
-LOAD DATA INFILE 'C:/temp/auracle_data/school.csv'
-  INTO TABLE `school` 
-  FIELDS TERMINATED BY ',' 
-  ENCLOSED BY '"'
-  LINES TERMINATED BY '\n'
-  IGNORE 1 ROWS;
-
-LOAD DATA INFILE 'C:/temp/auracle_data/ingredient.csv'
-  INTO TABLE `ingredient` 
-  FIELDS TERMINATED BY ',' 
-  ENCLOSED BY '"'
-  LINES TERMINATED BY '\n'
-  IGNORE 1 ROWS;
-
-LOAD DATA INFILE 'C:/temp/auracle_data/variable.csv'
-  INTO TABLE `variable` 
-  FIELDS TERMINATED BY ',' 
-  ENCLOSED BY '"'
-  LINES TERMINATED BY '\n'
-  IGNORE 1 ROWS;
-
 -- Insertions de masses
 DELIMITER $$
 CREATE PROCEDURE insertIntoSchoolRange(IN delimiter_start INT, IN delimiter_end INT, IN id_school INT)
